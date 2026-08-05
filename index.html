@@ -95,6 +95,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
 
         .profile-avatar img {
@@ -215,7 +222,7 @@
             transform: scale(1.02);
         }
 
-        /* ===== 图片放大模态框（展示图） ===== */
+        /* ===== 图片放大模态框（展示图 + 头像共用） ===== */
         .modal {
             display: none;
             position: fixed;
@@ -266,7 +273,7 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* ===== 二维码模态框（独立于展示图） ===== */
+        /* ===== 二维码模态框 ===== */
         .qr-modal {
             display: none;
             position: fixed;
@@ -473,7 +480,8 @@
 
     <!-- ====== 个人信息 ====== -->
     <section class="profile-card">
-        <div class="profile-avatar">
+        <!-- 头像：点击放大 -->
+        <div class="profile-avatar" onclick="openAvatarModal()">
             <img src="ciweitouxiang.jpg" alt="小刺猬头像">
         </div>
         <div class="profile-info">
@@ -490,7 +498,7 @@
             </span>
         </div>
         <div class="profile-signature">
-            这是我的个性签名
+            这里是我独一无二的个性签名 
         </div>
     </section>
 
@@ -501,7 +509,7 @@
 
         <!-- ===== 作品 1：太阳系 ===== -->
         <div class="work-card">
-            <div class="work-image" onclick="openModal(this)">
+            <div class="work-image" onclick="openImageModal(this)">
                 <img src="xiaotaiyang.jpg" alt="3D太阳系展示图">
             </div>
             <div class="work-body">
@@ -519,7 +527,7 @@
 
         <!-- ===== 作品 2：地球版 ===== -->
         <div class="work-card">
-            <div class="work-image" onclick="openModal(this)">
+            <div class="work-image" onclick="openImageModal(this)">
                 <img src="diyue.jpg" alt="3D地月系展示图">
             </div>
             <div class="work-body">
@@ -544,9 +552,9 @@
 
 </div>
 
-<!-- ====== 展示图放大模态框 ====== -->
-<div class="modal" id="imageModal" onclick="closeModal()">
-    <img id="modalImage" src="" alt="展示图">
+<!-- ====== 图片放大模态框（展示图 + 头像共用） ====== -->
+<div class="modal" id="imageModal" onclick="closeImageModal()">
+    <img id="modalImage" src="" alt="大图">
     <div class="close-hint">点击任意处关闭</div>
 </div>
 
@@ -561,7 +569,7 @@
 
 <script>
     // ===== 展示图放大 =====
-    function openModal(el) {
+    function openImageModal(el) {
         const img = el.querySelector('img');
         if (!img) return;
         const modal = document.getElementById('imageModal');
@@ -572,7 +580,19 @@
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
+    // ===== 头像放大 =====
+    function openAvatarModal() {
+        const avatarImg = document.querySelector('.profile-avatar img');
+        if (!avatarImg) return;
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        modalImg.src = avatarImg.src;
+        modalImg.alt = avatarImg.alt || '头像';
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
         const modal = document.getElementById('imageModal');
         modal.classList.remove('active');
         document.body.style.overflow = '';
@@ -607,7 +627,7 @@
     // ===== 键盘快捷键 =====
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            closeModal();
+            closeImageModal();
             closeQR();
         }
     });
