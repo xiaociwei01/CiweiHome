@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刺猬的家</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
+            background: #ffffff;
+            color: #1a1a2e;
+            padding: 24px 20px 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1120px;
+            width: 100%;
+        }
+
+        /* ===== 顶部 ===== */
+        .header {
+            padding: 20px 0 12px;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 28px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #1a1a2e;
+        }
+
+        .header-left .tagline {
+            font-size: 15px;
+            color: #888;
+            margin-top: 4px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        .header-right {
+            font-size: 14px;
+            color: #aaa;
+            text-align: right;
+            line-height: 1.6;
+        }
+
+        .header-right a {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .header-right a:hover {
+            border-bottom-color: #1a1a2e;
+        }
+
+        /* ===== 个人信息卡片 ===== */
+        .profile-card {
+            background: #f8f9fc;
+            border-radius: 20px;
+            padding: 24px 28px;
+            margin-bottom: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 40px;
+            align-items: center;
+            border: 1px solid #eeeeee;
+        }
+
+        /* 头像：换成图片，圆形裁剪 */
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden;
+            background: #e0e5ed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 没有图片时的备用文字 */
+        .profile-avatar .fallback {
+            font-size: 32px;
+            color: #7a8a9e;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 24px;
+            flex: 1;
+        }
+
+        .profile-info .item {
+            font-size: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-info .item .label {
+            color: #999;
+            font-weight: 400;
+        }
+
+        .profile-info .item .value {
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+
+        .profile-info .item .value.highlight {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        /* 个性签名：纯文本，不可编辑 */
+        .profile-signature {
+            width: 100%;
+            margin-top: 4px;
+            font-size: 16px;
+            color: #555;
+            font-style: italic;
+            border-top: 1px solid #e8e8e8;
+            padding-top: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== 作品区标题 ===== */
+        .works-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 8px 0 18px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== 作品卡片网格 ===== */
+        .works-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 28px;
+        }
+
+        .work-card {
+            background: #ffffff;
+            border: 1px solid #eaeef3;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: box-shadow 0.25s ease, transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .work-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        /* ===== 展示图占位 ===== */
+        .work-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #b0b8c4;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #eaeef3;
+            position: relative;
+            user-select: none;
+        }
+
+        .work-image .placeholder-icon {
+            font-size: 32px;
+            opacity: 0.3;
+            margin-right: 8px;
+        }
+
+        .work-image .placeholder-text {
+            opacity: 0.5;
+        }
+
+        /* ===== 卡片内容 ===== */
+        .work-body {
+            padding: 18px 22px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .work-body .work-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .work-body .work-tag {
+            font-size: 13px;
+            color: #888;
+            font-weight: 400;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .work-body .work-desc {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+
+        .work-body .work-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            align-self: flex-start;
+            transition: background 0.2s ease, transform 0.15s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .work-body .work-link:hover {
+            background: #2d2d4a;
+            transform: scale(0.97);
+        }
+
+        .work-body .work-link:active {
+            transform: scale(0.94);
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            margin-top: 48px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 13px;
+            color: #bbb;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        .footer .heart {
+            color: #d14a4a;
+        }
+
+        /* ===== 响应式：平板/电脑横屏 ===== */
+        @media (min-width: 720px) {
+            body {
+                padding: 32px 40px 60px;
+            }
+
+            .header {
+                padding: 12px 0 16px;
+            }
+
+            .header-left h1 {
+                font-size: 34px;
+            }
+
+            .profile-card {
+                padding: 28px 34px;
+                gap: 20px 48px;
+            }
+
+            .profile-avatar {
+                width: 84px;
+                height: 84px;
+            }
+
+            .profile-info .item {
+                font-size: 16px;
+            }
+
+            .profile-signature {
+                font-size: 18px;
+            }
+
+            .works-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+
+            .work-body .work-name {
+                font-size: 22px;
+            }
+        }
+
+        /* ===== 更大屏幕 (桌面) ===== */
+        @media (min-width: 1024px) {
+            .works-grid {
+                gap: 36px;
+            }
+
+            .work-body {
+                padding: 22px 28px 26px;
+            }
+
+            .work-body .work-desc {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ====== 顶部 ====== -->
+    <header class="header">
+        <div class="header-left">
+            <h1>🦔 刺猬的家</h1>
+            <div class="tagline">独立开发者</div>
+        </div>
+        <div class="header-right">
+            <a href="https://github.com/xiaociwei01" target="_blank">GitHub</a>
+            &nbsp;·&nbsp;
+            <span>微信 As08_0831</span>
+            &nbsp;·&nbsp;
+            <span>QQ 2586279833</span>
+        </div>
+    </header>
+
+    <!-- ====== 个人信息 ====== -->
+    <section class="profile-card">
+        <!-- 头像：替换 src 为你自己的图片路径 -->
+        <div class="profile-avatar">
+            <img src="avatar.jpg" alt="小刺猬头像" id="avatar-img">
+        </div>
+        <div class="profile-info">
+            <span class="item"><span class="label">年龄</span><span class="value">18</span></span>
+            <span class="item"><span class="label">性别</span><span class="value">男</span></span>
+            <span class="item"><span class="label">地点</span><span class="value">中国 · 陕西</span></span>
+            <span class="item"><span class="label">微信</span><span class="value highlight">As08_0831</span></span>
+            <span class="item"><span class="label">QQ</span><span class="value highlight">2586279833</span></span>
+        </div>
+        <!-- 个性签名：纯文本，只有你改代码才能修改 -->
+        <div class="profile-signature">
+            无
+        </div>
+    </section>
+
+    <!-- ====== 作品区 ====== -->
+    <h2 class="works-title">🧰 我的作品</h2>
+
+    <div class="works-grid">
+
+        <!-- ===== 作品 1：太阳系 ===== -->
+        <div class="work-card">
+            <div class="work-image">
+                <span class="placeholder-icon">🌌</span>
+                <span class="placeholder-text">展示图 · 待替换</span>
+            </div>
+            <div class="work-body">
+                <div class="work-name">3D 太阳系 · 真实增强版</div>
+                <div class="work-tag">Three.js · 开普勒轨道 · 哈勃 · 旅行者一号</div>
+                <div class="work-desc">
+                    真实光照、椭圆轨道、行星轴倾斜、土星环、破坏工具箱、
+                    哈勃望远镜模式、旅行者一号深空飞行。
+                </div>
+                <a class="work-link" href="https://xiaociwei01.github.io/xiaotaiyang/" target="_blank">
+                    🚀 进入太阳系
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== 作品 2：地球版 ===== -->
+        <div class="work-card">
+            <div class="work-image">
+                <span class="placeholder-icon">🌍</span>
+                <span class="placeholder-text">展示图 · 待替换</span>
+            </div>
+            <div class="work-body">
+                <div class="work-name">地球 · 节气 · 日食月食</div>
+                <div class="work-tag">开普勒轨道 · 月相 · ISS · 天宫空间站</div>
+                <div class="work-desc">
+                    地球开普勒公转、节气跳转、日食/月食实时检测、
+                    月相模拟、ISS 与天宫双空间站、地轴倾斜。
+                </div>
+                <a class="work-link" href="https://xiaociwei01.github.io/diyue/" target="_blank">
+                    🌍 进入地球版
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ====== 页脚 ====== -->
+    <div class="footer">
+        <span class="heart">✦</span> 小刺猬 · 2026 <span class="heart">✦</span>
+    </div>
+
+</div>
+
+</body>
+</html>
