@@ -134,6 +134,19 @@
             font-weight: 600;
         }
 
+        /* 联系方式点击样式 */
+        .profile-info .item .value.clickable {
+            cursor: pointer;
+            border-bottom: 1.5px dashed #ccc;
+            transition: border-color 0.2s, color 0.2s;
+            padding-bottom: 1px;
+        }
+
+        .profile-info .item .value.clickable:hover {
+            border-color: #1a1a2e;
+            color: #000;
+        }
+
         .profile-signature {
             width: 100%;
             margin-top: 4px;
@@ -176,7 +189,7 @@
             transform: translateY(-2px);
         }
 
-        /* ===== 展示图：自适应 + 点击放大 ===== */
+        /* ===== 展示图 ===== */
         .work-image {
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -202,7 +215,7 @@
             transform: scale(1.02);
         }
 
-        /* ===== 图片放大模态框 ===== */
+        /* ===== 图片放大模态框（展示图） ===== */
         .modal {
             display: none;
             position: fixed;
@@ -251,6 +264,63 @@
         @keyframes scaleIn {
             from { transform: scale(0.9); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== 二维码模态框（独立于展示图） ===== */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .qr-modal.active {
+            display: flex;
+        }
+
+        .qr-modal .qr-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px 24px 20px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: scaleIn 0.25s ease;
+            cursor: default;
+        }
+
+        .qr-modal .qr-content .qr-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+
+        .qr-modal .qr-content img {
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .qr-modal .qr-content .qr-close-hint {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #aaa;
+            letter-spacing: 0.3px;
         }
 
         /* ===== 卡片内容 ===== */
@@ -325,7 +395,7 @@
             color: #d14a4a;
         }
 
-        /* ===== 响应式：平板/电脑横屏 ===== */
+        /* ===== 响应式 ===== */
         @media (min-width: 720px) {
             body {
                 padding: 32px 40px 60px;
@@ -367,7 +437,6 @@
             }
         }
 
-        /* ===== 更大屏幕 (桌面) ===== */
         @media (min-width: 1024px) {
             .works-grid {
                 gap: 36px;
@@ -405,14 +474,20 @@
     <!-- ====== 个人信息 ====== -->
     <section class="profile-card">
         <div class="profile-avatar">
-            <img src="ciweitouxiang.jpg" alt="小刺猬头像" id="avatar-img">
+            <img src="ciweitouxiang.jpg" alt="小刺猬头像">
         </div>
         <div class="profile-info">
             <span class="item"><span class="label">年龄</span><span class="value">17</span></span>
             <span class="item"><span class="label">性别</span><span class="value">男</span></span>
             <span class="item"><span class="label">地点</span><span class="value">中国 · 陕西</span></span>
-            <span class="item"><span class="label">微信</span><span class="value highlight">As08_0831</span></span>
-            <span class="item"><span class="label">QQ</span><span class="value highlight">2586279833</span></span>
+            <span class="item">
+                <span class="label">微信</span>
+                <span class="value highlight clickable" onclick="openQR('wechat')">As08_0831</span>
+            </span>
+            <span class="item">
+                <span class="label">QQ</span>
+                <span class="value highlight clickable" onclick="openQR('qq')">2586279833</span>
+            </span>
         </div>
         <div class="profile-signature">
             这是我的个性签名
@@ -469,13 +544,23 @@
 
 </div>
 
-<!-- ====== 图片放大模态框 ====== -->
+<!-- ====== 展示图放大模态框 ====== -->
 <div class="modal" id="imageModal" onclick="closeModal()">
     <img id="modalImage" src="" alt="展示图">
     <div class="close-hint">点击任意处关闭</div>
 </div>
 
+<!-- ====== 二维码模态框 ====== -->
+<div class="qr-modal" id="qrModal" onclick="closeQR()">
+    <div class="qr-content" onclick="event.stopPropagation()">
+        <div class="qr-label" id="qrLabel">微信二维码</div>
+        <img id="qrImage" src="" alt="二维码">
+        <div class="qr-close-hint">点击任意处关闭</div>
+    </div>
+</div>
+
 <script>
+    // ===== 展示图放大 =====
     function openModal(el) {
         const img = el.querySelector('img');
         if (!img) return;
@@ -493,9 +578,38 @@
         document.body.style.overflow = '';
     }
 
-    // 按 ESC 键关闭
+    // ===== 二维码弹窗 =====
+    function openQR(type) {
+        const modal = document.getElementById('qrModal');
+        const qrImg = document.getElementById('qrImage');
+        const qrLabel = document.getElementById('qrLabel');
+
+        if (type === 'wechat') {
+            qrImg.src = 'wechat_qr.jpg';
+            qrLabel.textContent = '📱 微信二维码';
+        } else if (type === 'qq') {
+            qrImg.src = 'qq_qr.jpg';
+            qrLabel.textContent = '💬 QQ二维码';
+        } else {
+            return;
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeQR() {
+        const modal = document.getElementById('qrModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // ===== 键盘快捷键 =====
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeModal();
+        if (e.key === 'Escape') {
+            closeModal();
+            closeQR();
+        }
     });
 </script>
 
