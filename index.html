@@ -184,30 +184,21 @@
             transform: translateY(-2px);
         }
 
-        /* ===== 展示图占位 ===== */
+        /* ===== 展示图 ===== */
         .work-image {
             width: 100%;
             aspect-ratio: 16 / 9;
             background: #f0f2f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #b0b8c4;
-            font-size: 14px;
-            letter-spacing: 0.5px;
+            overflow: hidden;
             border-bottom: 1px solid #eaeef3;
             position: relative;
-            user-select: none;
         }
 
-        .work-image .placeholder-icon {
-            font-size: 32px;
-            opacity: 0.3;
-            margin-right: 8px;
-        }
-
-        .work-image .placeholder-text {
-            opacity: 0.5;
+        .work-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         /* ===== 卡片内容 ===== */
@@ -386,8 +377,7 @@
         <!-- ===== 作品 1：太阳系 ===== -->
         <div class="work-card">
             <div class="work-image">
-                <span class="placeholder-icon">🌌</span>
-                <span class="placeholder-text">展示图 · 待替换</span>
+                <img src="xiaotaiyang.jpg" alt="3D太阳系展示图">
             </div>
             <div class="work-body">
                 <div class="work-name">3D太阳系</div>
@@ -405,8 +395,7 @@
         <!-- ===== 作品 2：地球版 ===== -->
         <div class="work-card">
             <div class="work-image">
-                <span class="placeholder-icon">🌍</span>
-                <span class="placeholder-text">展示图 · 待替换</span>
+                <img src="diyue.jpg" alt="3D地月系展示图">
             </div>
             <div class="work-body">
                 <div class="work-name">3D地月系</div>
