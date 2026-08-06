@@ -83,6 +83,11 @@
             gap: 16px 40px;
             align-items: center;
             border: 1px solid #eeeeee;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .profile-card:active {
+            transform: scale(0.99);
         }
 
         .profile-avatar {
@@ -102,6 +107,10 @@
         .profile-avatar:hover {
             transform: scale(1.05);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .profile-avatar:active {
+            transform: scale(0.93);
         }
 
         .profile-avatar img {
@@ -141,7 +150,6 @@
             font-weight: 600;
         }
 
-        /* 联系方式点击样式 */
         .profile-info .item .value.clickable {
             cursor: pointer;
             border-bottom: 1.5px dashed #ccc;
@@ -152,6 +160,10 @@
         .profile-info .item .value.clickable:hover {
             border-color: #1a1a2e;
             color: #000;
+        }
+
+        .profile-info .item .value.clickable:active {
+            transform: scale(0.95);
         }
 
         .profile-signature {
@@ -189,11 +201,19 @@
             transition: box-shadow 0.25s ease, transform 0.2s ease;
             display: flex;
             flex-direction: column;
+            cursor: default;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .work-card:hover {
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
             transform: translateY(-2px);
+        }
+
+        .work-card:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            transition-duration: 0.08s;
         }
 
         /* ===== 展示图 ===== */
@@ -222,7 +242,12 @@
             transform: scale(1.02);
         }
 
-        /* ===== 图片放大模态框（展示图 + 头像共用） ===== */
+        .work-image:active img {
+            transform: scale(0.97);
+            transition-duration: 0.08s;
+        }
+
+        /* ===== 图片放大模态框 ===== */
         .modal {
             display: none;
             position: fixed;
@@ -361,7 +386,16 @@
             flex: 1;
         }
 
-        .work-body .work-link {
+        /* ===== 跳转按钮区域 ===== */
+        .work-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .work-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -372,19 +406,103 @@
             font-size: 15px;
             font-weight: 500;
             text-decoration: none;
-            align-self: flex-start;
             transition: background 0.2s ease, transform 0.15s ease;
             border: none;
             cursor: pointer;
+            touch-action: manipulation;
         }
 
-        .work-body .work-link:hover {
+        .work-link:hover {
             background: #2d2d4a;
             transform: scale(0.97);
         }
 
-        .work-body .work-link:active {
-            transform: scale(0.94);
+        .work-link:active {
+            transform: scale(0.92);
+            transition-duration: 0.06s;
+        }
+
+        .work-link.loading {
+            background: #555;
+            cursor: wait;
+            pointer-events: none;
+        }
+
+        /* ===== 平台切换器 ===== */
+        .platform-switcher {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #999;
+            background: #f5f6f8;
+            padding: 4px 10px 4px 14px;
+            border-radius: 20px;
+            border: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .platform-switcher:hover {
+            background: #eef0f3;
+            border-color: #ddd;
+        }
+
+        .platform-switcher:active {
+            transform: scale(0.95);
+        }
+
+        .platform-switcher .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .platform-switcher .dot.netlify {
+            background: #00ad9f;
+        }
+
+        .platform-switcher .dot.github {
+            background: #6e5494;
+        }
+
+        .platform-switcher .dot.fallback {
+            background: #f0ad4e;
+        }
+
+        .platform-switcher .label {
+            font-weight: 500;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .platform-switcher .arrow {
+            font-size: 10px;
+            color: #bbb;
+            transition: transform 0.2s ease;
+        }
+
+        .platform-switcher:hover .arrow {
+            transform: translateX(2px);
+        }
+
+        /* ===== 备用链接（小字） ===== */
+        .fallback-link {
+            font-size: 11px;
+            color: #bbb;
+            text-decoration: none;
+            border-bottom: 1px dotted #ddd;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .fallback-link:hover {
+            color: #888;
+            border-bottom-color: #888;
         }
 
         /* ===== 页脚 ===== */
@@ -442,6 +560,10 @@
             .work-body .work-name {
                 font-size: 22px;
             }
+
+            .work-actions {
+                gap: 12px;
+            }
         }
 
         @media (min-width: 1024px) {
@@ -455,6 +577,22 @@
 
             .work-body .work-desc {
                 font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .work-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .work-link {
+                justify-content: center;
+            }
+
+            .platform-switcher {
+                justify-content: center;
+                padding: 6px 12px;
             }
         }
     </style>
@@ -480,7 +618,6 @@
 
     <!-- ====== 个人信息 ====== -->
     <section class="profile-card">
-        <!-- 头像：点击放大 -->
         <div class="profile-avatar" onclick="openAvatarModal()">
             <img src="ciweitouxiang.jpg" alt="小刺猬头像">
         </div>
@@ -498,7 +635,7 @@
             </span>
         </div>
         <div class="profile-signature">
-            这里是我独一无二的个性签名 
+            这里是我独一无二的个性签名
         </div>
     </section>
 
@@ -507,8 +644,10 @@
 
     <div class="works-grid">
 
+        <!-- ============================================================ -->
         <!-- ===== 作品 1：太阳系 ===== -->
-        <div class="work-card">
+        <!-- ============================================================ -->
+        <div class="work-card" id="work-solar">
             <div class="work-image" onclick="openImageModal(this)">
                 <img src="xiaotaiyang.jpg" alt="3D太阳系展示图">
             </div>
@@ -519,14 +658,34 @@
                     真实光照、椭圆轨道、行星轴倾斜、土星环、破坏工具箱、
                     哈勃望远镜模式、旅行者一号深空飞行。
                 </div>
-                <a class="work-link" href="https://xiaociwei01.github.io/xiaotaiyang/" target="_blank">
-                    🚀 进入太阳系
-                </a>
+
+                <!-- ===== 跳转区域 ===== -->
+                <div class="work-actions">
+                    <!-- 主按钮：智能跳转 -->
+                    <button class="work-link" id="btn-solar" onclick="smartNavigate('solar')">
+                        🚀 进入太阳系
+                    </button>
+
+                    <!-- 平台切换器 -->
+                    <div class="platform-switcher" id="switcher-solar" onclick="togglePlatform('solar')" title="点击切换平台">
+                        <span class="dot netlify" id="dot-solar"></span>
+                        <span class="label" id="label-solar">Netlify</span>
+                        <span class="arrow">⇄</span>
+                    </div>
+                </div>
+
+                <!-- 备用链接（手动直连） -->
+                <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span>📡 <span id="primary-label-solar">主: Netlify</span></span>
+                    <a href="#" id="fallback-link-solar" class="fallback-link" onclick="directNavigate('solar', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
+                </div>
             </div>
         </div>
 
-        <!-- ===== 作品 2：地球版 ===== -->
-        <div class="work-card">
+        <!-- ============================================================ -->
+        <!-- ===== 作品 2：地月系 ===== -->
+        <!-- ============================================================ -->
+        <div class="work-card" id="work-lunar">
             <div class="work-image" onclick="openImageModal(this)">
                 <img src="diyue.jpg" alt="3D地月系展示图">
             </div>
@@ -537,9 +696,27 @@
                     地球开普勒公转、节气跳转、日食/月食实时检测、
                     月相模拟、ISS 与天宫双空间站、地轴倾斜。
                 </div>
-                <a class="work-link" href="https://xiaociwei01.github.io/diyue/" target="_blank">
-                    🚀 进入地月系
-                </a>
+
+                <!-- ===== 跳转区域 ===== -->
+                <div class="work-actions">
+                    <!-- 主按钮：智能跳转 -->
+                    <button class="work-link" id="btn-lunar" onclick="smartNavigate('lunar')">
+                        🚀 进入地月系
+                    </button>
+
+                    <!-- 平台切换器 -->
+                    <div class="platform-switcher" id="switcher-lunar" onclick="togglePlatform('lunar')" title="点击切换平台">
+                        <span class="dot netlify" id="dot-lunar"></span>
+                        <span class="label" id="label-lunar">Netlify</span>
+                        <span class="arrow">⇄</span>
+                    </div>
+                </div>
+
+                <!-- 备用链接（手动直连） -->
+                <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span>📡 <span id="primary-label-lunar">主: Netlify</span></span>
+                    <a href="#" id="fallback-link-lunar" class="fallback-link" onclick="directNavigate('lunar', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
+                </div>
             </div>
         </div>
 
@@ -552,7 +729,7 @@
 
 </div>
 
-<!-- ====== 图片放大模态框（展示图 + 头像共用） ====== -->
+<!-- ====== 图片放大模态框 ====== -->
 <div class="modal" id="imageModal" onclick="closeImageModal()">
     <img id="modalImage" src="" alt="大图">
     <div class="close-hint">点击任意处关闭</div>
@@ -568,7 +745,154 @@
 </div>
 
 <script>
-    // ===== 展示图放大 =====
+    // ================================================================
+    // 一、链接配置（在这里填写你的 Netlify 地址）
+    // ================================================================
+    const LINK_CONFIG = {
+        solar: {
+            name: '太阳系',
+            primary: 'https://xiaotaiyang.netlify.app',    // ← 替换为你的 Netlify 地址
+            fallback: 'https://xiaociwei01.github.io/xiaotaiyang/',
+            selected: 'primary' // 'primary' 或 'fallback'
+        },
+        lunar: {
+            name: '地月系',
+            primary: 'https://diyue.netlify.app',        // ← 替换为你的 Netlify 地址
+            fallback: 'https://xiaociwei01.github.io/diyue/',
+            selected: 'primary'
+        }
+    };
+
+    // ================================================================
+    // 二、核心函数
+    // ================================================================
+
+    /** 获取当前选中的链接 */
+    function getCurrentLink(key) {
+        const config = LINK_CONFIG[key];
+        return config.selected === 'primary' ? config.primary : config.fallback;
+    }
+
+    /** 获取当前选中的平台名称 */
+    function getCurrentPlatform(key) {
+        const config = LINK_CONFIG[key];
+        return config.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
+    }
+
+    /** 更新 UI 中的平台显示 */
+    function updatePlatformUI(key) {
+        const config = LINK_CONFIG[key];
+        const isPrimary = config.selected === 'primary';
+        const dot = document.getElementById('dot-' + key);
+        const label = document.getElementById('label-' + key);
+        const primaryLabel = document.getElementById('primary-label-' + key);
+
+        if (dot) {
+            dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
+        }
+        if (label) {
+            label.textContent = isPrimary ? 'Netlify' : 'GitHub Pages';
+        }
+        if (primaryLabel) {
+            primaryLabel.textContent = isPrimary ? '主: Netlify' : '主: GitHub Pages';
+        }
+
+        // 更新备用链接显示
+        const fallbackLink = document.getElementById('fallback-link-' + key);
+        if (fallbackLink) {
+            const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
+            fallbackLink.textContent = '🔁 备用: ' + fbLabel;
+            // 备用链接的 href 指向非当前选中的平台
+            const target = isPrimary ? config.fallback : config.primary;
+            fallbackLink.href = target;
+            fallbackLink.onclick = function(e) {
+                e.preventDefault();
+                directNavigate(key, 'fallback');
+            };
+        }
+    }
+
+    /** 手动切换平台 */
+    function togglePlatform(key) {
+        const config = LINK_CONFIG[key];
+        config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
+        updatePlatformUI(key);
+        // 更新按钮文字提示（不强制跳转）
+        const btn = document.getElementById('btn-' + key);
+        if (btn) {
+            const platform = getCurrentPlatform(key);
+            btn.title = '当前目标: ' + platform;
+        }
+    }
+
+    /** 智能跳转：先检测主链接，失败则自动切换到备用 */
+    function smartNavigate(key) {
+        const config = LINK_CONFIG[key];
+        const btn = document.getElementById('btn-' + key);
+        const originalText = btn.innerHTML;
+
+        // 按钮置灰
+        btn.classList.add('loading');
+        btn.innerHTML = '⏳ 检测中...';
+
+        const primaryUrl = config.primary;
+        const fallbackUrl = config.fallback;
+
+        // 用 fetch 检测主链接是否可访问（超时 3 秒）
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        fetch(primaryUrl, {
+            method: 'HEAD',
+            mode: 'no-cors',
+            signal: controller.signal
+        })
+        .then(() => {
+            // no-cors 模式下，只要请求不报错就视为成功
+            clearTimeout(timeoutId);
+            btn.classList.remove('loading');
+            btn.innerHTML = originalText;
+            // 跳转到主链接
+            window.open(primaryUrl, '_blank');
+        })
+        .catch(() => {
+            clearTimeout(timeoutId);
+            // 主链接不可用，自动切换到备用
+            config.selected = 'fallback';
+            updatePlatformUI(key);
+            btn.classList.remove('loading');
+            btn.innerHTML = originalText;
+            // 跳转到备用链接
+            window.open(fallbackUrl, '_blank');
+        });
+    }
+
+    /** 直接跳转（手动点击备用链接时使用） */
+    function directNavigate(key, target) {
+        const config = LINK_CONFIG[key];
+        const url = target === 'fallback' ? config.fallback : config.primary;
+        window.open(url, '_blank');
+    }
+
+    // ================================================================
+    // 三、初始化
+    // ================================================================
+
+    // 页面加载后，更新所有平台的 UI 显示
+    document.addEventListener('DOMContentLoaded', function() {
+        Object.keys(LINK_CONFIG).forEach(key => {
+            updatePlatformUI(key);
+            const btn = document.getElementById('btn-' + key);
+            if (btn) {
+                btn.title = '当前目标: ' + getCurrentPlatform(key);
+            }
+        });
+    });
+
+    // ================================================================
+    // 四、图片放大 & 二维码（保持不变）
+    // ================================================================
+
     function openImageModal(el) {
         const img = el.querySelector('img');
         if (!img) return;
@@ -580,7 +904,6 @@
         document.body.style.overflow = 'hidden';
     }
 
-    // ===== 头像放大 =====
     function openAvatarModal() {
         const avatarImg = document.querySelector('.profile-avatar img');
         if (!avatarImg) return;
@@ -598,7 +921,6 @@
         document.body.style.overflow = '';
     }
 
-    // ===== 二维码弹窗 =====
     function openQR(type) {
         const modal = document.getElementById('qrModal');
         const qrImg = document.getElementById('qrImage');
@@ -624,7 +946,6 @@
         document.body.style.overflow = '';
     }
 
-    // ===== 键盘快捷键 =====
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeImageModal();
