@@ -186,6 +186,11 @@
             letter-spacing: 0.5px;
         }
 
+        /* 朋友圈标题（与作品区有间距） */
+        .friends-title {
+            margin-top: 48px;
+        }
+
         /* ===== 作品卡片网格 ===== */
         .works-grid {
             display: grid;
@@ -384,6 +389,64 @@
             line-height: 1.6;
             margin-bottom: 16px;
             flex: 1;
+        }
+
+        /* ===== 最近博客预览 ===== */
+        .recent-posts {
+            margin: 6px 0 14px;
+            padding: 12px 14px;
+            background: #f8f9fc;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .recent-posts .rp-title {
+            font-size: 12px;
+            color: #999;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+
+        .recent-posts .rp-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 14px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px dashed #eee;
+            transition: color 0.2s;
+        }
+
+        .recent-posts .rp-item:last-child {
+            border-bottom: none;
+        }
+
+        .recent-posts .rp-item:hover {
+            color: #1a1a2e;
+        }
+
+        .recent-posts .rp-item .rp-date {
+            font-size: 12px;
+            color: #bbb;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .recent-posts .rp-empty {
+            font-size: 13px;
+            color: #bbb;
+            text-align: center;
+            padding: 8px 0;
+        }
+
+        .recent-posts .rp-loading {
+            font-size: 13px;
+            color: #ccc;
+            text-align: center;
+            padding: 8px 0;
         }
 
         /* ===== 跳转按钮区域 ===== */
@@ -594,6 +657,11 @@
                 justify-content: center;
                 padding: 6px 12px;
             }
+
+            .recent-posts .rp-item {
+                font-size: 13px;
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -722,6 +790,39 @@
 
     </div>
 
+    <!-- ================================================================ -->
+    <!-- ====== 🆕 开发者的小朋友圈 ====== -->
+    <!-- ================================================================ -->
+    <h2 class="works-title friends-title">🦔 开发者的小朋友圈</h2>
+
+    <div class="works-grid">
+        <div class="work-card" id="work-friends">
+            <!-- 封面图（点击可放大） -->
+            <div class="work-image" onclick="openImageModal(this)">
+                <img src="FriendQuan.jpg" alt="朋友圈封面图">
+            </div>
+            <div class="work-body">
+                <div class="work-name">📝 开发者的小朋友圈</div>
+                <div class="work-tag">偶尔写写，记录一些瞬间</div>
+
+                <!-- ===== 最近3篇博客预览（自动加载） ===== -->
+                <div class="recent-posts" id="recentPosts">
+                    <div class="rp-title">📖 最近更新</div>
+                    <div class="rp-loading">加载中...</div>
+                </div>
+
+                <!-- ===== 跳转按钮 ===== -->
+                <div class="work-actions">
+                    <a class="work-link" href="FriendQuan.html" target="_blank">
+                        📝 进入朋友圈
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+
     <!-- ====== 页脚 ====== -->
     <div class="footer">
         <span class="heart">✦</span> 小刺猬 · 2026 <span class="heart">✦</span>
@@ -751,35 +852,91 @@
     const LINK_CONFIG = {
         solar: {
             name: '太阳系',
-            primary: 'https://xiaotaiyang.netlify.app',    // ← 替换为你的 Netlify 地址
+            primary: 'https://xiaotaiyang.netlify.app',
             fallback: 'https://xiaociwei01.github.io/xiaotaiyang/',
-            selected: 'primary' // 'primary' 或 'fallback'
+            selected: 'primary'
         },
         lunar: {
             name: '地月系',
-            primary: 'https://diyue.netlify.app',        // ← 替换为你的 Netlify 地址
+            primary: 'https://diyue.netlify.app',
             fallback: 'https://xiaociwei01.github.io/diyue/',
             selected: 'primary'
         }
     };
 
     // ================================================================
-    // 二、核心函数
+    // 二、博客加载（最近3篇）
+    // ================================================================
+    const BLOG_REPO = 'xiaociwei01/CiweiBlog';
+    const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
+
+    async function fetchRecentPosts() {
+        const container = document.getElementById('recentPosts');
+        try {
+            const res = await fetch(BLOG_API);
+            if (!res.ok) throw new Error('无法读取文章列表');
+            const files = await res.json();
+            const posts = files.filter(f => f.name.endsWith('.md'));
+
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="rp-title">📖 最近更新</div>
+                    <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
+                `;
+                return;
+            }
+
+            // 按文件名倒序排列（文件名包含日期）
+            posts.sort((a, b) => b.name.localeCompare(a.name));
+            // 取最新 3 篇
+            const recent = posts.slice(0, 3);
+
+            let html = `<div class="rp-title">📖 最近更新</div>`;
+            for (const post of recent) {
+                // 读取文件内容获取标题
+                try {
+                    const contentRes = await fetch(post.download_url);
+                    const contentText = await contentRes.text();
+                    const titleMatch = contentText.match(/title:\s*(.+)/);
+                    const dateMatch = contentText.match(/date:\s*(.+)/);
+                    const title = titleMatch ? titleMatch[1].trim() : post.name.replace('.md', '');
+                    const date = dateMatch ? dateMatch[1].trim() : '未知日期';
+
+                    html += `
+                        <a href="https://xiaociwei01.github.io/CiweiBlog/post.html?file=${encodeURIComponent(post.name)}" target="_blank" class="rp-item">
+                            <span>${title}</span>
+                            <span class="rp-date">${date}</span>
+                        </a>
+                    `;
+                } catch (e) {
+                    // 单篇文章读取失败时跳过
+                    continue;
+                }
+            }
+            container.innerHTML = html;
+        } catch (err) {
+            container.innerHTML = `
+                <div class="rp-title">📖 最近更新</div>
+                <div class="rp-empty">加载失败，请稍后重试</div>
+            `;
+            console.warn('加载博客失败:', err.message);
+        }
+    }
+
+    // ================================================================
+    // 三、核心函数（作品跳转）
     // ================================================================
 
-    /** 获取当前选中的链接 */
     function getCurrentLink(key) {
         const config = LINK_CONFIG[key];
         return config.selected === 'primary' ? config.primary : config.fallback;
     }
 
-    /** 获取当前选中的平台名称 */
     function getCurrentPlatform(key) {
         const config = LINK_CONFIG[key];
         return config.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
     }
 
-    /** 更新 UI 中的平台显示 */
     function updatePlatformUI(key) {
         const config = LINK_CONFIG[key];
         const isPrimary = config.selected === 'primary';
@@ -797,12 +954,10 @@
             primaryLabel.textContent = isPrimary ? '主: Netlify' : '主: GitHub Pages';
         }
 
-        // 更新备用链接显示
         const fallbackLink = document.getElementById('fallback-link-' + key);
         if (fallbackLink) {
             const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
             fallbackLink.textContent = '🔁 备用: ' + fbLabel;
-            // 备用链接的 href 指向非当前选中的平台
             const target = isPrimary ? config.fallback : config.primary;
             fallbackLink.href = target;
             fallbackLink.onclick = function(e) {
@@ -812,33 +967,27 @@
         }
     }
 
-    /** 手动切换平台 */
     function togglePlatform(key) {
         const config = LINK_CONFIG[key];
         config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
         updatePlatformUI(key);
-        // 更新按钮文字提示（不强制跳转）
         const btn = document.getElementById('btn-' + key);
         if (btn) {
-            const platform = getCurrentPlatform(key);
-            btn.title = '当前目标: ' + platform;
+            btn.title = '当前目标: ' + getCurrentPlatform(key);
         }
     }
 
-    /** 智能跳转：先检测主链接，失败则自动切换到备用 */
     function smartNavigate(key) {
         const config = LINK_CONFIG[key];
         const btn = document.getElementById('btn-' + key);
         const originalText = btn.innerHTML;
 
-        // 按钮置灰
         btn.classList.add('loading');
         btn.innerHTML = '⏳ 检测中...';
 
         const primaryUrl = config.primary;
         const fallbackUrl = config.fallback;
 
-        // 用 fetch 检测主链接是否可访问（超时 3 秒）
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
 
@@ -848,26 +997,21 @@
             signal: controller.signal
         })
         .then(() => {
-            // no-cors 模式下，只要请求不报错就视为成功
             clearTimeout(timeoutId);
             btn.classList.remove('loading');
             btn.innerHTML = originalText;
-            // 跳转到主链接
             window.open(primaryUrl, '_blank');
         })
         .catch(() => {
             clearTimeout(timeoutId);
-            // 主链接不可用，自动切换到备用
             config.selected = 'fallback';
             updatePlatformUI(key);
             btn.classList.remove('loading');
             btn.innerHTML = originalText;
-            // 跳转到备用链接
             window.open(fallbackUrl, '_blank');
         });
     }
 
-    /** 直接跳转（手动点击备用链接时使用） */
     function directNavigate(key, target) {
         const config = LINK_CONFIG[key];
         const url = target === 'fallback' ? config.fallback : config.primary;
@@ -875,22 +1019,7 @@
     }
 
     // ================================================================
-    // 三、初始化
-    // ================================================================
-
-    // 页面加载后，更新所有平台的 UI 显示
-    document.addEventListener('DOMContentLoaded', function() {
-        Object.keys(LINK_CONFIG).forEach(key => {
-            updatePlatformUI(key);
-            const btn = document.getElementById('btn-' + key);
-            if (btn) {
-                btn.title = '当前目标: ' + getCurrentPlatform(key);
-            }
-        });
-    });
-
-    // ================================================================
-    // 四、图片放大 & 二维码（保持不变）
+    // 四、图片放大 & 二维码
     // ================================================================
 
     function openImageModal(el) {
@@ -951,6 +1080,24 @@
             closeImageModal();
             closeQR();
         }
+    });
+
+    // ================================================================
+    // 五、初始化
+    // ================================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化作品切换器
+        Object.keys(LINK_CONFIG).forEach(key => {
+            updatePlatformUI(key);
+            const btn = document.getElementById('btn-' + key);
+            if (btn) {
+                btn.title = '当前目标: ' + getCurrentPlatform(key);
+            }
+        });
+
+        // 加载最近博客
+        fetchRecentPosts();
     });
 </script>
 

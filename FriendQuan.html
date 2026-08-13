@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>开发者的小朋友圈</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
+            background: #f5f6fa;
+            color: #1a1a2e;
+            padding: 20px 16px 60px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0 16px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .nav-bar .back-link {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .nav-bar .back-link:hover {
+            background: #e0e0e0;
+        }
+
+        .nav-bar .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            flex: 1;
+            text-align: center;
+            color: #1a1a2e;
+        }
+
+        .nav-bar .nav-title .sub {
+            font-size: 12px;
+            font-weight: 400;
+            color: #aaa;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* ===== 朋友圈动态列表 ===== */
+        .feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ===== 单条动态 ===== */
+        .feed-item {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px 18px 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            border: 1px solid #f0f0f0;
+            transition: box-shadow 0.2s;
+        }
+
+        .feed-item:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        /* 动态头部：头像 + 昵称 + 时间 */
+        .feed-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .feed-header .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #e0e5ed;
+        }
+
+        .feed-header .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .feed-header .info {
+            flex: 1;
+        }
+
+        .feed-header .info .name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .feed-header .info .time {
+            font-size: 12px;
+            color: #bbb;
+            margin-top: 1px;
+        }
+
+        /* 动态正文 */
+        .feed-body {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 10px;
+        }
+
+        .feed-body:empty {
+            display: none;
+        }
+
+        /* 动态中的图片/视频 */
+        .feed-media {
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f5f6fa;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .feed-media img {
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            display: block;
+            background: #f0f2f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .feed-media img:hover {
+            transform: scale(1.01);
+        }
+
+        .feed-media video {
+            width: 100%;
+            max-height: 420px;
+            border-radius: 8px;
+            background: #000;
+            outline: none;
+        }
+
+        /* 动态标签（如果有） */
+        .feed-tags {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .feed-tags .tag {
+            background: #f0f2f5;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* ===== 空状态 ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #bbb;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state .text {
+            font-size: 16px;
+        }
+
+        /* ===== 加载状态 ===== */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .loading-state .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #eee;
+            border-top: 3px solid #1a1a2e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== 图片查看模态框 ===== */
+        .img-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+        }
+
+        .img-modal.active {
+            display: flex;
+        }
+
+        .img-modal img {
+            max-width: 95%;
+            max-height: 92%;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .img-modal .close-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 480px) {
+            .feed-item {
+                padding: 14px 14px 16px;
+            }
+
+            .feed-header .avatar {
+                width: 38px;
+                height: 38px;
+            }
+
+            .feed-body {
+                font-size: 14px;
+            }
+
+            .feed-media img,
+            .feed-media video {
+                max-height: 280px;
+            }
+
+            .nav-bar .nav-title {
+                font-size: 16px;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .feed-media img,
+            .feed-media video {
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== 顶部导航 ====== -->
+    <nav class="nav-bar">
+        <a class="back-link" href="https://xiaociwei01.github.io/CiweiHome/" target="_blank">← 返回</a>
+        <div class="nav-title">
+            🦔 开发者的小朋友圈
+            <span class="sub">偶尔写写，记录一些瞬间</span>
+        </div>
+    </nav>
+
+    <!-- ====== 动态列表 ====== -->
+    <div id="feedList" class="feed-list">
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <div>加载中...</div>
+        </div>
+    </div>
+
+    <!-- ====== 图片查看模态框 ====== -->
+    <div class="img-modal" id="imgModal" onclick="closeImgModal()">
+        <img id="modalImg" src="" alt="查看大图">
+        <div class="close-hint">点击任意处关闭</div>
+    </div>
+
+    <script>
+        // ================================================================
+        // 配置
+        // ================================================================
+        const BLOG_REPO = 'xiaociwei01/CiweiBlog';
+        const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
+        const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
+        const NICKNAME = '小刺猬';
+
+        // ================================================================
+        // 获取所有博客文章
+        // ================================================================
+        async function fetchAllPosts() {
+            try {
+                const res = await fetch(BLOG_API);
+                if (!res.ok) throw new Error('无法读取文章列表');
+                const files = await res.json();
+                const posts = files.filter(f => f.name.endsWith('.md'));
+
+                if (posts.length === 0) {
+                    return [];
+                }
+
+                // 按文件名倒序排列（最新在上面）
+                posts.sort((a, b) => b.name.localeCompare(a.name));
+
+                // 读取每篇文章的内容
+                const postsWithContent = [];
+                for (const post of posts) {
+                    try {
+                        const contentRes = await fetch(post.download_url);
+                        const contentText = await contentRes.text();
+
+                        // 解析 frontmatter
+                        const lines = contentText.split('\n');
+                        let title = post.name.replace('.md', '');
+                        let date = '未知日期';
+                        let tags = '';
+                        let bodyStart = 0;
+
+                        if (lines[0] === '---') {
+                            let end = lines.indexOf('---', 1);
+                            if (end !== -1) {
+                                const front = lines.slice(1, end);
+                                front.forEach(line => {
+                                    if (line.startsWith('title:')) title = line.replace('title:', '').trim();
+                                    if (line.startsWith('date:')) date = line.replace('date:', '').trim();
+                                    if (line.startsWith('tags:')) tags = line.replace('tags:', '').trim();
+                                });
+                                bodyStart = end + 1;
+                            }
+                        }
+
+                        const body = lines.slice(bodyStart).join('\n').trim();
+
+                        // 提取正文中的图片和视频
+                        const images = [];
+                        const videos = [];
+                        // 提取 markdown 图片 ![]()
+                        let imgMatch;
+                        const imgRegex = /!\[.*?\]\((.*?)\)/g;
+                        while ((imgMatch = imgRegex.exec(body)) !== null) {
+                            images.push(imgMatch[1]);
+                        }
+                        // 提取 video 标签
+                        const vidRegex = /<video[^>]*src="([^"]*)"[^>]*>/g;
+                        let vidMatch;
+                        while ((vidMatch = vidRegex.exec(body)) !== null) {
+                            videos.push(vidMatch[1]);
+                        }
+
+                        // 纯文本（去除图片和视频标记）
+                        let textBody = body;
+                        // 移除 markdown 图片
+                        textBody = textBody.replace(/!\[.*?\]\(.*?\)/g, '');
+                        // 移除 video 标签
+                        textBody = textBody.replace(/<video[^>]*>.*?<\/video>/g, '');
+                        // 移除多余空行
+                        textBody = textBody.replace(/\n{3,}/g, '\n\n').trim();
+
+                        postsWithContent.push({
+                            filename: post.name,
+                            title: title,
+                            date: date,
+                            tags: tags.split(',').map(t => t.trim()).filter(t => t),
+                            body: textBody,
+                            images: images,
+                            videos: videos,
+                            raw: body
+                        });
+                    } catch (e) {
+                        // 跳过读取失败的文章
+                        console.warn('跳过文章:', post.name, e.message);
+                        continue;
+                    }
+                }
+
+                return postsWithContent;
+            } catch (err) {
+                console.error('加载博客失败:', err);
+                return null;
+            }
+        }
+
+        // ================================================================
+        // 渲染朋友圈
+        // ================================================================
+        function renderFeed(posts) {
+            const container = document.getElementById('feedList');
+
+            if (posts === null) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">⚠️</div>
+                        <div class="text">加载失败，请稍后重试</div>
+                    </div>
+                `;
+                return;
+            }
+
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <div class="text">还没有文章，写一篇吧 ✍️</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            for (const post of posts) {
+                // 提取文字内容（最多显示200字，超出截断）
+                let displayText = post.body;
+                if (displayText.length > 200) {
+                    displayText = displayText.substring(0, 200) + '...';
+                }
+
+                // 媒体内容：优先显示图片，没有图片显示视频
+                let mediaHtml = '';
+                if (post.images.length > 0) {
+                    const imgSrc = post.images[0];
+                    // 如果是相对路径，补全为 raw 地址
+                    const fullSrc = imgSrc.startsWith('http') ? imgSrc :
+                        `https://raw.githubusercontent.com/${BLOG_REPO}/main/${imgSrc.replace(/^\.\//, '')}`;
+                    mediaHtml = `
+                        <div class="feed-media">
+                            <img src="${fullSrc}" alt="图片" onclick="openImgModal(this.src)" loading="lazy">
+                        </div>
+                    `;
+                } else if (post.videos.length > 0) {
+                    const vidSrc = post.videos[0];
+                    const fullSrc = vidSrc.startsWith('http') ? vidSrc :
+                        `https://raw.githubusercontent.com/${BLOG_REPO}/main/${vidSrc.replace(/^\.\//, '')}`;
+                    mediaHtml = `
+                        <div class="feed-media">
+                            <video controls src="${fullSrc}" preload="metadata"></video>
+                        </div>
+                    `;
+                }
+
+                // 标签
+                const tagsHtml = post.tags.length > 0 ?
+                    `<div class="feed-tags">${post.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>` :
+                    '';
+
+                html += `
+                    <div class="feed-item">
+                        <div class="feed-header">
+                            <div class="avatar">
+                                <img src="${AVATAR_URL}" alt="头像" loading="lazy">
+                            </div>
+                            <div class="info">
+                                <div class="name">${NICKNAME}</div>
+                                <div class="time">${post.date}</div>
+                            </div>
+                        </div>
+                        ${displayText ? `<div class="feed-body">${displayText}</div>` : ''}
+                        ${mediaHtml}
+                        ${tagsHtml}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ================================================================
+        // 图片查看
+        // ================================================================
+        function openImgModal(src) {
+            const modal = document.getElementById('imgModal');
+            const img = document.getElementById('modalImg');
+            img.src = src;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImgModal() {
+            const modal = document.getElementById('imgModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImgModal();
+            }
+        });
+
+        // ================================================================
+        // 启动
+        // ================================================================
+        async function init() {
+            const posts = await fetchAllPosts();
+            renderFeed(posts);
+        }
+
+        init();
+    </script>
+
+</body>
+</html>
