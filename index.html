@@ -12,21 +12,72 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #1a1a2e;
+            --primary-hover: #2d2d4a;
+            --text: #1a1a2e;
+            --text-light: #555;
+            --text-muted: #888;
+            --text-faint: #aaa;
+            --bg-card: #f8f9fc;
+            --border: #eaeef3;
+            --border-light: #f0f0f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 20px;
+            --transition-fast: 0.15s ease;
+            --transition-base: 0.25s ease;
+            --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --ripple-color: rgba(255, 255, 255, 0.35);
+        }
+
         body {
             font-family: -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
             background: #ffffff;
-            color: #1a1a2e;
+            color: var(--text);
             padding: 24px 20px 60px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1120px;
             width: 100%;
         }
+
+        /* ===== 入场动画 ===== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate-in {
+            opacity: 0;
+            animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .animate-in-delay-1 { animation-delay: 0.05s; }
+        .animate-in-delay-2 { animation-delay: 0.15s; }
+        .animate-in-delay-3 { animation-delay: 0.25s; }
+        .animate-in-delay-4 { animation-delay: 0.35s; }
+        .animate-in-delay-5 { animation-delay: 0.45s; }
 
         /* ===== 顶部 ===== */
         .header {
@@ -37,18 +88,30 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: flex-end;
+            transition: border-color var(--transition-base);
+        }
+
+        .header:hover {
+            border-bottom-color: #e0e0e0;
         }
 
         .header-left h1 {
             font-size: 28px;
             font-weight: 700;
             letter-spacing: 1px;
-            color: #1a1a2e;
+            color: var(--text);
+            transition: letter-spacing var(--transition-slow), transform var(--transition-base);
+            display: inline-block;
+        }
+
+        .header-left h1:hover {
+            letter-spacing: 3px;
+            transform: translateX(2px);
         }
 
         .header-left .tagline {
             font-size: 15px;
-            color: #888;
+            color: var(--text-muted);
             margin-top: 4px;
             font-weight: 400;
             letter-spacing: 0.3px;
@@ -56,26 +119,29 @@
 
         .header-right {
             font-size: 14px;
-            color: #aaa;
+            color: var(--text-faint);
             text-align: right;
             line-height: 1.6;
         }
 
         .header-right a {
-            color: #1a1a2e;
+            color: var(--text);
             text-decoration: none;
             font-weight: 500;
             border-bottom: 1px dotted #ccc;
+            transition: border-color var(--transition-base), color var(--transition-base);
+            padding-bottom: 1px;
         }
 
         .header-right a:hover {
-            border-bottom-color: #1a1a2e;
+            border-bottom-color: var(--text);
+            color: #000;
         }
 
         /* ===== 个人信息卡片 ===== */
         .profile-card {
-            background: #f8f9fc;
-            border-radius: 20px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
             padding: 24px 28px;
             margin-bottom: 32px;
             display: flex;
@@ -83,11 +149,37 @@
             gap: 16px 40px;
             align-items: center;
             border: 1px solid #eeeeee;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: none;
+        }
+
+        .profile-card:hover::before {
+            left: 150%;
+        }
+
+        .profile-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: #e0e0e0;
+            transform: translateY(-1px);
         }
 
         .profile-card:active {
             transform: scale(0.99);
+            transition-duration: 0.08s;
         }
 
         .profile-avatar {
@@ -101,16 +193,28 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+            animation: avatarGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes avatarGlow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(26, 26, 46, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(26, 26, 46, 0.05);
+            }
         }
 
         .profile-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: scale(1.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .profile-avatar:active {
-            transform: scale(0.93);
+            transform: scale(0.92);
+            transition-duration: 0.08s;
         }
 
         .profile-avatar img {
@@ -118,6 +222,11 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            transition: transform var(--transition-base);
+        }
+
+        .profile-avatar:hover img {
+            transform: scale(1.05);
         }
 
         .profile-info {
@@ -125,6 +234,7 @@
             flex-wrap: wrap;
             gap: 6px 24px;
             flex: 1;
+            min-width: 200px;
         }
 
         .profile-info .item {
@@ -133,6 +243,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            transition: transform var(--transition-fast);
         }
 
         .profile-info .item .label {
@@ -142,28 +253,30 @@
 
         .profile-info .item .value {
             font-weight: 500;
-            color: #1a1a2e;
+            color: var(--text);
         }
 
         .profile-info .item .value.highlight {
-            color: #1a1a2e;
+            color: var(--text);
             font-weight: 600;
         }
 
         .profile-info .item .value.clickable {
             cursor: pointer;
             border-bottom: 1.5px dashed #ccc;
-            transition: border-color 0.2s, color 0.2s;
+            transition: border-color var(--transition-base), color var(--transition-base), transform var(--transition-fast);
             padding-bottom: 1px;
+            position: relative;
         }
 
         .profile-info .item .value.clickable:hover {
-            border-color: #1a1a2e;
+            border-color: var(--text);
             color: #000;
+            transform: translateY(-1px);
         }
 
         .profile-info .item .value.clickable:active {
-            transform: scale(0.95);
+            transform: scale(0.94);
         }
 
         .profile-signature {
@@ -175,15 +288,45 @@
             border-top: 1px solid #e8e8e8;
             padding-top: 14px;
             letter-spacing: 0.5px;
+            transition: letter-spacing var(--transition-slow), color var(--transition-base);
+        }
+
+        .profile-signature:hover {
+            letter-spacing: 1px;
+            color: #333;
         }
 
         /* ===== 作品区标题 ===== */
         .works-title {
             font-size: 20px;
             font-weight: 600;
-            color: #1a1a2e;
+            color: var(--text);
             margin: 8px 0 18px;
             letter-spacing: 0.5px;
+            position: relative;
+            display: inline-block;
+            transition: transform var(--transition-base), letter-spacing var(--transition-slow);
+        }
+
+        .works-title::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: width var(--transition-slow);
+        }
+
+        .works-title:hover {
+            letter-spacing: 1px;
+            transform: translateX(2px);
+        }
+
+        .works-title:hover::after {
+            width: 100%;
         }
 
         .friends-title {
@@ -199,19 +342,22 @@
 
         .work-card {
             background: #ffffff;
-            border: 1px solid #eaeef3;
-            border-radius: 20px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: box-shadow 0.25s ease, transform 0.2s ease;
+            transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
             display: flex;
             flex-direction: column;
             cursor: default;
             -webkit-tap-highlight-color: transparent;
+            position: relative;
+            will-change: transform, box-shadow;
         }
 
         .work-card:hover {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-4px);
+            border-color: #dde3ea;
         }
 
         .work-card:active {
@@ -226,7 +372,7 @@
             aspect-ratio: 16 / 9;
             background: #f0f2f5;
             overflow: hidden;
-            border-bottom: 1px solid #eaeef3;
+            border-bottom: 1px solid var(--border);
             cursor: pointer;
             position: relative;
             display: flex;
@@ -239,16 +385,38 @@
             height: 100%;
             object-fit: contain;
             display: block;
-            transition: transform 0.3s ease;
+            transition: transform var(--transition-slow);
+            will-change: transform;
         }
 
         .work-image:hover img {
-            transform: scale(1.02);
+            transform: scale(1.05);
         }
 
         .work-image:active img {
-            transform: scale(0.97);
+            transform: scale(0.95);
             transition-duration: 0.08s;
+        }
+
+        /* 展示图放大提示 */
+        .work-image::after {
+            content: '🔍';
+            position: absolute;
+            bottom: 10px;
+            right: 14px;
+            font-size: 14px;
+            opacity: 0;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 4px 10px;
+            border-radius: 20px;
+            transition: opacity var(--transition-base), transform var(--transition-base);
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .work-image:hover::after {
+            opacity: 1;
+            transform: translateY(-2px);
         }
 
         /* ===== 图片放大模态框 ===== */
@@ -266,6 +434,8 @@
             cursor: pointer;
             padding: 20px;
             animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
 
         .modal.active {
@@ -278,7 +448,13 @@
             object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            animation: scaleIn 0.3s ease;
+            animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform var(--transition-base);
+            will-change: transform;
+        }
+
+        .modal img:hover {
+            transform: scale(1.02);
         }
 
         .modal .close-hint {
@@ -290,6 +466,7 @@
             font-size: 14px;
             letter-spacing: 0.5px;
             pointer-events: none;
+            animation: fadeIn 0.5s ease 0.3s both;
         }
 
         @keyframes fadeIn {
@@ -298,8 +475,26 @@
         }
 
         @keyframes scaleIn {
-            from { transform: scale(0.9); opacity: 0; }
+            from { transform: scale(0.85); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes scaleOut {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(0.85); opacity: 0; }
+        }
+
+        .modal.closing {
+            animation: fadeOut 0.25s ease forwards;
+        }
+
+        .modal.closing img {
+            animation: scaleOut 0.25s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
 
         /* ===== 二维码模态框 ===== */
@@ -317,6 +512,8 @@
             cursor: pointer;
             padding: 20px;
             animation: fadeIn 0.25s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
 
         .qr-modal.active {
@@ -330,15 +527,20 @@
             max-width: 360px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: scaleIn 0.25s ease;
+            box-shadow: var(--shadow-lg);
+            animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
             cursor: default;
+            transition: transform var(--transition-base);
+        }
+
+        .qr-modal .qr-content:hover {
+            transform: translateY(-2px);
         }
 
         .qr-modal .qr-content .qr-label {
             font-size: 16px;
             font-weight: 600;
-            color: #1a1a2e;
+            color: var(--text);
             margin-bottom: 12px;
         }
 
@@ -350,13 +552,22 @@
             border-radius: 8px;
             display: block;
             margin: 0 auto;
+            transition: transform var(--transition-base);
+        }
+
+        .qr-modal .qr-content img:hover {
+            transform: scale(1.03);
         }
 
         .qr-modal .qr-content .qr-close-hint {
             margin-top: 12px;
             font-size: 13px;
-            color: #aaa;
+            color: var(--text-faint);
             letter-spacing: 0.3px;
+        }
+
+        .qr-modal.closing {
+            animation: fadeOut 0.2s ease forwards;
         }
 
         /* ===== 卡片内容 ===== */
@@ -370,13 +581,18 @@
         .work-body .work-name {
             font-size: 20px;
             font-weight: 700;
-            color: #1a1a2e;
+            color: var(--text);
             margin-bottom: 4px;
+            transition: color var(--transition-base), letter-spacing var(--transition-base);
+        }
+
+        .work-card:hover .work-name {
+            letter-spacing: 0.5px;
         }
 
         .work-body .work-tag {
             font-size: 13px;
-            color: #888;
+            color: var(--text-muted);
             font-weight: 400;
             margin-bottom: 10px;
             letter-spacing: 0.3px;
@@ -388,6 +604,7 @@
             line-height: 1.6;
             margin-bottom: 16px;
             flex: 1;
+            transition: color var(--transition-base);
         }
 
         /* ===== 最近博客预览 ===== */
@@ -395,8 +612,15 @@
             margin: 6px 0 14px;
             padding: 12px 14px;
             background: #f8f9fc;
-            border-radius: 12px;
-            border: 1px solid #f0f0f0;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            transition: background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+        }
+
+        .recent-posts:hover {
+            background: #f5f7fa;
+            border-color: #e5e8ec;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .recent-posts .rp-title {
@@ -411,20 +635,40 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 4px 0;
+            padding: 5px 0;
             font-size: 14px;
             color: #333;
             text-decoration: none;
             border-bottom: 1px dashed #eee;
-            transition: color 0.2s;
+            transition: color var(--transition-base), padding-left var(--transition-base), background var(--transition-base);
+            border-radius: 6px;
+            position: relative;
         }
 
         .recent-posts .rp-item:last-child {
             border-bottom: none;
         }
 
+        .recent-posts .rp-item::before {
+            content: '→';
+            position: absolute;
+            left: -2px;
+            opacity: 0;
+            transition: opacity var(--transition-base), transform var(--transition-base);
+            transform: translateX(-6px);
+            color: var(--primary);
+        }
+
         .recent-posts .rp-item:hover {
-            color: #1a1a2e;
+            color: var(--text);
+            padding-left: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 6px;
+        }
+
+        .recent-posts .rp-item:hover::before {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .recent-posts .rp-item .rp-date {
@@ -432,6 +676,11 @@
             color: #bbb;
             flex-shrink: 0;
             margin-left: 12px;
+            transition: color var(--transition-base);
+        }
+
+        .recent-posts .rp-item:hover .rp-date {
+            color: #999;
         }
 
         .recent-posts .rp-empty {
@@ -446,6 +695,12 @@
             color: #ccc;
             text-align: center;
             padding: 8px 0;
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         /* ===== 跳转按钮区域 ===== */
@@ -457,30 +712,37 @@
             margin-top: 4px;
         }
 
+        /* 按钮基础样式 + 涟漪效果 */
         .work-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: #1a1a2e;
+            background: var(--primary);
             color: #fff;
             padding: 10px 22px;
             border-radius: 40px;
             font-size: 15px;
             font-weight: 500;
             text-decoration: none;
-            transition: background 0.2s ease, transform 0.15s ease;
+            transition: background var(--transition-base), transform var(--transition-fast), box-shadow var(--transition-base);
             border: none;
             cursor: pointer;
             touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .work-link:hover {
-            background: #2d2d4a;
-            transform: scale(0.97);
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 26, 46, 0.25);
         }
 
         .work-link:active {
-            transform: scale(0.92);
+            transform: scale(0.93);
+            box-shadow: 0 2px 8px rgba(26, 26, 46, 0.2);
             transition-duration: 0.06s;
         }
 
@@ -488,6 +750,27 @@
             background: #555;
             cursor: wait;
             pointer-events: none;
+        }
+
+        /* 涟漪 */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--ripple-color);
+            transform: scale(0);
+            animation: rippleAnim 0.6s ease-out forwards;
+            pointer-events: none;
+            width: 100px;
+            height: 100px;
+            margin-left: -50px;
+            margin-top: -50px;
+        }
+
+        @keyframes rippleAnim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
 
         /* ===== 平台切换器 ===== */
@@ -502,18 +785,21 @@
             border-radius: 20px;
             border: 1px solid #eee;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--transition-base);
             touch-action: manipulation;
             user-select: none;
+            position: relative;
         }
 
         .platform-switcher:hover {
             background: #eef0f3;
             border-color: #ddd;
+            transform: translateY(-1px);
         }
 
         .platform-switcher:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
+            transition-duration: 0.06s;
         }
 
         .platform-switcher .dot {
@@ -522,34 +808,51 @@
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
+            transition: all var(--transition-base);
         }
 
         .platform-switcher .dot.netlify {
             background: #00ad9f;
+            box-shadow: 0 0 8px rgba(0, 173, 159, 0.4);
         }
 
         .platform-switcher .dot.github {
             background: #6e5494;
+            box-shadow: 0 0 8px rgba(110, 84, 148, 0.4);
         }
 
         .platform-switcher .dot.fallback {
             background: #f0ad4e;
+            box-shadow: 0 0 8px rgba(240, 173, 78, 0.4);
         }
 
         .platform-switcher .label {
             font-weight: 500;
             font-size: 12px;
             color: #555;
+            transition: color var(--transition-base);
         }
 
         .platform-switcher .arrow {
             font-size: 10px;
             color: #bbb;
-            transition: transform 0.2s ease;
+            transition: transform var(--transition-base);
+            display: inline-block;
         }
 
         .platform-switcher:hover .arrow {
-            transform: translateX(2px);
+            transform: translateX(3px) rotate(180deg);
+        }
+
+        /* 切换时的小动画 */
+        @keyframes pulseDot {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.6); }
+            100% { transform: scale(1); }
+        }
+
+        .platform-switcher .dot.switching {
+            animation: pulseDot 0.4s ease;
         }
 
         /* ===== 备用链接 ===== */
@@ -558,13 +861,18 @@
             color: #bbb;
             text-decoration: none;
             border-bottom: 1px dotted #ddd;
-            transition: color 0.2s;
+            transition: color var(--transition-base), border-color var(--transition-base);
             cursor: pointer;
+            padding-bottom: 1px;
         }
 
         .fallback-link:hover {
             color: #888;
             border-bottom-color: #888;
+        }
+
+        .fallback-link:active {
+            transform: scale(0.95);
         }
 
         /* ===== 页脚 ===== */
@@ -576,10 +884,26 @@
             color: #bbb;
             text-align: center;
             letter-spacing: 0.3px;
+            transition: letter-spacing var(--transition-slow), color var(--transition-base);
+        }
+
+        .footer:hover {
+            letter-spacing: 1px;
+            color: #999;
         }
 
         .footer .heart {
             color: #d14a4a;
+            display: inline-block;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
         }
 
         /* ===== 响应式 ===== */
@@ -662,6 +986,17 @@
                 flex-wrap: wrap;
             }
         }
+
+        /* ===== 减少动画偏好 ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -669,7 +1004,7 @@
 <div class="container">
 
     <!-- ====== 顶部 ====== -->
-    <header class="header">
+    <header class="header animate-in animate-in-delay-1">
         <div class="header-left">
             <h1>🦔 刺猬的家</h1>
             <div class="tagline">独立开发者</div>
@@ -684,7 +1019,7 @@
     </header>
 
     <!-- ====== 个人信息 ====== -->
-    <section class="profile-card">
+    <section class="profile-card animate-in animate-in-delay-2">
         <div class="profile-avatar" onclick="openAvatarModal()">
             <img src="ciweitouxiang.jpg" alt="小刺猬头像">
         </div>
@@ -707,14 +1042,14 @@
     </section>
 
     <!-- ====== 作品区 ====== -->
-    <h2 class="works-title">🧰 我的作品</h2>
+    <h2 class="works-title animate-in animate-in-delay-2">🧰 我的作品</h2>
 
     <div class="works-grid">
 
         <!-- ===== 作品 1：太阳系 ===== -->
-        <div class="work-card" id="work-solar">
+        <div class="work-card animate-in animate-in-delay-3" id="work-solar">
             <div class="work-image" onclick="openImageModal(this)">
-                <img src="xiaotaiyang.jpg" alt="3D太阳系展示图">
+                <img src="xiaotaiyang.jpg" alt="3D太阳系展示图" loading="lazy">
             </div>
             <div class="work-body">
                 <div class="work-name">3D太阳系</div>
@@ -743,9 +1078,9 @@
         </div>
 
         <!-- ===== 作品 2：地月系 ===== -->
-        <div class="work-card" id="work-lunar">
+        <div class="work-card animate-in animate-in-delay-4" id="work-lunar">
             <div class="work-image" onclick="openImageModal(this)">
-                <img src="diyue.jpg" alt="3D地月系展示图">
+                <img src="diyue.jpg" alt="3D地月系展示图" loading="lazy">
             </div>
             <div class="work-body">
                 <div class="work-name">3D地月系</div>
@@ -776,12 +1111,12 @@
     </div>
 
     <!-- ====== 开发者的小朋友圈 ====== -->
-    <h2 class="works-title friends-title">🦔 开发者的小朋友圈</h2>
+    <h2 class="works-title friends-title animate-in animate-in-delay-4">🦔 开发者的小朋友圈</h2>
 
     <div class="works-grid">
-        <div class="work-card" id="work-friends">
+        <div class="work-card animate-in animate-in-delay-5" id="work-friends">
             <div class="work-image" onclick="openImageModal(this)">
-                <img src="friendQuan.jpg" alt="朋友圈封面图">
+                <img src="FriendQuan.jpg" alt="朋友圈封面图" loading="lazy">
             </div>
             <div class="work-body">
                 <div class="work-name">📝 开发者的小朋友圈</div>
@@ -793,16 +1128,26 @@
                 </div>
 
                 <div class="work-actions">
-                    <a class="work-link" href="FriendQuan.html" target="_blank">
+                    <button class="work-link" id="btn-friends" onclick="smartNavigate('friends')">
                         📝 进入朋友圈
-                    </a>
+                    </button>
+                    <div class="platform-switcher" id="switcher-friends" onclick="togglePlatform('friends')" title="点击切换平台">
+                        <span class="dot netlify" id="dot-friends"></span>
+                        <span class="label" id="label-friends">Netlify</span>
+                        <span class="arrow">⇄</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span>📡 <span id="primary-label-friends">主: Netlify</span></span>
+                    <a href="#" id="fallback-link-friends" class="fallback-link" onclick="directNavigate('friends', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ====== 页脚 ====== -->
-    <div class="footer">
+    <div class="footer animate-in animate-in-delay-5">
         <span class="heart">✦</span> 小刺猬 · 2026 <span class="heart">✦</span>
     </div>
 
@@ -839,6 +1184,13 @@
             primary: 'https://diyue.netlify.app',
             fallback: 'https://xiaociwei01.github.io/diyue/',
             selected: 'primary'
+        },
+        friends: {
+            name: '朋友圈',
+            // ⚠️ 请替换成你 CiweiHome 在 Netlify 上的实际地址
+            primary: 'https://ciweihome.netlify.app/FriendQuan.html',
+            fallback: 'https://xiaociwei01.github.io/CiweiHome/FriendQuan.html',
+            selected: 'primary'
         }
     };
 
@@ -867,8 +1219,8 @@
             posts.sort((a, b) => b.name.localeCompare(a.name));
             const recent = posts.slice(0, 3);
 
-            let html = `<div class="rp-title">📖 最近更新</div>`;
-            for (const post of recent) {
+            // 并发获取最近3篇文章的标题和日期
+            const tasks = recent.map(async (post) => {
                 try {
                     const contentRes = await fetch(post.download_url);
                     const contentText = await contentRes.text();
@@ -876,24 +1228,66 @@
                     const dateMatch = contentText.match(/date:\s*(.+)/);
                     const title = titleMatch ? titleMatch[1].trim() : post.name.replace('.md', '');
                     const date = dateMatch ? dateMatch[1].trim() : '未知日期';
-
-                    html += `
-                        <a href="https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(post.name)}" target="_blank" class="rp-item">
-                            <span>${title}</span>
-                            <span class="rp-date">${date}</span>
-                        </a>
-                    `;
+                    return { title, date, filename: post.name };
                 } catch (e) {
-                    continue;
+                    return null;
                 }
+            });
+
+            const results = await Promise.all(tasks);
+            const validPosts = results.filter(p => p !== null);
+
+            if (validPosts.length === 0) {
+                container.innerHTML = `
+                    <div class="rp-title">📖 最近更新</div>
+                    <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
+                `;
+                return;
+            }
+
+            let html = `<div class="rp-title">📖 最近更新</div>`;
+            for (const post of validPosts) {
+                html += `
+                    <a href="https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(post.filename)}" target="_blank" class="rp-item">
+                        <span>${post.title}</span>
+                        <span class="rp-date">${post.date}</span>
+                    </a>
+                `;
             }
             container.innerHTML = html;
+
+            // 给文章项添加渐入动画
+            const items = container.querySelectorAll('.rp-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(8px)';
+                item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s, padding-left 0.25s ease, color 0.25s ease`;
+                requestAnimationFrame(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                });
+            });
         } catch (err) {
             container.innerHTML = `
                 <div class="rp-title">📖 最近更新</div>
                 <div class="rp-empty">加载失败，请稍后重试</div>
             `;
         }
+    }
+
+    // ================================================================
+    // 涟漪效果
+    // ================================================================
+    function createRipple(e, element) {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) * 2;
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        element.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
     }
 
     // ================================================================
@@ -942,6 +1336,14 @@
     function togglePlatform(key) {
         const config = LINK_CONFIG[key];
         config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
+
+        // 切换时的小动画
+        const dot = document.getElementById('dot-' + key);
+        if (dot) {
+            dot.classList.add('switching');
+            setTimeout(() => dot.classList.remove('switching'), 400);
+        }
+
         updatePlatformUI(key);
         const btn = document.getElementById('btn-' + key);
         if (btn) {
@@ -991,7 +1393,7 @@
     }
 
     // ================================================================
-    // 图片放大 & 二维码
+    // 图片放大 & 二维码（带关闭动画）
     // ================================================================
     function openImageModal(el) {
         const img = el.querySelector('img');
@@ -1000,6 +1402,7 @@
         const modalImg = document.getElementById('modalImage');
         modalImg.src = img.src;
         modalImg.alt = img.alt || '展示图';
+        modal.classList.remove('closing');
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
@@ -1011,14 +1414,19 @@
         const modalImg = document.getElementById('modalImage');
         modalImg.src = avatarImg.src;
         modalImg.alt = avatarImg.alt || '头像';
+        modal.classList.remove('closing');
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
     function closeImageModal() {
         const modal = document.getElementById('imageModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
+        modal.classList.add('closing');
+        setTimeout(() => {
+            modal.classList.remove('active');
+            modal.classList.remove('closing');
+            document.body.style.overflow = '';
+        }, 250);
     }
 
     function openQR(type) {
@@ -1036,14 +1444,19 @@
             return;
         }
 
+        modal.classList.remove('closing');
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
     function closeQR() {
         const modal = document.getElementById('qrModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
+        modal.classList.add('closing');
+        setTimeout(() => {
+            modal.classList.remove('active');
+            modal.classList.remove('closing');
+            document.body.style.overflow = '';
+        }, 200);
     }
 
     document.addEventListener('keydown', function(e) {
@@ -1051,6 +1464,15 @@
             closeImageModal();
             closeQR();
         }
+    });
+
+    // ================================================================
+    // 按钮涟漪效果绑定
+    // ================================================================
+    document.querySelectorAll('.work-link').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            createRipple(e, this);
+        });
     });
 
     // ================================================================
