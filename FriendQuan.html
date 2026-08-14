@@ -16,7 +16,6 @@
             margin: 0 auto;
         }
 
-        /* ===== 顶部导航 ===== */
         .nav-bar {
             display: flex;
             align-items: center;
@@ -61,14 +60,12 @@
             margin-top: 2px;
         }
 
-        /* ===== 朋友圈动态列表 ===== */
         .feed-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
         }
 
-        /* ===== 单条动态（整体可点击） ===== */
         .feed-item-link {
             display: block;
             text-decoration: none;
@@ -92,12 +89,10 @@
             transition-duration: 0.06s;
         }
 
-        /* ===== 单条动态内容 ===== */
         .feed-item {
             width: 100%;
         }
 
-        /* 动态头部：头像 + 昵称 + 时间 */
         .feed-header {
             display: flex;
             align-items: center;
@@ -138,7 +133,6 @@
             margin-top: 1px;
         }
 
-        /* 动态正文 */
         .feed-body {
             font-size: 15px;
             line-height: 1.7;
@@ -152,7 +146,6 @@
             display: none;
         }
 
-        /* ===== 图片网格 ===== */
         .feed-images {
             display: grid;
             gap: 4px;
@@ -221,7 +214,6 @@
             transform: scale(1.02);
         }
 
-        /* ===== 视频网格（和图片一样的逻辑） ===== */
         .feed-videos {
             display: grid;
             gap: 4px;
@@ -231,7 +223,6 @@
             margin-top: 4px;
         }
 
-        /* 单个视频 */
         .feed-videos.single {
             grid-template-columns: 1fr;
             gap: 0;
@@ -246,13 +237,11 @@
             background: #000;
         }
 
-        /* 多个视频：2列网格 */
         .feed-videos.multi {
             grid-template-columns: 1fr 1fr;
             gap: 4px;
         }
 
-        /* 3个视频时，第一个占一整行 */
         .feed-videos.multi.three {
             grid-template-columns: 1fr 1fr;
             grid-template-rows: auto auto;
@@ -282,21 +271,6 @@
             height: 100%;
         }
 
-        /* ===== 图片+视频混合显示 ===== */
-        .feed-media-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 4px;
-        }
-
-        .feed-media-group .media-label {
-            font-size: 12px;
-            color: #999;
-            padding: 2px 0;
-        }
-
-        /* ===== 动态标签 ===== */
         .feed-tags {
             margin-top: 10px;
             display: flex;
@@ -312,7 +286,6 @@
             color: #888;
         }
 
-        /* ===== 空状态 ===== */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -328,7 +301,6 @@
             font-size: 16px;
         }
 
-        /* ===== 加载状态 ===== */
         .loading-state {
             text-align: center;
             padding: 40px 20px;
@@ -351,7 +323,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== 图片查看模态框 ===== */
         .img-modal {
             display: none;
             position: fixed;
@@ -390,7 +361,6 @@
             pointer-events: none;
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 480px) {
             .feed-item-link {
                 padding: 14px 14px 16px;
@@ -466,16 +436,14 @@
 </head>
 <body>
 
-    <!-- ====== 顶部导航 ====== -->
     <nav class="nav-bar">
-        <a class="back-link" href="https://xiaociwei01.github.io/CiweiHome/" target="_blank">← 返回</a>
+        <a class="back-link" href="index.html">← 返回</a>
         <div class="nav-title">
             🦔 开发者的小朋友圈
             <span class="sub">偶尔写写，记录一些瞬间</span>
         </div>
     </nav>
 
-    <!-- ====== 动态列表 ====== -->
     <div id="feedList" class="feed-list">
         <div class="loading-state">
             <div class="spinner"></div>
@@ -483,25 +451,18 @@
         </div>
     </div>
 
-    <!-- ====== 图片查看模态框 ====== -->
     <div class="img-modal" id="imgModal" onclick="closeImgModal()">
         <img id="modalImg" src="" alt="查看大图">
         <div class="close-hint">点击任意处关闭</div>
     </div>
 
     <script>
-        // ================================================================
-        // 配置
-        // ================================================================
         const BLOG_REPO = 'xiaociwei01/CiweiBlog';
         const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
         const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
         const NICKNAME = '小刺猬';
-        const DETAIL_PAGE = 'Xiangqingye.html'; // 详情页文件名
+        const DETAIL_PAGE = 'Xiangqingye.html';
 
-        // ================================================================
-        // 工具函数：构建 raw 图片/视频地址
-        // ================================================================
         function buildRawUrl(path) {
             if (path.startsWith('http://') || path.startsWith('https://')) {
                 return path;
@@ -510,9 +471,6 @@
             return `https://raw.githubusercontent.com/${BLOG_REPO}/main/${clean}`;
         }
 
-        // ================================================================
-        // 获取所有博客文章
-        // ================================================================
         async function fetchAllPosts() {
             try {
                 const res = await fetch(BLOG_API);
@@ -553,7 +511,6 @@
 
                         const body = lines.slice(bodyStart).join('\n').trim();
 
-                        // 提取所有图片
                         const images = [];
                         const imgRegex = /!\[.*?\]\((.*?)\)/g;
                         let imgMatch;
@@ -561,7 +518,6 @@
                             images.push(imgMatch[1]);
                         }
 
-                        // 提取所有视频
                         const videos = [];
                         const vidRegex = /<video[^>]*src="([^"]*)"[^>]*>/g;
                         let vidMatch;
@@ -569,7 +525,6 @@
                             videos.push(vidMatch[1]);
                         }
 
-                        // 纯文本（去除图片和视频标记）
                         let textBody = body;
                         textBody = textBody.replace(/!\[.*?\]\(.*?\)/g, '');
                         textBody = textBody.replace(/<video[^>]*>.*?<\/video>/g, '');
@@ -598,9 +553,6 @@
             }
         }
 
-        // ================================================================
-        // 渲染图片网格
-        // ================================================================
         function renderImages(images) {
             if (!images || images.length === 0) return '';
 
@@ -626,15 +578,11 @@
             `;
         }
 
-        // ================================================================
-        // 渲染视频网格（和图片一样的逻辑，支持多个视频）
-        // ================================================================
         function renderVideos(videos) {
             if (!videos || videos.length === 0) return '';
 
             const rawVideos = videos.map(v => buildRawUrl(v));
 
-            // 单个视频
             if (videos.length === 1) {
                 return `
                     <div class="feed-videos single">
@@ -643,7 +591,6 @@
                 `;
             }
 
-            // 多个视频：2列网格
             const threeClass = videos.length === 3 ? 'three' : '';
             const vidsHtml = rawVideos.map(src =>
                 `<video controls src="${src}" preload="metadata"></video>`
@@ -656,9 +603,6 @@
             `;
         }
 
-        // ================================================================
-        // 渲染朋友圈
-        // ================================================================
         function renderFeed(posts) {
             const container = document.getElementById('feedList');
 
@@ -699,7 +643,7 @@
                 const detailUrl = `${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}`;
 
                 html += `
-                    <a href="${detailUrl}" class="feed-item-link" target="_blank">
+                    <a href="${detailUrl}" class="feed-item-link">
                         <div class="feed-item">
                             <div class="feed-header">
                                 <div class="avatar">
@@ -722,9 +666,6 @@
             container.innerHTML = html;
         }
 
-        // ================================================================
-        // 图片查看
-        // ================================================================
         function openImgModal(src) {
             const modal = document.getElementById('imgModal');
             const img = document.getElementById('modalImg');
@@ -745,9 +686,6 @@
             }
         });
 
-        // ================================================================
-        // 启动
-        // ================================================================
         async function init() {
             const posts = await fetchAllPosts();
             renderFeed(posts);

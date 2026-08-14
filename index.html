@@ -186,7 +186,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* 朋友圈标题（与作品区有间距） */
         .friends-title {
             margin-top: 48px;
         }
@@ -553,7 +552,7 @@
             transform: translateX(2px);
         }
 
-        /* ===== 备用链接（小字） ===== */
+        /* ===== 备用链接 ===== */
         .fallback-link {
             font-size: 11px;
             color: #bbb;
@@ -712,9 +711,7 @@
 
     <div class="works-grid">
 
-        <!-- ============================================================ -->
         <!-- ===== 作品 1：太阳系 ===== -->
-        <!-- ============================================================ -->
         <div class="work-card" id="work-solar">
             <div class="work-image" onclick="openImageModal(this)">
                 <img src="xiaotaiyang.jpg" alt="3D太阳系展示图">
@@ -727,14 +724,10 @@
                     哈勃望远镜模式、旅行者一号深空飞行。
                 </div>
 
-                <!-- ===== 跳转区域 ===== -->
                 <div class="work-actions">
-                    <!-- 主按钮：智能跳转 -->
                     <button class="work-link" id="btn-solar" onclick="smartNavigate('solar')">
                         🚀 进入太阳系
                     </button>
-
-                    <!-- 平台切换器 -->
                     <div class="platform-switcher" id="switcher-solar" onclick="togglePlatform('solar')" title="点击切换平台">
                         <span class="dot netlify" id="dot-solar"></span>
                         <span class="label" id="label-solar">Netlify</span>
@@ -742,7 +735,6 @@
                     </div>
                 </div>
 
-                <!-- 备用链接（手动直连） -->
                 <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
                     <span>📡 <span id="primary-label-solar">主: Netlify</span></span>
                     <a href="#" id="fallback-link-solar" class="fallback-link" onclick="directNavigate('solar', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
@@ -750,9 +742,7 @@
             </div>
         </div>
 
-        <!-- ============================================================ -->
         <!-- ===== 作品 2：地月系 ===== -->
-        <!-- ============================================================ -->
         <div class="work-card" id="work-lunar">
             <div class="work-image" onclick="openImageModal(this)">
                 <img src="diyue.jpg" alt="3D地月系展示图">
@@ -765,14 +755,10 @@
                     月相模拟、ISS 与天宫双空间站、地轴倾斜。
                 </div>
 
-                <!-- ===== 跳转区域 ===== -->
                 <div class="work-actions">
-                    <!-- 主按钮：智能跳转 -->
                     <button class="work-link" id="btn-lunar" onclick="smartNavigate('lunar')">
                         🚀 进入地月系
                     </button>
-
-                    <!-- 平台切换器 -->
                     <div class="platform-switcher" id="switcher-lunar" onclick="togglePlatform('lunar')" title="点击切换平台">
                         <span class="dot netlify" id="dot-lunar"></span>
                         <span class="label" id="label-lunar">Netlify</span>
@@ -780,7 +766,6 @@
                     </div>
                 </div>
 
-                <!-- 备用链接（手动直连） -->
                 <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
                     <span>📡 <span id="primary-label-lunar">主: Netlify</span></span>
                     <a href="#" id="fallback-link-lunar" class="fallback-link" onclick="directNavigate('lunar', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
@@ -790,28 +775,23 @@
 
     </div>
 
-    <!-- ================================================================ -->
-    <!-- ====== 🆕 开发者的小朋友圈 ====== -->
-    <!-- ================================================================ -->
+    <!-- ====== 开发者的小朋友圈 ====== -->
     <h2 class="works-title friends-title">🦔 开发者的小朋友圈</h2>
 
     <div class="works-grid">
         <div class="work-card" id="work-friends">
-            <!-- 封面图（点击可放大） -->
             <div class="work-image" onclick="openImageModal(this)">
-                <img src="FriendQuan.jpg" alt="朋友圈封面图">
+                <img src="friendQuan.jpg" alt="朋友圈封面图">
             </div>
             <div class="work-body">
                 <div class="work-name">📝 开发者的小朋友圈</div>
                 <div class="work-tag">偶尔写写，记录一些瞬间</div>
 
-                <!-- ===== 最近3篇博客预览（自动加载） ===== -->
                 <div class="recent-posts" id="recentPosts">
                     <div class="rp-title">📖 最近更新</div>
                     <div class="rp-loading">加载中...</div>
                 </div>
 
-                <!-- ===== 跳转按钮 ===== -->
                 <div class="work-actions">
                     <a class="work-link" href="FriendQuan.html" target="_blank">
                         📝 进入朋友圈
@@ -820,8 +800,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ================================================================ -->
 
     <!-- ====== 页脚 ====== -->
     <div class="footer">
@@ -847,7 +825,7 @@
 
 <script>
     // ================================================================
-    // 一、链接配置（在这里填写你的 Netlify 地址）
+    // 链接配置
     // ================================================================
     const LINK_CONFIG = {
         solar: {
@@ -865,7 +843,7 @@
     };
 
     // ================================================================
-    // 二、博客加载（最近3篇）
+    // 博客加载（最近3篇）
     // ================================================================
     const BLOG_REPO = 'xiaociwei01/CiweiBlog';
     const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
@@ -886,14 +864,11 @@
                 return;
             }
 
-            // 按文件名倒序排列（文件名包含日期）
             posts.sort((a, b) => b.name.localeCompare(a.name));
-            // 取最新 3 篇
             const recent = posts.slice(0, 3);
 
             let html = `<div class="rp-title">📖 最近更新</div>`;
             for (const post of recent) {
-                // 读取文件内容获取标题
                 try {
                     const contentRes = await fetch(post.download_url);
                     const contentText = await contentRes.text();
@@ -903,13 +878,12 @@
                     const date = dateMatch ? dateMatch[1].trim() : '未知日期';
 
                     html += `
-                        <a href="https://xiaociwei01.github.io/CiweiBlog/post.html?file=${encodeURIComponent(post.name)}" target="_blank" class="rp-item">
+                        <a href="https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(post.name)}" target="_blank" class="rp-item">
                             <span>${title}</span>
                             <span class="rp-date">${date}</span>
                         </a>
                     `;
                 } catch (e) {
-                    // 单篇文章读取失败时跳过
                     continue;
                 }
             }
@@ -919,14 +893,12 @@
                 <div class="rp-title">📖 最近更新</div>
                 <div class="rp-empty">加载失败，请稍后重试</div>
             `;
-            console.warn('加载博客失败:', err.message);
         }
     }
 
     // ================================================================
-    // 三、核心函数（作品跳转）
+    // 核心函数
     // ================================================================
-
     function getCurrentLink(key) {
         const config = LINK_CONFIG[key];
         return config.selected === 'primary' ? config.primary : config.fallback;
@@ -1019,9 +991,8 @@
     }
 
     // ================================================================
-    // 四、图片放大 & 二维码
+    // 图片放大 & 二维码
     // ================================================================
-
     function openImageModal(el) {
         const img = el.querySelector('img');
         if (!img) return;
@@ -1083,11 +1054,9 @@
     });
 
     // ================================================================
-    // 五、初始化
+    // 初始化
     // ================================================================
-
     document.addEventListener('DOMContentLoaded', function() {
-        // 初始化作品切换器
         Object.keys(LINK_CONFIG).forEach(key => {
             updatePlatformUI(key);
             const btn = document.getElementById('btn-' + key);
@@ -1095,8 +1064,6 @@
                 btn.title = '当前目标: ' + getCurrentPlatform(key);
             }
         });
-
-        // 加载最近博客
         fetchRecentPosts();
     });
 </script>
