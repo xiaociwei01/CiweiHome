@@ -12,7 +12,7 @@
             background: #f5f6fa;
             color: #1a1a2e;
             padding: 20px 16px 60px;
-            max-width: 640px;
+            max-width: 720px;
             margin: 0 auto;
         }
 
@@ -38,6 +38,7 @@
             border-radius: 20px;
             background: #f0f0f0;
             transition: background 0.2s;
+            flex-shrink: 0;
         }
 
         .nav-bar .back-link:hover {
@@ -67,18 +68,33 @@
             gap: 16px;
         }
 
-        /* ===== 单条动态 ===== */
-        .feed-item {
+        /* ===== 单条动态（整体可点击） ===== */
+        .feed-item-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
             background: #ffffff;
             border-radius: 16px;
             padding: 16px 18px 18px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
             border: 1px solid #f0f0f0;
-            transition: box-shadow 0.2s;
+            transition: box-shadow 0.2s, transform 0.15s;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .feed-item:hover {
+        .feed-item-link:hover {
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .feed-item-link:active {
+            transform: scale(0.98);
+            transition-duration: 0.06s;
+        }
+
+        /* ===== 单条动态内容 ===== */
+        .feed-item {
+            width: 100%;
         }
 
         /* 动态头部：头像 + 昵称 + 时间 */
@@ -107,6 +123,7 @@
 
         .feed-header .info {
             flex: 1;
+            min-width: 0;
         }
 
         .feed-header .info .name {
@@ -135,40 +152,151 @@
             display: none;
         }
 
-        /* 动态中的图片/视频 */
-        .feed-media {
+        /* ===== 图片网格 ===== */
+        .feed-images {
+            display: grid;
+            gap: 4px;
             border-radius: 12px;
             overflow: hidden;
             background: #f5f6fa;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            margin-top: 4px;
         }
 
-        .feed-media img {
+        .feed-images.single {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .feed-images.single img {
             width: 100%;
             max-height: 420px;
             object-fit: contain;
             display: block;
             background: #f0f2f5;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: transform 0.2s;
         }
 
-        .feed-media img:hover {
+        .feed-images.single img:hover {
             transform: scale(1.01);
         }
 
-        .feed-media video {
-            width: 100%;
-            max-height: 420px;
-            border-radius: 8px;
-            background: #000;
-            outline: none;
+        .feed-images.multi {
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
         }
 
-        /* 动态标签（如果有） */
+        .feed-images.multi.three {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+        }
+
+        .feed-images.multi.three img:first-child {
+            grid-column: 1 / -1;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .feed-images.multi.three img:nth-child(2),
+        .feed-images.multi.three img:nth-child(3) {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+
+        .feed-images.multi img {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #f0f2f5;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-radius: 4px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .feed-images.multi img:hover {
+            transform: scale(1.02);
+        }
+
+        /* ===== 视频网格（和图片一样的逻辑） ===== */
+        .feed-videos {
+            display: grid;
+            gap: 4px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            margin-top: 4px;
+        }
+
+        /* 单个视频 */
+        .feed-videos.single {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .feed-videos.single video {
+            width: 100%;
+            max-height: 420px;
+            display: block;
+            outline: none;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        /* 多个视频：2列网格 */
+        .feed-videos.multi {
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        /* 3个视频时，第一个占一整行 */
+        .feed-videos.multi.three {
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+        }
+
+        .feed-videos.multi.three video:first-child {
+            grid-column: 1 / -1;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .feed-videos.multi.three video:nth-child(2),
+        .feed-videos.multi.three video:nth-child(3) {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+
+        .feed-videos.multi video {
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #000;
+            outline: none;
+            border-radius: 4px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ===== 图片+视频混合显示 ===== */
+        .feed-media-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .feed-media-group .media-label {
+            font-size: 12px;
+            color: #999;
+            padding: 2px 0;
+        }
+
+        /* ===== 动态标签 ===== */
         .feed-tags {
             margin-top: 10px;
             display: flex;
@@ -264,7 +392,7 @@
 
         /* ===== 响应式 ===== */
         @media (max-width: 480px) {
-            .feed-item {
+            .feed-item-link {
                 padding: 14px 14px 16px;
             }
 
@@ -277,20 +405,61 @@
                 font-size: 14px;
             }
 
-            .feed-media img,
-            .feed-media video {
+            .feed-images.multi {
+                gap: 3px;
+            }
+
+            .feed-images.single img {
                 max-height: 280px;
+            }
+
+            .feed-videos.single video {
+                max-height: 280px;
+            }
+
+            .feed-videos.multi {
+                gap: 3px;
             }
 
             .nav-bar .nav-title {
                 font-size: 16px;
             }
+
+            .nav-bar .back-link {
+                font-size: 13px;
+                padding: 4px 10px;
+            }
         }
 
-        @media (min-width: 640px) {
-            .feed-media img,
-            .feed-media video {
+        @media (min-width: 641px) {
+            .feed-images.single img {
                 max-height: 500px;
+            }
+
+            .feed-videos.single video {
+                max-height: 500px;
+            }
+
+            .feed-images.multi {
+                gap: 6px;
+            }
+
+            .feed-videos.multi {
+                gap: 6px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 24px 32px 60px;
+                max-width: 820px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            body {
+                max-width: 900px;
+                padding: 32px 40px 60px;
             }
         }
     </style>
@@ -328,6 +497,18 @@
         const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
         const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
         const NICKNAME = '小刺猬';
+        const DETAIL_PAGE = 'post-detail.html'; // 详情页文件名
+
+        // ================================================================
+        // 工具函数：构建 raw 图片/视频地址
+        // ================================================================
+        function buildRawUrl(path) {
+            if (path.startsWith('http://') || path.startsWith('https://')) {
+                return path;
+            }
+            const clean = path.replace(/^\.?\//, '');
+            return `https://raw.githubusercontent.com/${BLOG_REPO}/main/${clean}`;
+        }
 
         // ================================================================
         // 获取所有博客文章
@@ -343,17 +524,14 @@
                     return [];
                 }
 
-                // 按文件名倒序排列（最新在上面）
                 posts.sort((a, b) => b.name.localeCompare(a.name));
 
-                // 读取每篇文章的内容
                 const postsWithContent = [];
                 for (const post of posts) {
                     try {
                         const contentRes = await fetch(post.download_url);
                         const contentText = await contentRes.text();
 
-                        // 解析 frontmatter
                         const lines = contentText.split('\n');
                         let title = post.name.replace('.md', '');
                         let date = '未知日期';
@@ -375,16 +553,16 @@
 
                         const body = lines.slice(bodyStart).join('\n').trim();
 
-                        // 提取正文中的图片和视频
+                        // 提取所有图片
                         const images = [];
-                        const videos = [];
-                        // 提取 markdown 图片 ![]()
-                        let imgMatch;
                         const imgRegex = /!\[.*?\]\((.*?)\)/g;
+                        let imgMatch;
                         while ((imgMatch = imgRegex.exec(body)) !== null) {
                             images.push(imgMatch[1]);
                         }
-                        // 提取 video 标签
+
+                        // 提取所有视频
+                        const videos = [];
                         const vidRegex = /<video[^>]*src="([^"]*)"[^>]*>/g;
                         let vidMatch;
                         while ((vidMatch = vidRegex.exec(body)) !== null) {
@@ -393,11 +571,8 @@
 
                         // 纯文本（去除图片和视频标记）
                         let textBody = body;
-                        // 移除 markdown 图片
                         textBody = textBody.replace(/!\[.*?\]\(.*?\)/g, '');
-                        // 移除 video 标签
                         textBody = textBody.replace(/<video[^>]*>.*?<\/video>/g, '');
-                        // 移除多余空行
                         textBody = textBody.replace(/\n{3,}/g, '\n\n').trim();
 
                         postsWithContent.push({
@@ -411,7 +586,6 @@
                             raw: body
                         });
                     } catch (e) {
-                        // 跳过读取失败的文章
                         console.warn('跳过文章:', post.name, e.message);
                         continue;
                     }
@@ -422,6 +596,64 @@
                 console.error('加载博客失败:', err);
                 return null;
             }
+        }
+
+        // ================================================================
+        // 渲染图片网格
+        // ================================================================
+        function renderImages(images) {
+            if (!images || images.length === 0) return '';
+
+            const rawImages = images.map(img => buildRawUrl(img));
+
+            if (images.length === 1) {
+                return `
+                    <div class="feed-images single">
+                        <img src="${rawImages[0]}" alt="图片" onclick="event.stopPropagation(); openImgModal(this.src)" loading="lazy">
+                    </div>
+                `;
+            }
+
+            const threeClass = images.length === 3 ? 'three' : '';
+            const imgsHtml = rawImages.map(src =>
+                `<img src="${src}" alt="图片" onclick="event.stopPropagation(); openImgModal(this.src)" loading="lazy">`
+            ).join('');
+
+            return `
+                <div class="feed-images multi ${threeClass}">
+                    ${imgsHtml}
+                </div>
+            `;
+        }
+
+        // ================================================================
+        // 渲染视频网格（和图片一样的逻辑，支持多个视频）
+        // ================================================================
+        function renderVideos(videos) {
+            if (!videos || videos.length === 0) return '';
+
+            const rawVideos = videos.map(v => buildRawUrl(v));
+
+            // 单个视频
+            if (videos.length === 1) {
+                return `
+                    <div class="feed-videos single">
+                        <video controls src="${rawVideos[0]}" preload="metadata"></video>
+                    </div>
+                `;
+            }
+
+            // 多个视频：2列网格
+            const threeClass = videos.length === 3 ? 'three' : '';
+            const vidsHtml = rawVideos.map(src =>
+                `<video controls src="${src}" preload="metadata"></video>`
+            ).join('');
+
+            return `
+                <div class="feed-videos multi ${threeClass}">
+                    ${vidsHtml}
+                </div>
+            `;
         }
 
         // ================================================================
@@ -452,55 +684,38 @@
 
             let html = '';
             for (const post of posts) {
-                // 提取文字内容（最多显示200字，超出截断）
                 let displayText = post.body;
                 if (displayText.length > 200) {
                     displayText = displayText.substring(0, 200) + '...';
                 }
 
-                // 媒体内容：优先显示图片，没有图片显示视频
-                let mediaHtml = '';
-                if (post.images.length > 0) {
-                    const imgSrc = post.images[0];
-                    // 如果是相对路径，补全为 raw 地址
-                    const fullSrc = imgSrc.startsWith('http') ? imgSrc :
-                        `https://raw.githubusercontent.com/${BLOG_REPO}/main/${imgSrc.replace(/^\.\//, '')}`;
-                    mediaHtml = `
-                        <div class="feed-media">
-                            <img src="${fullSrc}" alt="图片" onclick="openImgModal(this.src)" loading="lazy">
-                        </div>
-                    `;
-                } else if (post.videos.length > 0) {
-                    const vidSrc = post.videos[0];
-                    const fullSrc = vidSrc.startsWith('http') ? vidSrc :
-                        `https://raw.githubusercontent.com/${BLOG_REPO}/main/${vidSrc.replace(/^\.\//, '')}`;
-                    mediaHtml = `
-                        <div class="feed-media">
-                            <video controls src="${fullSrc}" preload="metadata"></video>
-                        </div>
-                    `;
-                }
+                const imagesHtml = renderImages(post.images);
+                const videosHtml = renderVideos(post.videos);
 
-                // 标签
                 const tagsHtml = post.tags.length > 0 ?
                     `<div class="feed-tags">${post.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>` :
                     '';
 
+                const detailUrl = `${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}`;
+
                 html += `
-                    <div class="feed-item">
-                        <div class="feed-header">
-                            <div class="avatar">
-                                <img src="${AVATAR_URL}" alt="头像" loading="lazy">
+                    <a href="${detailUrl}" class="feed-item-link" target="_blank">
+                        <div class="feed-item">
+                            <div class="feed-header">
+                                <div class="avatar">
+                                    <img src="${AVATAR_URL}" alt="头像" loading="lazy">
+                                </div>
+                                <div class="info">
+                                    <div class="name">${NICKNAME}</div>
+                                    <div class="time">${post.date}</div>
+                                </div>
                             </div>
-                            <div class="info">
-                                <div class="name">${NICKNAME}</div>
-                                <div class="time">${post.date}</div>
-                            </div>
+                            ${displayText ? `<div class="feed-body">${displayText}</div>` : ''}
+                            ${imagesHtml}
+                            ${videosHtml}
+                            ${tagsHtml}
                         </div>
-                        ${displayText ? `<div class="feed-body">${displayText}</div>` : ''}
-                        ${mediaHtml}
-                        ${tagsHtml}
-                    </div>
+                    </a>
                 `;
             }
 
