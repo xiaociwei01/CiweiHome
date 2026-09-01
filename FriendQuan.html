@@ -108,8 +108,8 @@
         const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
         const NICKNAME = '小刺猬';
         const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
-        // 优先从 jsDelivr CDN 加载索引文件（国内速度极快）
-        const INDEX_URL = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/posts/index.json`;
+        // 加时间戳参数，绕过 jsDelivr 缓存，每次加载最新索引
+        const INDEX_URL = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/posts/index.json?t=${Date.now()}`;
 
         async function loadPosts() {
             const container = document.getElementById('feedList');
