@@ -108,31 +108,83 @@
         const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
         const NICKNAME = '小刺猬';
         const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
-        // 加时间戳参数，绕过 jsDelivr 缓存，每次加载最新索引
-        const INDEX_URL = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/posts/index.json?t=${Date.now()}`;
+        const TOKEN_KEY = 'ciwei_blog_token';
 
+        // ========== 核心加载函数：智能选择最快且最新的数据源 ==========
         async function loadPosts() {
             const container = document.getElementById('feedList');
             container.innerHTML = `<div class="loading-state"><div class="spinner"></div><div>加载中...</div></div>`;
 
+            // 第一步：尝试获取 index.json 的最新提交 SHA（轻量 API 请求）
+            let sha = '';
             try {
-                const res = await fetch(INDEX_URL);
-                if (!res.ok) throw new Error('CDN 索引加载失败');
-                const posts = await res.json();
-                if (!Array.isArray(posts)) throw new Error('索引格式错误');
-                renderFeed(posts);
+                const token = localStorage.getItem(TOKEN_KEY);
+                const headers = token ? { 'Authorization': `token ${token}` } : {};
+                const commitsUrl = `https://api.github.com/repos/${BLOG_REPO}/commits?path=posts/index.json&per_page=1`;
+                const commitsRes = await fetch(commitsUrl, { headers });
+                if (commitsRes.ok) {
+                    const commits = await commitsRes.json();
+                    if (commits.length > 0) {
+                        sha = commits[0].sha.slice(0, 7);
+                    }
+                }
+            } catch (e) {
+                console.warn('获取 SHA 失败，将使用带时间戳的 CDN 链接', e);
+            }
+
+            // 第二步：根据 SHA 构建 CDN 地址
+            let cdnUrl;
+            if (sha) {
+                // 使用精确 SHA，CDN 内容一定最新且可缓存
+                cdnUrl = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@${sha}/posts/index.json`;
+            } else {
+                // 没有 SHA 时，用带时间戳的 CDN 地址（强制最新）
+                cdnUrl = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/posts/index.json?t=${Date.now()}`;
+            }
+
+            // 第三步：从 CDN 加载
+            try {
+                const res = await fetch(cdnUrl);
+                if (res.ok) {
+                    const posts = await res.json();
+                    if (Array.isArray(posts)) {
+                        renderFeed(posts);
+                        return;
+                    }
+                }
+                throw new Error('CDN 加载失败');
             } catch (err) {
-                console.warn('CDN 加载失败，尝试 API 回退', err);
+                console.warn('CDN 加载失败，尝试 raw 链接', err);
+                await loadFromRaw();
+            }
+        }
+
+        // ========== 回退方案1：raw 链接（保证最新） ==========
+        async function loadFromRaw() {
+            const container = document.getElementById('feedList');
+            try {
+                const rawUrl = `https://raw.githubusercontent.com/${BLOG_REPO}/main/posts/index.json?t=${Date.now()}`;
+                const res = await fetch(rawUrl);
+                if (res.ok) {
+                    const posts = await res.json();
+                    if (Array.isArray(posts)) {
+                        renderFeed(posts);
+                        return;
+                    }
+                }
+                throw new Error('raw 加载失败');
+            } catch (err) {
+                console.warn('raw 加载失败，尝试 API 逐篇加载', err);
                 await loadFromAPI();
             }
         }
 
+        // ========== 回退方案2：GitHub API 逐篇加载（最慢但最稳） ==========
         async function loadFromAPI() {
             const container = document.getElementById('feedList');
-            const TOKEN_KEY = 'ciwei_blog_token';
-            const token = localStorage.getItem(TOKEN_KEY);
             const API_URL = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
             try {
+                const token = localStorage.getItem(TOKEN_KEY);
                 const headers = token ? { 'Authorization': `token ${token}` } : {};
                 const res = await fetch(API_URL, { headers });
                 if (!res.ok) throw new Error('API 请求失败');
