@@ -16,226 +16,59 @@
             min-height: 100vh;
         }
         .nav-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0 16px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px; padding: 8px 0 16px;
+            border-bottom: 1px solid #eee; margin-bottom: 20px;
         }
         .nav-bar .back-link {
-            color: #1a1a2e;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 20px;
-            background: #f0f0f0;
-            transition: background 0.2s;
-            flex-shrink: 0;
+            color: #1a1a2e; text-decoration: none; font-size: 14px; font-weight: 500;
+            padding: 6px 12px; border-radius: 20px; background: #f0f0f0; transition: background 0.2s; flex-shrink: 0;
         }
         .nav-bar .back-link:hover { background: #e0e0e0; }
-        .nav-bar .nav-title {
-            font-size: 18px;
-            font-weight: 700;
-            flex: 1;
-            text-align: center;
-            color: #1a1a2e;
-        }
-        .nav-bar .nav-title .sub {
-            font-size: 12px;
-            font-weight: 400;
-            color: #aaa;
-            display: block;
-            margin-top: 2px;
-        }
-        .feed-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .nav-bar .nav-title { font-size: 18px; font-weight: 700; flex: 1; text-align: center; color: #1a1a2e; }
+        .nav-bar .nav-title .sub { font-size: 12px; font-weight: 400; color: #aaa; display: block; margin-top: 2px; }
+        .feed-list { display: flex; flex-direction: column; gap: 16px; }
         .feed-item {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 16px 18px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-            border: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: box-shadow 0.2s, transform 0.2s;
-            position: relative;
+            background: #ffffff; border-radius: 16px; padding: 16px 18px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;
+            cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; position: relative;
         }
-        .feed-item:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            transform: translateY(-2px);
-        }
-        .feed-item.pinned {
-            border-left: 4px solid #f59e0b;
-        }
-        .feed-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .feed-header .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #e0e5ed;
-            flex-shrink: 0;
-        }
-        .feed-header .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .feed-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); transform: translateY(-2px); }
+        .feed-item.pinned { border-left: 4px solid #f59e0b; }
+        .feed-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .feed-header .avatar { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #e0e5ed; flex-shrink: 0; }
+        .feed-header .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .feed-header .info { flex: 1; min-width: 0; }
         .feed-header .info .name { font-size: 15px; font-weight: 600; color: #1a1a2e; }
         .feed-header .info .time { font-size: 12px; color: #bbb; margin-top: 1px; }
-        .feed-body {
-            font-size: 15px;
-            line-height: 1.7;
-            color: #333;
-            white-space: pre-wrap;
-            word-break: break-word;
-            margin-bottom: 10px;
-        }
+        .feed-body { font-size: 15px; line-height: 1.7; color: #333; white-space: pre-wrap; word-break: break-word; margin-bottom: 10px; }
         .feed-body:empty { display: none; }
-        .feed-images {
-            display: grid;
-            gap: 4px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 4px;
-        }
+        .feed-images { display: grid; gap: 4px; border-radius: 12px; overflow: hidden; margin-top: 4px; }
         .feed-images.single { grid-template-columns: 1fr; gap: 0; }
-        .feed-images.single img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            display: block;
-            background: #f0f2f5;
-            border-radius: 8px;
-            cursor: pointer;
-        }
+        .feed-images.single img { width: 100%; max-height: 400px; object-fit: contain; display: block; background: #f0f2f5; border-radius: 8px; cursor: pointer; }
         .feed-images.multi { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; }
         .feed-images.multi.two { grid-template-columns: repeat(2, 1fr); }
-        .feed-images.multi img {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            display: block;
-            background: #f0f2f5;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .feed-videos {
-            display: grid;
-            gap: 4px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 4px;
-            background: #000;
-        }
+        .feed-images.multi img { width: 100%; height: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #f0f2f5; cursor: pointer; border-radius: 4px; }
+        .feed-videos { display: grid; gap: 4px; border-radius: 12px; overflow: hidden; margin-top: 4px; background: #000; }
         .feed-videos.single { grid-template-columns: 1fr; gap: 0; }
-        .feed-videos.single video {
-            width: 100%;
-            max-height: 400px;
-            display: block;
-            border-radius: 8px;
-            background: #000;
-        }
+        .feed-videos.single video { width: 100%; max-height: 400px; display: block; border-radius: 8px; background: #000; }
         .feed-videos.multi { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; }
-        .feed-videos.multi video {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            display: block;
-            background: #000;
-            border-radius: 4px;
-        }
-        .feed-tags {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-        .feed-tags .tag {
-            background: #f0f2f5;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: #888;
-        }
-        .badge-pin, .badge-modified {
-            font-size: 12px;
-            margin-left: 6px;
-        }
+        .feed-videos.multi video { width: 100%; height: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; background: #000; border-radius: 4px; }
+        .feed-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+        .feed-tags .tag { background: #f0f2f5; padding: 2px 10px; border-radius: 12px; font-size: 12px; color: #888; }
+        .badge-pin, .badge-modified { font-size: 12px; margin-left: 6px; }
         .badge-pin { color: #f59e0b; }
         .badge-modified { color: #3b82f6; }
         .empty-state, .loading-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #bbb;
-            background: #ffffff;
-            border-radius: 16px;
-            border: 1px solid #f0f0f0;
+            text-align: center; padding: 60px 20px; color: #bbb; background: #ffffff; border-radius: 16px; border: 1px solid #f0f0f0;
         }
-        .loading-state .spinner {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid #eee;
-            border-top: 3px solid #1a1a2e;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 8px;
-        }
+        .loading-state .spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid #eee; border-top: 3px solid #1a1a2e; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .retry-btn {
-            padding: 8px 20px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            background: #fff;
-            cursor: pointer;
-            font-size: 14px;
-            color: #555;
-            transition: all 0.2s;
-        }
+        .retry-btn { padding: 8px 20px; border-radius: 20px; border: 1px solid #ddd; background: #fff; cursor: pointer; font-size: 14px; color: #555; transition: all 0.2s; }
         .retry-btn:hover { background: #f5f5f5; border-color: #ccc; }
-        .retry-btn:active { transform: scale(0.95); }
-        .img-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 20px;
-        }
+        .img-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; cursor: pointer; padding: 20px; }
         .img-modal.active { display: flex; }
-        .img-modal img {
-            max-width: 95%;
-            max-height: 92%;
-            object-fit: contain;
-            border-radius: 6px;
-        }
-        .img-modal .close-hint {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 13px;
-        }
+        .img-modal img { max-width: 95%; max-height: 92%; object-fit: contain; border-radius: 6px; }
+        .img-modal .close-hint { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 13px; }
         @media (max-width: 480px) {
             .feed-item { padding: 14px; }
             .feed-header .avatar { width: 38px; height: 38px; }
@@ -272,161 +105,131 @@
 
     <script>
         const BLOG_REPO = 'xiaociwei01/CiweiBlog';
-        const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
         const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
         const NICKNAME = '小刺猬';
         const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
-        const TOKEN_KEY = 'ciwei_blog_token';
+        // 优先从 jsDelivr CDN 加载索引文件（国内速度极快）
+        const INDEX_URL = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/posts/index.json`;
 
-        function buildMediaUrl(url) {
-            if (!url) return '';
-            if (url.includes('cdn.jsdelivr.net')) return url;
-            if (url.includes('raw.githubusercontent.com/' + BLOG_REPO + '/main/')) {
-                const path = url.split('raw.githubusercontent.com/' + BLOG_REPO + '/main/')[1];
-                return `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/${path}`;
-            }
-            if (url.includes('github.com/' + BLOG_REPO + '/blob/main/')) {
-                const path = url.split('github.com/' + BLOG_REPO + '/blob/main/')[1];
-                return `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/${path}`;
-            }
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                return `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/${url.replace(/^\.?\//, '')}`;
-            }
-            return url;
-        }
+        async function loadPosts() {
+            const container = document.getElementById('feedList');
+            container.innerHTML = `<div class="loading-state"><div class="spinner"></div><div>加载中...</div></div>`;
 
-        function parseFrontmatter(contentText) {
-            const result = { title: '', date: '', tags: '', pinned: false, modified: '' };
-            const lines = contentText.split('\n');
-            let bodyStart = 0;
-            if (lines[0] === '---') {
-                const end = lines.indexOf('---', 1);
-                if (end !== -1) {
-                    lines.slice(1, end).forEach(line => {
-                        if (line.startsWith('title:')) result.title = line.replace('title:', '').trim();
-                        if (line.startsWith('date:')) result.date = line.replace('date:', '').trim();
-                        if (line.startsWith('tags:')) result.tags = line.replace('tags:', '').trim();
-                        if (line.startsWith('pinned:')) result.pinned = line.replace('pinned:', '').trim() === 'true';
-                        if (line.startsWith('modified:')) result.modified = line.replace('modified:', '').trim();
-                    });
-                    bodyStart = end + 1;
-                }
-            }
-            result.body = lines.slice(bodyStart).join('\n').trim();
-            return result;
-        }
-
-        async function fetchAllPosts() {
             try {
-                const token = localStorage.getItem(TOKEN_KEY);
+                const res = await fetch(INDEX_URL);
+                if (!res.ok) throw new Error('CDN 索引加载失败');
+                const posts = await res.json();
+                if (!Array.isArray(posts)) throw new Error('索引格式错误');
+                renderFeed(posts);
+            } catch (err) {
+                console.warn('CDN 加载失败，尝试 API 回退', err);
+                await loadFromAPI();
+            }
+        }
+
+        async function loadFromAPI() {
+            const container = document.getElementById('feedList');
+            const TOKEN_KEY = 'ciwei_blog_token';
+            const token = localStorage.getItem(TOKEN_KEY);
+            const API_URL = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
+            try {
                 const headers = token ? { 'Authorization': `token ${token}` } : {};
-                const res = await fetch(BLOG_API, { headers });
-                if (!res.ok) throw new Error('无法读取文章列表');
+                const res = await fetch(API_URL, { headers });
+                if (!res.ok) throw new Error('API 请求失败');
                 const files = await res.json();
                 const posts = files.filter(f => f.name.endsWith('.md'));
-
-                if (posts.length === 0) return [];
-
-                const tasks = posts.map(async (post) => {
+                if (posts.length === 0) { renderFeed([]); return; }
+                const tasks = posts.map(async post => {
                     try {
                         const contentRes = await fetch(post.download_url);
                         if (!contentRes.ok) return null;
                         const contentText = await contentRes.text();
-                        const meta = parseFrontmatter(contentText);
-                        const title = meta.title || post.name.replace('.md', '');
-                        const date = meta.date || '未知日期';
-                        const images = [...meta.body.matchAll(/!\[.*?\]\((.*?)\)/g)].map(m => buildMediaUrl(m[1]));
-                        const videos = [...meta.body.matchAll(/<video[^>]*src="([^"]*)"[^>]*>/g)].map(m => buildMediaUrl(m[1]));
-                        let textBody = meta.body.replace(/!\[.*?\]\(.*?\)/g, '').replace(/<video[^>]*>.*?<\/video>/g, '').replace(/\n{3,}/g, '\n\n').trim();
-                        return {
-                            filename: post.name,
-                            title: title,
-                            date: date,
-                            tags: meta.tags.split(',').map(t => t.trim()).filter(t => t),
-                            body: textBody,
-                            images: images,
-                            videos: videos,
-                            pinned: meta.pinned,
-                            modified: meta.modified
-                        };
-                    } catch (e) {
-                        console.warn('跳过文章:', post.name, e.message);
-                        return null;
-                    }
+                        return parsePostFromMarkdown(contentText, post.name);
+                    } catch { return null; }
                 });
-
                 const results = await Promise.all(tasks);
                 const validPosts = results.filter(p => p !== null);
-
-                // 关键修复：文章列表有文件，但一篇都没加载成功，说明是网络/API问题，不是真的没文章
-                if (posts.length > 0 && validPosts.length === 0) {
-                    return null;
-                }
-
-                // 排序：置顶优先，然后按文件名倒序
-                return validPosts.sort((a, b) => {
-                    if (a.pinned && !b.pinned) return -1;
-                    if (!a.pinned && b.pinned) return 1;
-                    return b.filename.localeCompare(a.filename);
-                });
+                if (validPosts.length === 0) throw new Error('加载失败');
+                renderFeed(validPosts);
             } catch (err) {
-                console.error('加载博客失败:', err);
-                return null;
-            }
-        }
-
-        function renderFeed(posts) {
-            const container = document.getElementById('feedList');
-
-            // null 表示加载失败，不是没有文章
-            if (posts === null) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div style="font-size:32px;margin-bottom:8px;">⚠️</div>
                         <div>加载失败，请检查网络或稍后重试</div>
                         <div style="margin-top:14px;">
-                            <button class="retry-btn" onclick="init()">🔄 重新加载</button>
+                            <button class="retry-btn" onclick="loadPosts()">🔄 重新加载</button>
                         </div>
                     </div>
                 `;
+            }
+        }
+
+        function parsePostFromMarkdown(contentText, filename) {
+            const lines = contentText.split('\n');
+            let title = filename.replace('.md', '');
+            let date = '未知日期';
+            let tags = '';
+            let pinned = false;
+            let modified = '';
+            let bodyStart = 0;
+            if (lines[0] === '---') {
+                const end = lines.indexOf('---', 1);
+                if (end !== -1) {
+                    lines.slice(1, end).forEach(line => {
+                        if (line.startsWith('title:')) title = line.replace('title:', '').trim();
+                        if (line.startsWith('date:')) date = line.replace('date:', '').trim();
+                        if (line.startsWith('tags:')) tags = line.replace('tags:', '').trim();
+                        if (line.startsWith('pinned:')) pinned = line.replace('pinned:', '').trim() === 'true';
+                        if (line.startsWith('modified:')) modified = line.replace('modified:', '').trim();
+                    });
+                    bodyStart = end + 1;
+                }
+            }
+            const body = lines.slice(bodyStart).join('\n').trim();
+            const images = [...body.matchAll(/!\[.*?\]\((.*?)\)/g)].map(m => m[1]);
+            const videos = [...body.matchAll(/<video[^>]*src="([^"]*)"[^>]*>/g)].map(m => m[1]);
+            let textBody = body.replace(/!\[.*?\]\(.*?\)/g, '').replace(/<video[^>]*>.*?<\/video>/g, '').replace(/\n{3,}/g, '\n\n').trim();
+            return { filename, title, date, tags: tags.split(',').map(t => t.trim()).filter(t => t), body: textBody, images, videos, pinned, modified };
+        }
+
+        function renderFeed(posts) {
+            const container = document.getElementById('feedList');
+            if (!Array.isArray(posts)) {
+                container.innerHTML = `<div class="empty-state"><div>⚠️ 数据格式错误</div></div>`;
+                return;
+            }
+            if (posts.length === 0) {
+                container.innerHTML = `<div class="empty-state"><div>📝 还没有文章，写一篇吧 ✍️</div></div>`;
                 return;
             }
 
-            if (posts.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size:32px;margin-bottom:8px;">📝</div>
-                        <div>还没有文章，写一篇吧 ✍️</div>
-                    </div>
-                `;
-                return;
-            }
+            posts.sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return (b.filename || '').localeCompare(a.filename || '');
+            });
 
             let html = '';
             posts.forEach(post => {
-                const imagesHtml = post.images.length ? (
+                const imagesHtml = post.images && post.images.length ? (
                     post.images.length === 1
                         ? `<div class="feed-images single"><img src="${post.images[0]}" alt="图片" onclick="openImgModal(event, this.src)" loading="lazy"></div>`
                         : `<div class="feed-images multi ${post.images.length === 2 ? 'two' : ''}">${post.images.map(src => `<img src="${src}" alt="图片" onclick="openImgModal(event, this.src)" loading="lazy">`).join('')}</div>`
                 ) : '';
-
-                const videosHtml = post.videos.length ? (
+                const videosHtml = post.videos && post.videos.length ? (
                     post.videos.length === 1
                         ? `<div class="feed-videos single"><video controls src="${post.videos[0]}" preload="metadata" playsinline></video></div>`
                         : `<div class="feed-videos multi">${post.videos.map(src => `<video controls src="${src}" preload="metadata" playsinline></video>`).join('')}</div>`
                 ) : '';
-
-                const tagsHtml = post.tags.length > 0
+                const tagsHtml = post.tags && post.tags.length > 0
                     ? `<div class="feed-tags">${post.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>`
                     : '';
-
                 const badgesHtml = `
                     <div style="margin-top:8px;">
                         ${post.pinned ? '<span class="badge-pin">📌 置顶</span>' : ''}
                         ${post.modified ? '<span class="badge-modified">✏️ 已修改</span>' : ''}
                     </div>
                 `;
-
                 html += `
                     <div class="feed-item ${post.pinned ? 'pinned' : ''}" data-file="${post.filename}">
                         <div class="feed-header">
@@ -436,7 +239,7 @@
                                 <div class="time">${post.date}</div>
                             </div>
                         </div>
-                        <div class="feed-body">${post.body}</div>
+                        <div class="feed-body">${post.body || ''}</div>
                         ${imagesHtml}
                         ${videosHtml}
                         ${tagsHtml}
@@ -444,52 +247,30 @@
                     </div>
                 `;
             });
-
             container.innerHTML = html;
 
             document.querySelectorAll('.feed-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                     if (e.target.closest('.feed-images') || e.target.closest('.feed-videos')) return;
                     const filename = this.dataset.file;
-                    if (filename) {
-                        window.open(`${DETAIL_PAGE}?file=${encodeURIComponent(filename)}`, '_blank');
-                    }
+                    if (filename) window.open(`${DETAIL_PAGE}?file=${encodeURIComponent(filename)}`, '_blank');
                 });
             });
         }
 
         function openImgModal(event, src) {
             event.stopPropagation();
-            const modal = document.getElementById('imgModal');
-            const img = document.getElementById('modalImg');
-            img.src = src;
-            modal.classList.add('active');
+            document.getElementById('modalImg').src = src;
+            document.getElementById('imgModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
         function closeImgModal() {
-            const modal = document.getElementById('imgModal');
-            modal.classList.remove('active');
+            document.getElementById('imgModal').classList.remove('active');
             document.body.style.overflow = '';
         }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImgModal(); });
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closeImgModal();
-        });
-
-        async function init() {
-            const container = document.getElementById('feedList');
-            container.innerHTML = `
-                <div class="loading-state">
-                    <div class="spinner"></div>
-                    <div>加载中...</div>
-                </div>
-            `;
-            const posts = await fetchAllPosts();
-            renderFeed(posts);
-        }
-
-        init();
+        loadPosts();
     </script>
 </body>
 </html>
