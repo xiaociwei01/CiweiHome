@@ -110,18 +110,18 @@
         const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
         const TOKEN_KEY = 'ciwei_blog_token';
 
-        // ========== 核心加载函数：智能选择最快且最新的数据源 ==========
+        // 核心加载：所有 fetch 都禁用缓存，确保拿最新数据
         async function loadPosts() {
             const container = document.getElementById('feedList');
             container.innerHTML = `<div class="loading-state"><div class="spinner"></div><div>加载中...</div></div>`;
 
-            // 第一步：尝试获取 index.json 的最新提交 SHA（轻量 API 请求）
+            // 第一步：获取 index.json 最新 SHA（轻量 API，同样禁用缓存）
             let sha = '';
             try {
                 const token = localStorage.getItem(TOKEN_KEY);
                 const headers = token ? { 'Authorization': `token ${token}` } : {};
                 const commitsUrl = `https://api.github.com/repos/${BLOG_REPO}/commits?path=posts/index.json&per_page=1`;
-                const commitsRes = await fetch(commitsUrl, { headers });
+                const commitsRes = await fetch(commitsUrl, { headers, cache: 'no-store' });
                 if (commitsRes.ok) {
                     const commits = await commitsRes.json();
                     if (commits.length > 0) {
@@ -129,22 +129,20 @@
                     }
                 }
             } catch (e) {
-                console.warn('获取 SHA 失败，将使用带时间戳的 CDN 链接', e);
+                console.warn('获取 SHA 失败，将使用时间戳方案', e);
             }
 
             // 第二步：根据 SHA 构建 CDN 地址
             let cdnUrl;
             if (sha) {
-                // 使用精确 SHA，CDN 内容一定最新且可缓存
                 cdnUrl = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@${sha}/posts/index.json`;
             } else {
-                // 没有 SHA 时，用带时间戳的 CDN 地址（强制最新）
                 cdnUrl = `https://cdn.jsdelivr.net/gh/${BLOG_REPO}@main/posts/index.json?t=${Date.now()}`;
             }
 
-            // 第三步：从 CDN 加载
+            // 第三步：从 CDN 加载（禁用缓存）
             try {
-                const res = await fetch(cdnUrl);
+                const res = await fetch(cdnUrl, { cache: 'no-store' });
                 if (res.ok) {
                     const posts = await res.json();
                     if (Array.isArray(posts)) {
@@ -159,12 +157,10 @@
             }
         }
 
-        // ========== 回退方案1：raw 链接（保证最新） ==========
         async function loadFromRaw() {
-            const container = document.getElementById('feedList');
             try {
                 const rawUrl = `https://raw.githubusercontent.com/${BLOG_REPO}/main/posts/index.json?t=${Date.now()}`;
-                const res = await fetch(rawUrl);
+                const res = await fetch(rawUrl, { cache: 'no-store' });
                 if (res.ok) {
                     const posts = await res.json();
                     if (Array.isArray(posts)) {
@@ -179,21 +175,20 @@
             }
         }
 
-        // ========== 回退方案2：GitHub API 逐篇加载（最慢但最稳） ==========
         async function loadFromAPI() {
             const container = document.getElementById('feedList');
             const API_URL = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
             try {
                 const token = localStorage.getItem(TOKEN_KEY);
                 const headers = token ? { 'Authorization': `token ${token}` } : {};
-                const res = await fetch(API_URL, { headers });
+                const res = await fetch(API_URL, { headers, cache: 'no-store' });
                 if (!res.ok) throw new Error('API 请求失败');
                 const files = await res.json();
                 const posts = files.filter(f => f.name.endsWith('.md'));
                 if (posts.length === 0) { renderFeed([]); return; }
                 const tasks = posts.map(async post => {
                     try {
-                        const contentRes = await fetch(post.download_url);
+                        const contentRes = await fetch(post.download_url, { cache: 'no-store' });
                         if (!contentRes.ok) return null;
                         const contentText = await contentRes.text();
                         return parsePostFromMarkdown(contentText, post.name);
@@ -209,11 +204,21 @@
                         <div style="font-size:32px;margin-bottom:8px;">⚠️</div>
                         <div>加载失败，请检查网络或稍后重试</div>
                         <div style="margin-top:14px;">
-                            <button class="retry-btn" onclick="loadPosts()">🔄 重新加载</button>
+                            <button class="retry-btn" onclick="forceReload()">🔄 强制刷新（清缓存）</button>
                         </div>
                     </div>
                 `;
             }
+        }
+
+        function forceReload() {
+            // 清除所有可能的缓存，然后重新加载
+            if ('caches' in window) {
+                caches.keys().then(keys => {
+                    keys.forEach(key => caches.delete(key));
+                });
+            }
+            loadPosts();
         }
 
         function parsePostFromMarkdown(contentText, filename) {
