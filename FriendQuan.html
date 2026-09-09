@@ -426,20 +426,15 @@
     </div>
 
     <script>
-        // ================================================================
-        // 配置
-        // ================================================================
         const MANAGER_REPO = 'xiaociwei01/CiweiManager';
         const CONFIG_PATH = 'config.json';
         const THEME_KEY = 'ciwei_home_theme';
         const DETAIL_PAGE = 'Xiangqingye.html';
         const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
+        const NICKNAME = '小刺猬';
 
         const $ = id => document.getElementById(id);
 
-        // ================================================================
-        // 工具函数
-        // ================================================================
         function buildCdnUrl(path) {
             if (!path) return '';
             if (path.startsWith('http://') || path.startsWith('https://')) return path;
@@ -478,9 +473,7 @@
             return html;
         }
 
-        // ================================================================
-        // 主题
-        // ================================================================
+        // ===== 主题 =====
         function getPreferredTheme() {
             const saved = localStorage.getItem(THEME_KEY);
             if (saved === 'dark' || saved === 'light') return saved;
@@ -514,11 +507,8 @@
         });
         $('themeToggle').addEventListener('click', toggleTheme);
 
-        // ================================================================
-        // 加载数据
-        // ================================================================
+        // ===== 加载数据 =====
         let configData = null;
-        let configLoaded = false;
 
         async function loadConfig() {
             try {
@@ -533,22 +523,12 @@
                     if (!res.ok) throw new Error('加载失败');
                 }
                 configData = await res.json();
-                configLoaded = true;
                 renderFriends();
             } catch (err) {
                 console.warn('加载失败', err);
-                configData = null;
-                configLoaded = false;
                 $('feedList').innerHTML =
                     `<div class="empty-state"><div class="empty-icon">⚠️</div><div>加载失败，请稍后重试</div></div>`;
             }
-        }
-
-        function getSiteConfig() {
-            if (configData && configData.site) {
-                return configData.site;
-            }
-            return { title: '小刺猬', avatar: DEFAULT_AVATAR };
         }
 
         function getFriends() {
@@ -558,13 +538,9 @@
             return [];
         }
 
-        // ================================================================
-        // 渲染
-        // ================================================================
         function renderFriends() {
             const container = $('feedList');
             const friends = getFriends();
-            const site = getSiteConfig();
 
             $('countBadge').textContent = friends.length + ' 条';
 
@@ -580,8 +556,7 @@
                 return (b.id || '').localeCompare(a.id || '');
             });
 
-            const avatarUrl = buildCdnUrl(site.avatar || DEFAULT_AVATAR);
-            const authorName = site.title || '小刺猬';
+            const avatarUrl = buildCdnUrl(configData?.site?.avatar || DEFAULT_AVATAR);
 
             let html = '';
             sorted.forEach((friend) => {
@@ -621,7 +596,7 @@
                             <div class="feed-header">
                                 <img class="avatar" src="${avatarUrl}" alt="头像" />
                                 <div class="meta">
-                                    <div class="name">${authorName}</div>
+                                    <div class="name">${NICKNAME}</div>
                                     <div class="date">${displayDate}</div>
                                 </div>
                             </div>
@@ -638,9 +613,6 @@
             container.innerHTML = html;
         }
 
-        // ================================================================
-        // 图片模态框
-        // ================================================================
         function openImgModal(src) {
             if (!src) return;
             const modal = $('imgModal');
@@ -660,9 +632,6 @@
             if (e.key === 'Escape') closeImgModal();
         });
 
-        // ================================================================
-        // 启动
-        // ================================================================
         loadConfig();
         console.log('🦔 FriendQuan 已启动');
     </script>
