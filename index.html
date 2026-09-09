@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>刺猬的家</title>
 
     <!-- Google Font (Inter) -->
@@ -16,10 +16,9 @@
 
     <style>
         /* ================================================================
-               CSS 变量：浅色 / 深色模式
-            ================================================================ */
+           CSS 变量：浅色 / 深色模式
+        ================================================================ */
         :root {
-            /* 浅色模式 (默认) */
             --bg-body: #f0f2f5;
             --bg-hero: #e8ecf0;
             --text-primary: #1a1a2e;
@@ -40,6 +39,7 @@
             --pinned-tag-bg: rgba(0, 0, 0, 0.06);
             --pinned-tag-text: #888;
 
+            --radius-sm: 12px;
             --radius-md: 16px;
             --radius-lg: 24px;
             --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -49,7 +49,6 @@
             --font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* 深色模式 */
         [data-theme="dark"] {
             --bg-body: #0a0a0f;
             --bg-hero: #0d0d16;
@@ -70,18 +69,8 @@
             --pinned-tag-text: rgba(255, 255, 255, 0.4);
         }
 
-        /* ================================================================
-               全局重置
-            ================================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: var(--font-family);
@@ -89,14 +78,12 @@
             color: var(--text-primary);
             min-height: 100vh;
             transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+                        color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        /* ================================================================
-               动态光晕背景
-            ================================================================ */
+        /* ===== 动态光晕背景 ===== */
         .bg-glow {
             position: fixed;
             top: 0;
@@ -105,7 +92,6 @@
             height: 100%;
             z-index: 0;
             pointer-events: none;
-            transition: opacity 1s ease;
         }
         .bg-glow::before,
         .bg-glow::after {
@@ -130,7 +116,6 @@
             right: -10%;
             background: radial-gradient(circle, rgba(255, 180, 60, 0.10) 0%, transparent 70%);
         }
-
         [data-theme="dark"] .bg-glow::before {
             background: radial-gradient(circle, rgba(88, 166, 255, 0.20) 0%, transparent 70%);
         }
@@ -138,9 +123,7 @@
             background: radial-gradient(circle, rgba(255, 180, 60, 0.12) 0%, transparent 70%);
         }
 
-        /* ================================================================
-               容器
-            ================================================================ */
+        /* ===== 容器 ===== */
         .container {
             position: relative;
             z-index: 1;
@@ -149,9 +132,7 @@
             padding: 0 24px 60px;
         }
 
-        /* ================================================================
-               顶部导航
-            ================================================================ */
+        /* ===== 顶部导航 ===== */
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -163,13 +144,11 @@
             margin-bottom: 32px;
             transition: border-color 0.5s ease;
         }
-
         .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .header-left .logo {
             font-size: 24px;
             font-weight: 700;
@@ -180,20 +159,17 @@
         .header-left .logo span {
             color: var(--accent);
         }
-
         .header-left .tagline {
             font-size: 14px;
             color: var(--text-muted);
             font-weight: 400;
             transition: color 0.5s ease;
         }
-
         .header-right {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .header-right a {
             color: var(--text-secondary);
             text-decoration: none;
@@ -205,7 +181,6 @@
             border: 1px solid var(--glass-border);
             transition: all var(--transition-base);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
         }
         .header-right a:hover {
             background: var(--card-bg);
@@ -214,7 +189,6 @@
             transform: translateY(-1px);
         }
 
-        /* 主题切换按钮 */
         .theme-toggle {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -226,7 +200,6 @@
             transition: all var(--transition-base);
             font-family: inherit;
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             gap: 4px;
@@ -236,24 +209,15 @@
             border-color: var(--accent);
             color: var(--text-primary);
         }
-        .theme-toggle:active {
-            transform: scale(0.93);
-        }
+        .theme-toggle:active { transform: scale(0.93); }
+        .theme-toggle .theme-label { font-size: 12px; font-weight: 500; }
 
-        .theme-toggle .theme-label {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* ================================================================
-               Hero 区域
-            ================================================================ */
+        /* ===== Hero 区域 ===== */
         .hero {
             padding: 40px 0 48px;
             text-align: center;
             position: relative;
         }
-
         .hero-avatar {
             width: 96px;
             height: 96px;
@@ -269,7 +233,6 @@
             transform: scale(1.05);
             box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
         }
-
         .hero-title {
             font-size: clamp(40px, 8vw, 80px);
             font-weight: 700;
@@ -285,7 +248,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-
         .hero-sub {
             font-size: clamp(16px, 2vw, 22px);
             color: var(--text-secondary);
@@ -293,7 +255,6 @@
             font-weight: 400;
             transition: color 0.5s ease;
         }
-
         .hero-signature {
             max-width: 640px;
             margin: 20px auto 0;
@@ -309,7 +270,6 @@
             margin: 8px 0;
             display: block;
         }
-
         .hero-social {
             display: flex;
             flex-wrap: wrap;
@@ -328,7 +288,7 @@
             font-weight: 500;
             transition: all var(--transition-base);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            cursor: pointer;
         }
         .hero-social a:hover {
             background: var(--card-bg);
@@ -338,9 +298,7 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
-        /* ================================================================
-               区块标题
-            ================================================================ */
+        /* ===== 区块标题 ===== */
         .section-title {
             font-size: 14px;
             font-weight: 600;
@@ -350,25 +308,16 @@
             margin: 48px 0 20px;
             transition: color 0.5s ease;
         }
-        .section-title .count {
-            font-weight: 400;
-            opacity: 0.6;
-        }
+        .section-title .count { font-weight: 400; opacity: 0.6; }
 
-        /* ================================================================
-               作品网格
-            ================================================================ */
+        /* ===== 作品网格 ===== */
         .works-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 24px;
         }
-
         @media (max-width: 720px) {
-            .works-grid {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
+            .works-grid { grid-template-columns: 1fr; gap: 18px; }
         }
 
         .work-card {
@@ -377,7 +326,6 @@
             border-radius: var(--radius-lg);
             padding: 24px 24px 22px;
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             box-shadow: var(--card-shadow);
             transition: all var(--transition-spring);
             cursor: default;
@@ -389,10 +337,7 @@
             box-shadow: var(--card-hover-shadow);
             border-color: var(--accent);
         }
-        .work-card:active {
-            transform: scale(0.97);
-            transition-duration: 0.08s;
-        }
+        .work-card:active { transform: scale(0.97); transition-duration: 0.08s; }
 
         .work-card .work-cover {
             width: 100%;
@@ -404,9 +349,7 @@
             transition: transform var(--transition-base);
             cursor: pointer;
         }
-        .work-card:hover .work-cover {
-            transform: scale(1.02);
-        }
+        .work-card:hover .work-cover { transform: scale(1.02); }
 
         .work-card .work-name {
             font-size: 20px;
@@ -414,14 +357,12 @@
             color: var(--text-primary);
             transition: color 0.5s ease;
         }
-
         .work-card .work-tags {
             font-size: 13px;
             color: var(--text-muted);
             margin-top: 2px;
             transition: color 0.5s ease;
         }
-
         .work-card .work-desc {
             font-size: 14px;
             color: var(--text-secondary);
@@ -429,7 +370,6 @@
             margin-top: 8px;
             transition: color 0.5s ease;
         }
-
         .work-card .work-actions {
             display: flex;
             flex-wrap: wrap;
@@ -437,8 +377,7 @@
             gap: 10px;
             margin-top: 16px;
         }
-
-        .work-card .work-link {
+        .work-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -454,16 +393,19 @@
             background: var(--accent);
             color: #fff;
         }
-        .work-card .work-link:hover {
+        .work-link:hover {
             background: #4a8edb;
             box-shadow: 0 4px 20px var(--accent-glow);
             transform: translateY(-2px);
         }
-        .work-card .work-link:active {
-            transform: scale(0.93);
+        .work-link:active { transform: scale(0.93); }
+        .work-link.loading {
+            background: #555;
+            cursor: wait;
+            pointer-events: none;
         }
 
-        .work-card .platform-switcher {
+        .platform-switcher {
             display: flex;
             align-items: center;
             gap: 6px;
@@ -476,19 +418,16 @@
             cursor: pointer;
             transition: all var(--transition-base);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             user-select: none;
             font-family: inherit;
         }
-        .work-card .platform-switcher:hover {
+        .platform-switcher:hover {
             border-color: var(--accent);
             background: var(--card-bg);
             transform: translateY(-1px);
         }
-        .work-card .platform-switcher:active {
-            transform: scale(0.92);
-        }
-        .work-card .platform-switcher .dot {
+        .platform-switcher:active { transform: scale(0.92); }
+        .platform-switcher .dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
@@ -496,19 +435,30 @@
             flex-shrink: 0;
             transition: all 0.3s;
         }
-        .work-card .platform-switcher .dot.netlify {
-            background: #00ad9f;
-        }
-        .work-card .platform-switcher .dot.github {
-            background: #6e5494;
-        }
-        .work-card .platform-switcher .label {
+        .platform-switcher .dot.netlify { background: #00ad9f; }
+        .platform-switcher .dot.github { background: #6e5494; }
+        .platform-switcher .dot.fallback { background: #f0ad4e; }
+        .platform-switcher .label {
             font-weight: 500;
             font-size: 12px;
             color: var(--text-secondary);
         }
+        .platform-switcher .arrow {
+            font-size: 10px;
+            color: var(--text-muted);
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .platform-switcher:hover .arrow { transform: translateX(3px) rotate(180deg); }
 
-        .work-card .fallback-link {
+        @keyframes pulseDot {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.6); }
+            100% { transform: scale(1); }
+        }
+        .platform-switcher .dot.switching { animation: pulseDot 0.4s ease; }
+
+        .fallback-link {
             font-size: 11px;
             color: var(--text-muted);
             text-decoration: none;
@@ -516,176 +466,178 @@
             transition: all var(--transition-base);
             cursor: pointer;
         }
-        .work-card .fallback-link:hover {
+        .fallback-link:hover {
             color: var(--text-secondary);
             border-color: var(--text-secondary);
         }
 
-        /* ================================================================
-               朋友圈板块
-            ================================================================ */
-        .friends-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+        /* ===== 最近博客预览（朋友圈板块） ===== */
+        .recent-posts {
+            margin: 6px 0 14px;
+            padding: 12px 14px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--card-border);
+            transition: all var(--transition-base);
         }
-
-        @media (max-width: 720px) {
-            .friends-grid {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
-        }
-
-        .friend-card {
+        .recent-posts:hover {
             background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 20px 22px 20px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: var(--card-shadow);
-            transition: all var(--transition-spring);
-            cursor: pointer;
-        }
-        .friend-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--card-hover-shadow);
             border-color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
-        .friend-card:active {
-            transform: scale(0.97);
-            transition-duration: 0.08s;
-        }
-
-        .friend-card .friend-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 6px;
-        }
-        .friend-card .friend-header .friend-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: var(--bg-body);
-            border: 1px solid var(--card-border);
-            flex-shrink: 0;
-        }
-        .friend-card .friend-header .friend-meta {
-            flex: 1;
-            min-width: 0;
-        }
-        .friend-card .friend-header .friend-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: color 0.5s ease;
-        }
-        .friend-card .friend-header .friend-date {
+        .recent-posts .rp-title {
             font-size: 12px;
             color: var(--text-muted);
-            transition: color 0.5s ease;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+        .recent-posts .rp-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--card-border);
+            transition: all var(--transition-base);
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+        }
+        .recent-posts .rp-item:last-child { border-bottom: none; }
+        .recent-posts .rp-item::before {
+            content: '→';
+            position: absolute;
+            left: -2px;
+            opacity: 0;
+            transition: all var(--transition-base);
+            transform: translateX(-6px);
+            color: var(--accent);
+        }
+        .recent-posts .rp-item:hover {
+            color: var(--text-primary);
+            padding-left: 16px;
+            background: var(--card-bg);
+            border-radius: 6px;
+        }
+        .recent-posts .rp-item:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .recent-posts .rp-item .rp-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            margin-left: 12px;
+            transition: color var(--transition-base);
+        }
+        .recent-posts .rp-item:hover .rp-date { color: var(--text-muted); }
+        .recent-posts .rp-empty {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 8px 0;
+        }
+        .recent-posts .rp-loading {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 8px 0;
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
-        .friend-card .friend-title {
+        /* ===== 图片/二维码模态框 ===== */
+        .modal,
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(6px);
+        }
+        .modal.active,
+        .qr-modal.active { display: flex; }
+
+        .modal { background: rgba(0, 0, 0, 0.85); }
+        .qr-modal { background: rgba(0, 0, 0, 0.75); }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .modal .close-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        .qr-modal .qr-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px 24px 20px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            cursor: default;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+        }
+        .qr-modal .qr-content .qr-label {
             font-size: 16px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 4px;
-            transition: color 0.5s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            margin-bottom: 12px;
         }
-        .friend-card .friend-title .pinned-tag {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--pinned-tag-text);
-            background: var(--pinned-tag-bg);
-            padding: 1px 12px;
-            border-radius: 12px;
-            letter-spacing: 0.3px;
-            transition: all 0.5s ease;
-        }
-
-        .friend-card .friend-content {
-            font-size: 14px;
-            line-height: 1.7;
-            color: var(--text-secondary);
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            transition: color 0.5s ease;
-        }
-        .friend-card .friend-content img {
-            max-width: 100%;
-            border-radius: var(--radius-sm);
-            margin: 4px 0;
-        }
-
-        .friend-card .friend-media {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            margin-top: 10px;
-        }
-        .friend-card .friend-media.one {
-            grid-template-columns: 1fr;
-        }
-        .friend-card .friend-media.two {
-            grid-template-columns: 1fr 1fr;
-        }
-        .friend-card .friend-media img,
-        .friend-card .friend-media video {
+        .qr-modal .qr-content img {
             width: 100%;
+            max-width: 280px;
             aspect-ratio: 1 / 1;
-            object-fit: cover;
-            border-radius: var(--radius-sm);
-            background: var(--bg-body);
-            cursor: pointer;
-            transition: transform var(--transition-base);
+            object-fit: contain;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
         }
-        .friend-card .friend-media img:hover,
-        .friend-card .friend-media video:hover {
-            transform: scale(1.02);
-        }
-
-        .friend-card .friend-more {
+        .qr-modal .qr-content .qr-close-hint {
+            margin-top: 12px;
             font-size: 13px;
             color: var(--text-muted);
-            margin-top: 8px;
-            transition: color 0.5s ease;
         }
 
-        /* ================================================================
-               空状态
-            ================================================================ */
-        .empty-state {
-            text-align: center;
-            padding: 32px 20px;
-            color: var(--text-muted);
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all 0.5s ease;
-        }
-        .empty-state .empty-icon {
-            font-size: 32px;
-            margin-bottom: 6px;
-        }
-        .empty-state .empty-text {
-            font-size: 14px;
-        }
+        .modal.closing { animation: fadeOut 0.25s ease forwards; }
+        .modal.closing img { animation: scaleOut 0.25s ease forwards; }
+        .qr-modal.closing { animation: fadeOut 0.2s ease forwards; }
 
-        /* ================================================================
-               页脚
-            ================================================================ */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes scaleIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes scaleOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.85); opacity: 0; } }
+
+        /* ===== 页脚 ===== */
         .footer {
             margin-top: 48px;
             padding-top: 20px;
@@ -702,201 +654,45 @@
             animation: heartbeat 1.8s ease-in-out infinite;
         }
         @keyframes heartbeat {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            15% {
-                transform: scale(1.2);
-            }
-            30% {
-                transform: scale(1);
-            }
-            45% {
-                transform: scale(1.15);
-            }
-            60% {
-                transform: scale(1);
-            }
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
         }
 
-        /* ================================================================
-               图片查看模态框
-            ================================================================ */
-        .img-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 20px;
-        }
-        .img-modal.active {
-            display: flex;
-        }
-        .img-modal img {
-            max-width: 90%;
-            max-height: 85%;
-            object-fit: contain;
-            border-radius: var(--radius-sm);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-            animation: modalZoom 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        @keyframes modalZoom {
-            from {
-                opacity: 0;
-                transform: scale(0.92);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .img-modal .close-hint {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 13px;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-        }
+        /* ===== GSAP 初始隐藏 ===== */
+        .reveal { opacity: 0; transform: translateY(40px); }
 
-        /* ================================================================
-               响应式调整
-            ================================================================ */
+        /* ===== 响应式 ===== */
         @media (max-width: 600px) {
-            .container {
-                padding: 0 16px 40px;
-            }
-            .header {
-                padding: 14px 0 12px;
-            }
-            .header-left .logo {
-                font-size: 19px;
-            }
-            .header-left .tagline {
-                font-size: 12px;
-            }
-            .header-right a {
-                font-size: 12px;
-                padding: 4px 10px;
-            }
-            .theme-toggle {
-                padding: 4px 10px;
-                font-size: 12px;
-            }
-            .theme-toggle .theme-label {
-                font-size: 11px;
-            }
-            .hero {
-                padding: 20px 0 28px;
-            }
-            .hero-avatar {
-                width: 72px;
-                height: 72px;
-            }
-            .hero-signature {
-                font-size: 14px;
-                line-height: 1.7;
-            }
-            .section-title {
-                font-size: 12px;
-                margin: 32px 0 14px;
-            }
-            .work-card {
-                padding: 16px 16px 18px;
-            }
-            .work-card .work-name {
-                font-size: 17px;
-            }
-            .work-card .work-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .work-card .work-link {
-                justify-content: center;
-            }
-            .work-card .platform-switcher {
-                justify-content: center;
-                padding: 6px 12px;
-            }
-            .friend-card {
-                padding: 14px 16px 16px;
-            }
-            .friend-card .friend-title {
-                font-size: 15px;
-            }
-            .friend-card .friend-media {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .friend-card .friend-media.one {
-                grid-template-columns: 1fr;
-            }
-            .friend-card .friend-media.two {
-                grid-template-columns: 1fr 1fr;
-            }
-            .friends-grid {
-                gap: 14px;
-            }
-            .works-grid {
-                gap: 14px;
-            }
+            .container { padding: 0 16px 40px; }
+            .header { padding: 14px 0 12px; }
+            .header-left .logo { font-size: 19px; }
+            .header-left .tagline { font-size: 12px; }
+            .header-right a { font-size: 12px; padding: 4px 10px; }
+            .theme-toggle { padding: 4px 10px; font-size: 12px; }
+            .theme-toggle .theme-label { font-size: 11px; }
+            .hero { padding: 20px 0 28px; }
+            .hero-avatar { width: 72px; height: 72px; }
+            .hero-signature { font-size: 14px; line-height: 1.7; }
+            .section-title { font-size: 12px; margin: 32px 0 14px; }
+            .work-card { padding: 16px 16px 18px; }
+            .work-card .work-name { font-size: 17px; }
+            .work-card .work-actions { flex-direction: column; align-items: stretch; }
+            .work-link { justify-content: center; }
+            .platform-switcher { justify-content: center; padding: 6px 12px; }
+            .recent-posts .rp-item { font-size: 13px; flex-wrap: wrap; }
         }
-
         @media (max-width: 400px) {
-            .hero-title {
-                font-size: 32px;
-            }
-            .hero-social a {
-                font-size: 12px;
-                padding: 6px 14px;
-            }
-            .work-card .work-desc {
-                font-size: 13px;
-            }
-            .friend-card .friend-content {
-                font-size: 13px;
-            }
+            .hero-title { font-size: 32px; }
+            .hero-social a { font-size: 12px; padding: 6px 14px; }
+            .work-card .work-desc { font-size: 13px; }
         }
 
-        /* ================================================================
-               GSAP 初始隐藏 (滚动入场)
-            ================================================================ */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-        }
-        .reveal-scale {
-            opacity: 0;
-            transform: scale(0.92) translateY(20px);
-        }
-
-        /* ================================================================
-               减少动画偏好
-            ================================================================ */
         @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-            .reveal,
-            .reveal-scale {
-                opacity: 1 !important;
-                transform: none !important;
-            }
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+            .reveal { opacity: 1 !important; transform: none !important; }
         }
     </style>
 </head>
@@ -917,7 +713,7 @@
                 <span class="tagline" id="headerTagline">独立开发者</span>
             </div>
             <div class="header-right">
-                <a href="https://github.com/xiaociwei01" target="_blank" id="headerGithub">GitHub</a>
+                <a href="https://github.com/xiaociwei01" target="_blank">GitHub</a>
                 <button class="theme-toggle" id="themeToggle" title="切换主题">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-label" id="themeLabel">深色</span>
@@ -927,41 +723,56 @@
 
         <!-- ===== Hero 区域 ===== -->
         <section class="hero">
-            <img class="hero-avatar reveal" id="heroAvatar" src="" alt="头像" loading="lazy" />
+            <img class="hero-avatar reveal" id="heroAvatar" src="ciweitouxiang.jpg" alt="小刺猬头像" loading="lazy" onclick="openAvatarModal()" />
             <h1 class="hero-title reveal">
                 <span class="highlight" id="heroTitle">刺猬</span>
             </h1>
             <p class="hero-sub reveal" id="heroSub">独立开发者</p>
             <div class="hero-signature reveal" id="heroSignature">
-                本站点使用 HTML+CSS+JavaScript 语言开发...
+                本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。<br>
+                已适配手机 + 平板 + 电脑设备。项目源码开源托管在 GitHub。
             </div>
             <div class="hero-social reveal">
-                <a href="#" id="socialWechat">💬 微信</a>
-                <a href="#" id="socialQQ">🐧 QQ</a>
+                <a id="socialWechat">💬 微信</a>
+                <a id="socialQQ">🐧 QQ</a>
             </div>
         </section>
 
         <!-- ===== 作品区 ===== -->
-        <div class="section-title reveal">
-            📦 作品 <span class="count" id="worksCount">(0)</span>
-        </div>
+        <div class="section-title reveal">🧰 我的作品</div>
         <div class="works-grid" id="worksGrid">
-            <!-- 由 JS 动态渲染 -->
-            <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <div class="empty-text">暂无作品</div>
-            </div>
+            <!-- 由 JS 动态渲染（优先 config.json，fallback 到硬编码） -->
         </div>
 
         <!-- ===== 朋友圈区 ===== -->
-        <div class="section-title reveal" style="margin-top:56px;">
-            📝 朋友圈 <span class="count" id="friendsCount">(0)</span>
-        </div>
-        <div class="friends-grid" id="friendsGrid">
-            <!-- 由 JS 动态渲染 -->
-            <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <div class="empty-text">暂无动态</div>
+        <div class="section-title reveal" style="margin-top:56px;">🦔 开发者的小朋友圈</div>
+        <div class="works-grid" id="friendsGrid">
+            <div class="work-card reveal" id="work-friends" style="grid-column:1/-1;">
+                <div class="work-cover" onclick="openImageModal(this)">
+                    <img src="FriendQuan.jpg" alt="朋友圈封面图" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);">
+                </div>
+                <div class="work-body" style="padding-top:14px;">
+                    <div class="work-name">📝 开发者的小朋友圈</div>
+                    <div class="work-tags">偶尔写写，记录一些瞬间</div>
+                    <div class="recent-posts" id="recentPosts">
+                        <div class="rp-title">📖 最近更新</div>
+                        <div class="rp-loading">加载中...</div>
+                    </div>
+                    <div class="work-actions">
+                        <button class="work-link" id="btn-friends" onclick="smartNavigate('friends')">
+                            📝 进入朋友圈
+                        </button>
+                        <div class="platform-switcher" id="switcher-friends" onclick="togglePlatform('friends')" title="点击切换平台">
+                            <span class="dot netlify" id="dot-friends"></span>
+                            <span class="label" id="label-friends">Netlify</span>
+                            <span class="arrow">⇄</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
+                        <span>📡 <span id="primary-label-friends">主: Netlify</span></span>
+                        <a href="#" id="fallback-link-friends" class="fallback-link" onclick="directNavigate('friends', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -972,60 +783,312 @@
 
     </div>
 
-    <!-- ===== 图片查看模态框 ===== -->
-    <div class="img-modal" id="imgModal" onclick="closeImgModal()">
-        <img id="modalImg" src="" alt="查看大图" />
+    <!-- ===== 图片放大模态框 ===== -->
+    <div class="modal" id="imageModal" onclick="closeImageModal()">
+        <img id="modalImage" src="" alt="大图">
         <div class="close-hint">点击任意处关闭</div>
+    </div>
+
+    <!-- ===== 二维码模态框 ===== -->
+    <div class="qr-modal" id="qrModal" onclick="closeQR()">
+        <div class="qr-content" onclick="event.stopPropagation()">
+            <div class="qr-label" id="qrLabel">微信二维码</div>
+            <img id="qrImage" src="" alt="二维码">
+            <div class="qr-close-hint">点击任意处关闭</div>
+        </div>
     </div>
 
     <script>
         // ================================================================
         // 配置
         // ================================================================
+        const BLOG_REPO = 'xiaociwei01/CiweiBlog';
+        const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
+        const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
         const MANAGER_REPO = 'xiaociwei01/CiweiManager';
         const CONFIG_PATH = 'config.json';
-        const THEME_KEY = 'ciwei_home_theme';
-
-        // 默认头像 (CiweiHome 仓库里的)
         const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
+
+        // 硬编码作品（fallback）
+        const HARDCODED_WORKS = [{
+            id: 'solar',
+            name: '3D太阳系',
+            tags: 'Three.js · 开普勒轨道 · 哈勃 · 旅行者一号',
+            desc: '真实光照、椭圆轨道、行星轴倾斜、土星环、破坏工具箱、哈勃望远镜模式、旅行者一号深空飞行。',
+            cover: 'xiaotaiyang.jpg',
+            primaryLink: 'https://xiaotaiyang.netlify.app',
+            fallbackLink: 'https://xiaociwei01.github.io/xiaotaiyang/'
+        }, {
+            id: 'lunar',
+            name: '3D地月系',
+            tags: '开普勒轨道 · 月相 · ISS · 天宫空间站',
+            desc: '地球开普勒公转、节气跳转、日食/月食实时检测、月相模拟、ISS 与天宫双空间站、地轴倾斜。',
+            cover: 'diyue.jpg',
+            primaryLink: 'https://diyue.netlify.app',
+            fallbackLink: 'https://xiaociwei01.github.io/diyue/'
+        }];
+
+        const LINK_CONFIG = {
+            solar: {
+                primary: 'https://xiaotaiyang.netlify.app',
+                fallback: 'https://xiaociwei01.github.io/xiaotaiyang/',
+                selected: 'primary'
+            },
+            lunar: {
+                primary: 'https://diyue.netlify.app',
+                fallback: 'https://xiaociwei01.github.io/diyue/',
+                selected: 'primary'
+            },
+            friends: {
+                primary: 'https://ciweihome.netlify.app/FriendQuan.html',
+                fallback: 'https://xiaociwei01.github.io/CiweiHome/FriendQuan.html',
+                selected: 'primary'
+            }
+        };
+
+        // 全局配置数据
+        let configData = null;
+        let configLoaded = false;
 
         // ================================================================
         // DOM 引用
         // ================================================================
         const $ = id => document.getElementById(id);
+        const worksGrid = $('worksGrid');
 
         // ================================================================
         // 工具函数
         // ================================================================
-        function buildCdnUrl(path, sha = 'main') {
+        function buildCdnUrl(path) {
             if (!path) return '';
             if (path.startsWith('http://') || path.startsWith('https://')) return path;
-            // 如果是默认头像，从 CiweiHome 仓库加载
-            if (path === DEFAULT_AVATAR) {
-                return `https://xiaociwei01.github.io/CiweiHome/${DEFAULT_AVATAR}`;
+            if (path === DEFAULT_AVATAR || path.includes('ciweitouxiang')) {
+                return `https://xiaociwei01.github.io/CiweiHome/${path}`;
             }
-            return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@${sha}/${path}`;
+            return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${path}`;
         }
 
-        function formatDateToMinute(dateStr) {
-            if (!dateStr) return '未知日期';
+        function getCurrentLink(key) {
+            const config = LINK_CONFIG[key];
+            return config.selected === 'primary' ? config.primary : config.fallback;
+        }
+
+        function getCurrentPlatform(key) {
+            const config = LINK_CONFIG[key];
+            return config.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
+        }
+
+        function updatePlatformUI(key) {
+            const config = LINK_CONFIG[key];
+            const isPrimary = config.selected === 'primary';
+            const dot = document.getElementById('dot-' + key);
+            const label = document.getElementById('label-' + key);
+            const primaryLabel = document.getElementById('primary-label-' + key);
+
+            if (dot) {
+                dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
+            }
+            if (label) {
+                label.textContent = isPrimary ? 'Netlify' : 'GitHub Pages';
+            }
+            if (primaryLabel) {
+                primaryLabel.textContent = isPrimary ? '主: Netlify' : '主: GitHub Pages';
+            }
+
+            const fallbackLink = document.getElementById('fallback-link-' + key);
+            if (fallbackLink) {
+                const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
+                fallbackLink.textContent = '🔁 备用: ' + fbLabel;
+                const target = isPrimary ? config.fallback : config.primary;
+                fallbackLink.href = target;
+                fallbackLink.onclick = function(e) {
+                    e.preventDefault();
+                    directNavigate(key, 'fallback');
+                };
+            }
+        }
+
+        function togglePlatform(key) {
+            const config = LINK_CONFIG[key];
+            config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
+
+            const dot = document.getElementById('dot-' + key);
+            if (dot) {
+                dot.classList.add('switching');
+                setTimeout(() => dot.classList.remove('switching'), 400);
+            }
+
+            updatePlatformUI(key);
+            const btn = document.getElementById('btn-' + key);
+            if (btn) {
+                btn.title = '当前目标: ' + getCurrentPlatform(key);
+            }
+        }
+
+        function smartNavigate(key) {
+            const config = LINK_CONFIG[key];
+            const btn = document.getElementById('btn-' + key);
+            const originalText = btn.innerHTML;
+
+            btn.classList.add('loading');
+            btn.innerHTML = '⏳ 检测中...';
+
+            const primaryUrl = config.primary;
+            const fallbackUrl = config.fallback;
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+            fetch(primaryUrl, {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    signal: controller.signal
+                })
+                .then(() => {
+                    clearTimeout(timeoutId);
+                    btn.classList.remove('loading');
+                    btn.innerHTML = originalText;
+                    window.open(primaryUrl, '_blank');
+                })
+                .catch(() => {
+                    clearTimeout(timeoutId);
+                    config.selected = 'fallback';
+                    updatePlatformUI(key);
+                    btn.classList.remove('loading');
+                    btn.innerHTML = originalText;
+                    window.open(fallbackUrl, '_blank');
+                });
+        }
+
+        function directNavigate(key, target) {
+            const config = LINK_CONFIG[key];
+            const url = target === 'fallback' ? config.fallback : config.primary;
+            window.open(url, '_blank');
+        }
+
+        // ================================================================
+        // 加载 config.json
+        // ================================================================
+        async function loadConfig() {
             try {
-                const d = new Date(dateStr);
-                if (isNaN(d.getTime())) return dateStr;
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const h = String(d.getHours()).padStart(2, '0');
-                const min = String(d.getMinutes()).padStart(2, '0');
-                return `${y}-${m}-${day} ${h}:${min}`;
-            } catch {
-                return dateStr;
+                const t = Date.now();
+                const cdnUrl =
+                    `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${t}`;
+                let res = await fetch(cdnUrl, { cache: 'no-store' });
+                if (!res.ok) {
+                    const rawUrl =
+                        `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${t}`;
+                    res = await fetch(rawUrl, { cache: 'no-store' });
+                    if (!res.ok) throw new Error('加载 config.json 失败');
+                }
+                configData = await res.json();
+                configLoaded = true;
+                console.log('✅ config.json 加载成功', configData);
+            } catch (err) {
+                console.warn('⚠️ config.json 加载失败，使用硬编码数据', err);
+                configData = null;
+                configLoaded = false;
+            }
+        }
+
+        // ================================================================
+        // 获取配置数据（优先 config.json，fallback 到硬编码）
+        // ================================================================
+        function getSiteConfig() {
+            if (configData && configData.site) {
+                return configData.site;
+            }
+            // fallback 到硬编码
+            return {
+                title: '刺猬',
+                subtitle: '独立开发者',
+                avatar: DEFAULT_AVATAR,
+                signature: '本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。已适配手机 + 平板 + 电脑设备。',
+                wechat: 'As08_0831',
+                qq: '2586279833',
+                wechatQr: 'wechat_qr.jpg',
+                qqQr: 'qq_qr.jpg'
+            };
+        }
+
+        function getWorks() {
+            if (configData && configData.works && configData.works.length > 0) {
+                return configData.works.filter(w => w.enabled !== false);
+            }
+            return HARDCODED_WORKS;
+        }
+
+        function getFriends() {
+            if (configData && configData.friends && configData.friends.length > 0) {
+                return configData.friends;
+            }
+            return null; // 返回 null 表示需要从 CiweiBlog 加载
+        }
+
+        // ================================================================
+        // 渲染网站信息（从 config.json 读取）
+        // ================================================================
+        function renderSite() {
+            const site = getSiteConfig();
+
+            // 标题
+            const titleEl = document.getElementById('heroTitle');
+            if (titleEl) titleEl.textContent = site.title || '刺猬';
+
+            // 副标题
+            const taglineEl = document.getElementById('headerTagline');
+            const subEl = document.getElementById('heroSub');
+            const subtitle = site.subtitle || '独立开发者';
+            if (taglineEl) taglineEl.textContent = subtitle;
+            if (subEl) subEl.textContent = subtitle;
+
+            // 头像
+            const avatarEl = document.getElementById('heroAvatar');
+            if (avatarEl) {
+                const avatarPath = site.avatar || DEFAULT_AVATAR;
+                avatarEl.src = buildCdnUrl(avatarPath);
+                avatarEl.alt = (site.title || '刺猬') + '的头像';
+            }
+
+            // 签名（支持 Markdown 图片）
+            const sigEl = document.getElementById('heroSignature');
+            if (sigEl) {
+                if (site.signature) {
+                    sigEl.innerHTML = renderMarkdown(site.signature);
+                } else {
+                    sigEl.textContent = '本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。已适配手机 + 平板 + 电脑设备。';
+                }
+            }
+
+            // 微信/QQ 点击事件
+            const wechatEl = document.getElementById('socialWechat');
+            const qqEl = document.getElementById('socialQQ');
+
+            if (wechatEl) {
+                const wechat = site.wechat || 'As08_0831';
+                const wechatQr = site.wechatQr || 'wechat_qr.jpg';
+                wechatEl.textContent = '💬 微信';
+                wechatEl.onclick = function(e) {
+                    e.preventDefault();
+                    const qrPath = buildCdnUrl(wechatQr);
+                    openQR('微信', qrPath, wechat);
+                };
+            }
+
+            if (qqEl) {
+                const qq = site.qq || '2586279833';
+                const qqQr = site.qqQr || 'qq_qr.jpg';
+                qqEl.textContent = '🐧 QQ';
+                qqEl.onclick = function(e) {
+                    e.preventDefault();
+                    const qrPath = buildCdnUrl(qqQr);
+                    openQR('QQ', qrPath, qq);
+                };
             }
         }
 
         function renderMarkdown(text) {
             if (!text) return '';
-            // 简单的 Markdown 渲染：图片、加粗、换行
             let html = text
                 .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
                     const fullUrl = url.startsWith('http') ? url : buildCdnUrl(url);
@@ -1037,8 +1100,265 @@
         }
 
         // ================================================================
+        // 渲染作品（优先 config.json，fallback 到硬编码）
+        // ================================================================
+        function renderWorks() {
+            const works = getWorks();
+
+            if (!works || works.length === 0) {
+                worksGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--text-muted);background:var(--card-bg);border-radius:var(--radius-lg);border:1px solid var(--card-border);">
+                        <div style="font-size:32px;margin-bottom:8px;">📭</div>
+                        <div>暂无作品</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            works.forEach((work, index) => {
+                const id = work.id || 'work-' + index;
+                const coverUrl = work.cover ? buildCdnUrl(work.cover) : '';
+                const primaryLink = work.primaryLink || work.primary || '';
+                const fallbackLink = work.fallbackLink || work.fallback || '#';
+
+                // 动态更新 LINK_CONFIG（如果作品有链接）
+                if (primaryLink || fallbackLink) {
+                    if (!LINK_CONFIG[id]) {
+                        LINK_CONFIG[id] = {
+                            primary: primaryLink || fallbackLink,
+                            fallback: fallbackLink || primaryLink,
+                            selected: 'primary'
+                        };
+                    } else {
+                        LINK_CONFIG[id].primary = primaryLink || LINK_CONFIG[id].primary;
+                        LINK_CONFIG[id].fallback = fallbackLink || LINK_CONFIG[id].fallback;
+                    }
+                }
+
+                const dotClass = (LINK_CONFIG[id] && LINK_CONFIG[id].selected === 'primary') ? 'netlify' : 'github';
+                const labelText = (LINK_CONFIG[id] && LINK_CONFIG[id].selected === 'primary') ? 'Netlify' : 'GitHub Pages';
+
+                html += `
+                    <div class="work-card reveal" id="work-${id}">
+                        ${coverUrl ? `<img class="work-cover" src="${coverUrl}" alt="${work.name || '作品封面'}" loading="lazy" onclick="openImageModal(this.src)" />` : ''}
+                        <div class="work-name">${work.name || '未命名作品'}</div>
+                        ${work.tags ? `<div class="work-tags">${work.tags}</div>` : ''}
+                        ${work.desc ? `<div class="work-desc">${work.desc}</div>` : ''}
+                        <div class="work-actions">
+                            <a class="work-link" id="work-link-${id}" href="${primaryLink || fallbackLink}" target="_blank">
+                                🚀 进入
+                            </a>
+                            <button class="platform-switcher" data-work-id="${id}" onclick="togglePlatform('${id}')" title="点击切换平台">
+                                <span class="dot ${dotClass}" id="dot-${id}"></span>
+                                <span class="label" id="label-${id}">${labelText}</span>
+                                <span class="arrow">⇄</span>
+                            </button>
+                        </div>
+                        <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
+                            <span>📡 <span id="primary-label-${id}">主: ${labelText}</span></span>
+                            <a href="#" class="fallback-link" onclick="directNavigate('${id}', 'fallback'); return false;">🔁 备用: ${labelText === 'Netlify' ? 'GitHub Pages' : 'Netlify'}</a>
+                        </div>
+                    </div>
+                `;
+            });
+
+            worksGrid.innerHTML = html;
+
+            // 初始化平台切换器
+            Object.keys(LINK_CONFIG).forEach(key => {
+                if (key !== 'friends') {
+                    updatePlatformUI(key);
+                    const btn = document.getElementById('btn-' + key);
+                    if (btn) {
+                        btn.title = '当前目标: ' + getCurrentPlatform(key);
+                    }
+                }
+            });
+        }
+
+        // ================================================================
+        // 加载朋友圈（优先 config.json，fallback 到 CiweiBlog）
+        // ================================================================
+        async function fetchRecentPosts() {
+            const container = document.getElementById('recentPosts');
+
+            // 优先从 config.json 读取
+            const friends = getFriends();
+            if (friends && friends.length > 0) {
+                // 排序：置顶优先
+                const sorted = [...friends].sort((a, b) => {
+                    if (a.pinned && !b.pinned) return -1;
+                    if (!a.pinned && b.pinned) return 1;
+                    return (b.id || '').localeCompare(a.id || '');
+                });
+
+                const display = sorted.slice(0, 3);
+                let html = `<div class="rp-title">📖 最近更新</div>`;
+                for (const post of display) {
+                    const dateStr = post.date || '未知日期';
+                    html += `
+                        <a href="${DETAIL_PAGE}?file=${encodeURIComponent(post.id || '')}" target="_blank" class="rp-item">
+                            <span>${post.title || '无标题'}</span>
+                            <span class="rp-date">${dateStr}</span>
+                        </a>
+                    `;
+                }
+                container.innerHTML = html;
+                return;
+            }
+
+            // fallback: 从 CiweiBlog 加载
+            try {
+                const res = await fetch(BLOG_API);
+                if (!res.ok) throw new Error('无法读取文章列表');
+                const files = await res.json();
+                const posts = files.filter(f => f.name.endsWith('.md'));
+
+                if (posts.length === 0) {
+                    container.innerHTML = `
+                        <div class="rp-title">📖 最近更新</div>
+                        <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
+                    `;
+                    return;
+                }
+
+                posts.sort((a, b) => b.name.localeCompare(a.name));
+                const recent = posts.slice(0, 3);
+
+                const tasks = recent.map(async (post) => {
+                    try {
+                        const contentRes = await fetch(post.download_url);
+                        const contentText = await contentRes.text();
+                        const titleMatch = contentText.match(/title:\s*(.+)/);
+                        const dateMatch = contentText.match(/date:\s*(.+)/);
+                        const title = titleMatch ? titleMatch[1].trim() : post.name.replace('.md', '');
+                        const date = dateMatch ? dateMatch[1].trim() : '未知日期';
+                        return { title, date, filename: post.name };
+                    } catch (e) {
+                        return null;
+                    }
+                });
+
+                const results = await Promise.all(tasks);
+                const validPosts = results.filter(p => p !== null);
+
+                if (validPosts.length === 0) {
+                    container.innerHTML = `
+                        <div class="rp-title">📖 最近更新</div>
+                        <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
+                    `;
+                    return;
+                }
+
+                let html = `<div class="rp-title">📖 最近更新</div>`;
+                for (const post of validPosts) {
+                    html += `
+                        <a href="${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}" target="_blank" class="rp-item">
+                            <span>${post.title}</span>
+                            <span class="rp-date">${post.date}</span>
+                        </a>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="rp-title">📖 最近更新</div>
+                    <div class="rp-empty">加载失败，请稍后重试</div>
+                `;
+            }
+        }
+
+        // ================================================================
+        // 二维码弹窗（通用）
+        // ================================================================
+        function openQR(title, imgSrc, fallbackText) {
+            const modal = document.getElementById('qrModal');
+            const qrImg = document.getElementById('qrImage');
+            const qrLabel = document.getElementById('qrLabel');
+
+            qrLabel.textContent = title + '二维码';
+
+            // 尝试加载图片，如果加载失败则显示 fallback
+            const img = new Image();
+            img.onload = function() {
+                qrImg.src = imgSrc;
+            };
+            img.onerror = function() {
+                qrImg.style.display = 'none';
+                qrLabel.textContent = title + ': ' + (fallbackText || '未设置');
+                // 显示文字提示
+                const hint = document.querySelector('.qr-content .qr-close-hint');
+                if (hint) hint.textContent = '请上传二维码图片';
+            };
+            img.src = imgSrc;
+
+            // 如果图片已经加载过，直接显示
+            qrImg.src = imgSrc;
+            qrImg.style.display = 'block';
+
+            modal.classList.remove('closing');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeQR() {
+            const modal = document.getElementById('qrModal');
+            modal.classList.add('closing');
+            setTimeout(() => {
+                modal.classList.remove('active');
+                modal.classList.remove('closing');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        // ================================================================
+        // 图片模态框
+        // ================================================================
+        function openImageModal(src) {
+            if (!src) return;
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = src;
+            modal.classList.remove('closing');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openAvatarModal() {
+            const avatarImg = document.getElementById('heroAvatar');
+            if (!avatarImg) return;
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = avatarImg.src;
+            modalImg.alt = avatarImg.alt || '头像';
+            modal.classList.remove('closing');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('closing');
+            setTimeout(() => {
+                modal.classList.remove('active');
+                modal.classList.remove('closing');
+                document.body.style.overflow = '';
+            }, 250);
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+                closeQR();
+            }
+        });
+
+        // ================================================================
         // 主题切换
         // ================================================================
+        const THEME_KEY = 'ciwei_home_theme';
+
         function getPreferredTheme() {
             const saved = localStorage.getItem(THEME_KEY);
             if (saved === 'dark' || saved === 'light') return saved;
@@ -1048,8 +1368,8 @@
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem(THEME_KEY, theme);
-            const icon = $('themeIcon');
-            const label = $('themeLabel');
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
             if (theme === 'dark') {
                 icon.textContent = '☀️';
                 label.textContent = '浅色';
@@ -1064,401 +1384,27 @@
             applyTheme(current === 'dark' ? 'light' : 'dark');
         }
 
-        // 初始化主题
         applyTheme(getPreferredTheme());
-
-        // 监听系统主题变化
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (!localStorage.getItem(THEME_KEY)) {
                 applyTheme(e.matches ? 'dark' : 'light');
             }
         });
-
-        $('themeToggle').addEventListener('click', toggleTheme);
-
-        // ================================================================
-        // 加载配置数据
-        // ================================================================
-        let configData = null;
-        let linkConfig = {};
-
-        async function loadConfig() {
-            try {
-                // 优先从 jsDelivr 加载
-                const cdnUrl =
-                    `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${Date.now()}`;
-                let res = await fetch(cdnUrl, { cache: 'no-store' });
-                if (!res.ok) {
-                    // 回退 raw
-                    const rawUrl =
-                        `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${Date.now()}`;
-                    res = await fetch(rawUrl, { cache: 'no-store' });
-                    if (!res.ok) throw new Error('加载配置失败');
-                }
-                configData = await res.json();
-                console.log('✅ 配置加载成功', configData);
-                renderAll();
-                // 启动 GSAP 入场动画
-                initGSAP();
-            } catch (err) {
-                console.warn('加载配置失败，使用默认数据', err);
-                // 使用默认数据（让页面不至于空白）
-                configData = {
-                    site: {
-                        title: '刺猬',
-                        subtitle: '独立开发者',
-                        avatar: DEFAULT_AVATAR,
-                        signature: '本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。',
-                        wechat: 'As08_0831',
-                        qq: '2586279833'
-                    },
-                    works: [],
-                    friends: []
-                };
-                renderAll();
-                initGSAP();
-            }
-        }
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
         // ================================================================
-        // 渲染函数
-        // ================================================================
-        function renderAll() {
-            if (!configData) return;
-            renderSite();
-            renderWorks();
-            renderFriends();
-            updateCounts();
-            // 初始化平台切换器状态
-            initPlatformSwitchers();
-        }
-
-        // ----- 网站信息 -----
-        function renderSite() {
-            const site = configData.site || {};
-
-            // 标题
-            $('heroTitle').textContent = site.title || '刺猬';
-            $('headerTagline').textContent = site.subtitle || '独立开发者';
-            $('heroSub').textContent = site.subtitle || '独立开发者';
-
-            // 头像
-            const avatarPath = site.avatar || DEFAULT_AVATAR;
-            $('heroAvatar').src = buildCdnUrl(avatarPath);
-            $('heroAvatar').alt = site.title + '的头像';
-
-            // 签名 (支持 Markdown)
-            if (site.signature) {
-                $('heroSignature').innerHTML = renderMarkdown(site.signature);
-            } else {
-                $('heroSignature').textContent = '本站点使用 HTML+CSS+JavaScript 语言开发。';
-            }
-
-            // 社交
-            const wechat = site.wechat || 'As08_0831';
-            const qq = site.qq || '2586279833';
-            $('socialWechat').textContent = '💬 微信 ' + wechat;
-            $('socialWechat').href = '#';
-            $('socialWechat').onclick = (e) => {
-                e.preventDefault();
-                alert('微信: ' + wechat);
-            };
-            $('socialQQ').textContent = '🐧 QQ ' + qq;
-            $('socialQQ').href = '#';
-            $('socialQQ').onclick = (e) => {
-                e.preventDefault();
-                alert('QQ: ' + qq);
-            };
-
-            // GitHub 链接保持不变
-        }
-
-        // ----- 作品 -----
-        function renderWorks() {
-            const container = $('worksGrid');
-            const works = (configData.works || []).filter(w => w.enabled !== false);
-
-            if (works.length === 0) {
-                container.innerHTML = `
-                        <div class="empty-state" style="grid-column:1/-1;">
-                            <div class="empty-icon">📭</div>
-                            <div class="empty-text">暂无作品</div>
-                        </div>
-                    `;
-                return;
-            }
-
-            let html = '';
-            works.forEach((work, index) => {
-                const coverUrl = work.cover ? buildCdnUrl(work.cover) : '';
-                const primaryLink = work.primaryLink || '';
-                const fallbackLink = work.fallbackLink || '#';
-                const workId = work.id || 'work-' + index;
-
-                // 存储链接配置供 JS 使用
-                linkConfig[workId] = {
-                    primary: primaryLink,
-                    fallback: fallbackLink,
-                    selected: 'primary'
-                };
-
-                html += `
-                        <div class="work-card reveal" data-work-id="${workId}">
-                            ${coverUrl ? `<img class="work-cover" src="${coverUrl}" alt="${work.name || '作品封面'}" loading="lazy" onclick="openImgModal(this.src)" />` : ''}
-                            <div class="work-name">${work.name || '未命名作品'}</div>
-                            ${work.tags ? `<div class="work-tags">${work.tags}</div>` : ''}
-                            ${work.desc ? `<div class="work-desc">${work.desc}</div>` : ''}
-                            <div class="work-actions">
-                                <a class="work-link" id="work-link-${workId}" href="${primaryLink || fallbackLink}" target="_blank">
-                                    🚀 进入
-                                </a>
-                                ${primaryLink || fallbackLink !== '#' ? `
-                                    <button class="platform-switcher" data-work-id="${workId}" onclick="togglePlatform('${workId}')" title="点击切换平台">
-                                        <span class="dot netlify" id="dot-${workId}"></span>
-                                        <span class="label" id="label-${workId}">${primaryLink ? 'Netlify' : 'GitHub Pages'}</span>
-                                        <span style="font-size:10px;color:var(--text-muted);">⇄</span>
-                                    </button>
-                                ` : ''}
-                            </div>
-                            ${primaryLink && fallbackLink && fallbackLink !== '#' ? `
-                                <div style="margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);">
-                                    <span>📡 <span id="primary-label-${workId}">主: ${primaryLink ? 'Netlify' : 'GitHub Pages'}</span></span>
-                                    <a href="#" class="fallback-link" onclick="directNavigate('${workId}', 'fallback'); return false;">🔁 备用: ${primaryLink ? 'GitHub Pages' : 'Netlify'}</a>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-            });
-
-            container.innerHTML = html;
-        }
-
-        // ----- 朋友圈 -----
-        function renderFriends() {
-            const container = $('friendsGrid');
-            const friends = configData.friends || [];
-
-            if (friends.length === 0) {
-                container.innerHTML = `
-                        <div class="empty-state" style="grid-column:1/-1;">
-                            <div class="empty-icon">📭</div>
-                            <div class="empty-text">暂无动态</div>
-                        </div>
-                    `;
-                return;
-            }
-
-            // 排序：置顶优先
-            const sorted = [...friends].sort((a, b) => {
-                if (a.pinned && !b.pinned) return -1;
-                if (!a.pinned && b.pinned) return 1;
-                return (b.id || '').localeCompare(a.id || '');
-            });
-
-            // 只显示最近 6 条（首页展示）
-            const display = sorted.slice(0, 6);
-            const hasMore = sorted.length > 6;
-
-            // 获取头像
-            const avatarUrl = buildCdnUrl(configData.site?.avatar || DEFAULT_AVATAR);
-
-            let html = '';
-            display.forEach((friend) => {
-                const pinnedTag = friend.pinned ? '<span class="pinned-tag">🔝 置顶</span>' : '';
-                const contentHtml = renderMarkdown(friend.content || '');
-                const displayDate = formatDateToMinute(friend.date);
-
-                // 媒体
-                const allMedia = [...(friend.images || []), ...(friend.videos || [])];
-                let mediaHtml = '';
-                if (allMedia.length > 0) {
-                    const count = allMedia.length;
-                    let gridClass = 'one';
-                    if (count === 2) gridClass = 'two';
-                    else if (count >= 3) gridClass = '';
-
-                    const items = allMedia.slice(0, 6).map(url => {
-                        const fullUrl = buildCdnUrl(url);
-                        const isVideo = url.match(/\.(mp4|mov|webm)$/i);
-                        if (isVideo) {
-                            return `<video src="${fullUrl}" muted playsinline loading="lazy"></video>`;
-                        }
-                        return `<img src="${fullUrl}" alt="媒体" loading="lazy" onclick="openImgModal(this.src)" />`;
-                    }).join('');
-
-                    mediaHtml = `<div class="friend-media ${gridClass}">${items}</div>`;
-                    if (count > 6) {
-                        mediaHtml +=
-                            `<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">+${count - 6} 更多</div>`;
-                    }
-                }
-
-                html += `
-                        <div class="friend-card reveal" onclick="window.open('https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(friend.id || '')}', '_blank')">
-                            <div class="friend-header">
-                                <img class="friend-avatar" src="${avatarUrl}" alt="头像" />
-                                <div class="friend-meta">
-                                    <div class="friend-name">${configData.site?.title || '小刺猬'}</div>
-                                    <div class="friend-date">${displayDate}</div>
-                                </div>
-                            </div>
-                            <div class="friend-title">
-                                ${friend.title || '无标题'} ${pinnedTag}
-                            </div>
-                            <div class="friend-content">${contentHtml}</div>
-                            ${mediaHtml}
-                        </div>
-                    `;
-            });
-
-            if (hasMore) {
-                html += `
-                        <div class="empty-state" style="grid-column:1/-1;padding:20px;cursor:pointer;" onclick="window.open('FriendQuan.html', '_blank')">
-                            <div style="font-size:14px;color:var(--text-secondary);">📖 查看全部 ${sorted.length} 条动态 →</div>
-                        </div>
-                    `;
-            }
-
-            container.innerHTML = html;
-        }
-
-        // ----- 计数 -----
-        function updateCounts() {
-            const works = (configData.works || []).filter(w => w.enabled !== false);
-            const friends = configData.friends || [];
-            $('worksCount').textContent = '(' + works.length + ')';
-            $('friendsCount').textContent = '(' + friends.length + ')';
-        }
-
-        // ================================================================
-        // 平台切换器逻辑
-        // ================================================================
-        function getCurrentLink(workId) {
-            const cfg = linkConfig[workId];
-            if (!cfg) return '#';
-            return cfg.selected === 'primary' ? cfg.primary : cfg.fallback;
-        }
-
-        function getCurrentPlatform(workId) {
-            const cfg = linkConfig[workId];
-            if (!cfg) return 'Netlify';
-            return cfg.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
-        }
-
-        function updatePlatformUI(workId) {
-            const cfg = linkConfig[workId];
-            if (!cfg) return;
-
-            const isPrimary = cfg.selected === 'primary';
-            const dot = document.getElementById('dot-' + workId);
-            const label = document.getElementById('label-' + workId);
-            const primaryLabel = document.getElementById('primary-label-' + workId);
-            const link = document.getElementById('work-link-' + workId);
-
-            if (dot) {
-                dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
-            }
-            if (label) {
-                label.textContent = isPrimary ? (cfg.primary ? 'Netlify' : 'GitHub Pages') : 'GitHub Pages';
-            }
-            if (primaryLabel) {
-                primaryLabel.textContent = '主: ' + (isPrimary ? (cfg.primary ? 'Netlify' : 'GitHub Pages') : 'GitHub Pages');
-            }
-            if (link) {
-                const url = isPrimary ? cfg.primary : cfg.fallback;
-                link.href = url || '#';
-                // 更新备用链接的 href
-                const fallbackLinks = document.querySelectorAll(`.fallback-link[onclick*="${workId}"]`);
-                fallbackLinks.forEach(el => {
-                    const target = isPrimary ? cfg.fallback : cfg.primary;
-                    el.href = target || '#';
-                    el.textContent = '🔁 备用: ' + (isPrimary ? 'GitHub Pages' : 'Netlify');
-                    el.onclick = function(e) {
-                        e.preventDefault();
-                        directNavigate(workId, 'fallback');
-                    };
-                });
-            }
-
-            // 更新平台切换器的 onclick 里的提示
-            const switcher = document.querySelector(`.platform-switcher[data-work-id="${workId}"]`);
-            if (switcher) {
-                switcher.title = '当前: ' + getCurrentPlatform(workId);
-            }
-        }
-
-        function togglePlatform(workId) {
-            const cfg = linkConfig[workId];
-            if (!cfg) return;
-            if (!cfg.primary || !cfg.fallback || cfg.fallback === '#') {
-                // 如果没有备用链接，不切换
-                return;
-            }
-            cfg.selected = cfg.selected === 'primary' ? 'fallback' : 'primary';
-            updatePlatformUI(workId);
-        }
-
-        function directNavigate(workId, target) {
-            const cfg = linkConfig[workId];
-            if (!cfg) return;
-            const url = target === 'fallback' ? cfg.fallback : cfg.primary;
-            if (url && url !== '#') {
-                window.open(url, '_blank');
-            }
-        }
-
-        function initPlatformSwitchers() {
-            const workCards = document.querySelectorAll('.work-card');
-            workCards.forEach(card => {
-                const workId = card.dataset.workId;
-                if (workId && linkConfig[workId]) {
-                    updatePlatformUI(workId);
-                }
-            });
-        }
-
-        // ================================================================
-        // 图片查看模态框
-        // ================================================================
-        function openImgModal(src) {
-            if (!src) return;
-            const modal = document.getElementById('imgModal');
-            const img = document.getElementById('modalImg');
-            img.src = src;
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeImgModal() {
-            const modal = document.getElementById('imgModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeImgModal();
-        });
-
-        // ================================================================
-        // GSAP 滚动入场动画
+        // GSAP 滚动入场动画（双向触发）
         // ================================================================
         function initGSAP() {
-            // 检查 GSAP 是否加载完成
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-                // 如果还没加载，等待一下再试
                 setTimeout(initGSAP, 500);
                 return;
             }
 
             gsap.registerPlugin(ScrollTrigger);
 
-            // 所有 .reveal 元素
-            const reveals = document.querySelectorAll('.reveal');
-
-            reveals.forEach((el, i) => {
-                // 如果是空的占位状态，跳过
-                if (el.querySelector('.empty-state')) return;
-
+            // 1. Hero 区域
+            document.querySelectorAll('.hero .reveal').forEach((el, i) => {
                 gsap.fromTo(el, {
                         opacity: 0,
                         y: 40,
@@ -1467,20 +1413,43 @@
                         opacity: 1,
                         y: 0,
                         scale: 1,
-                        duration: 0.9,
-                        ease: 'power4.out',
-                        delay: i * 0.06,
+                        duration: 1.0,
+                        ease: 'power3.out',
+                        delay: i * 0.08,
                         scrollTrigger: {
                             trigger: el,
-                            start: 'top 88%',
-                            toggleActions: 'play none none none',
+                            start: 'top 90%',
+                            end: 'top 40%',
+                            scrub: 1.0,
+                            toggleActions: 'play reverse play reverse',
                         },
                     }
                 );
             });
 
-            // 作品卡片和朋友圈卡片单独处理 (延迟稍长)
-            document.querySelectorAll('.work-card.reveal, .friend-card.reveal').forEach((el, i) => {
+            // 2. 区块标题
+            document.querySelectorAll('.section-title.reveal').forEach((el) => {
+                gsap.fromTo(el, {
+                        opacity: 0,
+                        y: 30,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 88%',
+                            end: 'top 50%',
+                            scrub: 0.8,
+                            toggleActions: 'play reverse play reverse',
+                        },
+                    }
+                );
+            });
+
+            // 3. 作品卡片
+            document.querySelectorAll('.work-card.reveal').forEach((el, i) => {
                 gsap.fromTo(el, {
                         opacity: 0,
                         y: 50,
@@ -1489,42 +1458,146 @@
                         opacity: 1,
                         y: 0,
                         scale: 1,
-                        duration: 0.8,
+                        duration: 1.0,
                         ease: 'power4.out',
-                        delay: i * 0.05 + 0.1,
+                        delay: i * 0.06,
                         scrollTrigger: {
                             trigger: el,
-                            start: 'top 90%',
-                            toggleActions: 'play none none none',
+                            start: 'top 92%',
+                            end: 'top 40%',
+                            scrub: 1.0,
+                            toggleActions: 'play reverse play reverse',
                         },
                     }
                 );
             });
 
-            // 头像特殊处理 (更柔和)
-            const avatar = document.querySelector('.hero-avatar');
-            if (avatar) {
-                gsap.from(avatar, {
-                    opacity: 0,
-                    scale: 0.8,
-                    duration: 1.0,
-                    ease: 'power4.out',
-                    delay: 0.2,
-                });
+            // 4. 朋友圈卡片
+            const friendCard = document.querySelector('#work-friends.reveal');
+            if (friendCard) {
+                gsap.fromTo(friendCard, {
+                        opacity: 0,
+                        y: 50,
+                        scale: 0.94,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 1.0,
+                        ease: 'power4.out',
+                        scrollTrigger: {
+                            trigger: friendCard,
+                            start: 'top 92%',
+                            end: 'top 40%',
+                            scrub: 1.0,
+                            toggleActions: 'play reverse play reverse',
+                        },
+                    }
+                );
             }
 
-            console.log('🚀 GSAP 动画已启动');
+            // 5. 页脚
+            const footer = document.querySelector('.footer.reveal');
+            if (footer) {
+                gsap.fromTo(footer, {
+                        opacity: 0,
+                        y: 30,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: footer,
+                            start: 'top 90%',
+                            end: 'top 60%',
+                            scrub: 0.8,
+                            toggleActions: 'play reverse play reverse',
+                        },
+                    }
+                );
+            }
+
+            // 6. 头像
+            const avatar = document.querySelector('.hero-avatar');
+            if (avatar) {
+                gsap.fromTo(avatar, {
+                        opacity: 0,
+                        scale: 0.8,
+                        rotation: -3,
+                    }, {
+                        opacity: 1,
+                        scale: 1,
+                        rotation: 0,
+                        duration: 1.2,
+                        ease: 'power4.out',
+                        scrollTrigger: {
+                            trigger: avatar,
+                            start: 'top 95%',
+                            end: 'top 50%',
+                            scrub: 0.8,
+                            toggleActions: 'play reverse play reverse',
+                        },
+                    }
+                );
+            }
+
+            // 7. 朋友圈最近文章
+            document.querySelectorAll('.recent-posts .rp-item').forEach((el, i) => {
+                gsap.fromTo(el, {
+                        opacity: 0,
+                        x: -15,
+                    }, {
+                        opacity: 1,
+                        x: 0,
+                        duration: 0.6,
+                        ease: 'power3.out',
+                        delay: i * 0.08,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 92%',
+                            end: 'top 60%',
+                            scrub: 0.6,
+                            toggleActions: 'play reverse play reverse',
+                        },
+                    }
+                );
+            });
+
+            console.log('🚀 GSAP 滚动驱动动画已启动');
         }
 
         // ================================================================
         // 启动
         // ================================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            loadConfig();
-        });
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 1. 加载 config.json
+            await loadConfig();
 
-        console.log('🦔 CiweiHome 已启动 (修复版)');
-        console.log('📦 配置仓库:', MANAGER_REPO);
+            // 2. 渲染网站信息（从 config.json 读取）
+            renderSite();
+
+            // 3. 渲染作品（优先 config.json，fallback 到硬编码）
+            renderWorks();
+
+            // 4. 加载朋友圈（优先 config.json，fallback 到 CiweiBlog）
+            await fetchRecentPosts();
+
+            // 5. 初始化朋友圈平台切换器
+            updatePlatformUI('friends');
+            const btn = document.getElementById('btn-friends');
+            if (btn) {
+                btn.title = '当前目标: ' + getCurrentPlatform('friends');
+            }
+
+            // 6. 启动 GSAP
+            setTimeout(initGSAP, 300);
+
+            console.log('🦔 CiweiHome 已启动（完整版：新版视觉 + 原版逻辑 + config.json 动态配置）');
+            console.log('📦 配置仓库:', MANAGER_REPO);
+            console.log('📦 博客仓库:', BLOG_REPO);
+            console.log('📋 config.json 加载状态:', configLoaded ? '✅ 已加载' : '⚠️ 使用 fallback');
+        });
     </script>
 
 </body>
