@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>开发者的小朋友圈</title>
+    <title>朋友圈 · 小刺猬</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,34 +17,29 @@
             --text-primary: #1a1a2e;
             --text-secondary: #444;
             --text-muted: #888;
-            --card-border: rgba(255, 255, 255, 0.5);
-            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-            --card-hover-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            --glass-bg: rgba(255, 255, 255, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.4);
+            --border-color: rgba(0, 0, 0, 0.06);
+            --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             --pinned-tag-bg: rgba(0, 0, 0, 0.06);
             --pinned-tag-text: #888;
             --accent: #58a6ff;
-            --radius-sm: 10px;
-            --radius-md: 16px;
-            --radius-lg: 20px;
-            --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
-            --max-width: 720px;
+            --glass-border: rgba(255, 255, 255, 0.5);
         }
 
         [data-theme="dark"] {
             --bg-body: #0a0a0f;
             --bg-card: rgba(255, 255, 255, 0.05);
-            --bg-card-hover: rgba(255, 255, 255, 0.10);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.75);
             --text-muted: rgba(255, 255, 255, 0.4);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-            --card-hover-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            --glass-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
             --glass-border: rgba(255, 255, 255, 0.06);
             --pinned-tag-bg: rgba(255, 255, 255, 0.06);
             --pinned-tag-text: rgba(255, 255, 255, 0.4);
@@ -57,88 +52,105 @@
         }
 
         body {
-            font-family: var(--font-family);
+            font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-body);
             color: var(--text-primary);
-            padding: 20px 16px 60px;
-            max-width: var(--max-width);
-            margin: 0 auto;
             min-height: 100vh;
-            transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            padding: 20px 16px 60px;
+            transition: background 0.5s ease, color 0.5s ease;
             -webkit-font-smoothing: antialiased;
         }
 
-        .nav-bar {
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        /* ===== 顶部 ===== */
+        .header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
-            padding: 8px 0 16px;
-            border-bottom: 1px solid var(--card-border);
-            margin-bottom: 20px;
+            padding: 12px 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
             transition: border-color 0.5s ease;
         }
 
-        .nav-bar .back-link {
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-left .back-link {
             color: var(--text-secondary);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
             padding: 6px 14px;
             border-radius: 30px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            transition: all var(--transition-base);
-            flex-shrink: 0;
-        }
-        .nav-bar .back-link:hover {
             background: var(--bg-card);
-            border-color: var(--accent);
-            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
         }
-
-        .nav-bar .nav-title {
+        .header-left .back-link:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+        }
+        .header-left .logo {
             font-size: 18px;
             font-weight: 700;
-            flex: 1;
-            text-align: center;
             color: var(--text-primary);
             transition: color 0.5s ease;
         }
-        .nav-bar .nav-title .sub {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 2px;
-            transition: color 0.5s ease;
+        .header-left .logo span {
+            color: var(--accent);
         }
 
-        .nav-bar .theme-toggle {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 30px;
-            padding: 6px 12px;
+            padding: 6px 14px;
             cursor: pointer;
             font-size: 14px;
             color: var(--text-secondary);
             transition: all var(--transition-base);
             font-family: inherit;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
-        .nav-bar .theme-toggle:hover {
-            background: var(--bg-card);
+        .theme-toggle:hover {
+            background: var(--bg-card-hover);
             border-color: var(--accent);
-            color: var(--text-primary);
         }
-        .nav-bar .theme-toggle:active {
+        .theme-toggle:active {
             transform: scale(0.93);
         }
+        .theme-toggle .theme-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
 
+        .count-badge {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            transition: all 0.5s ease;
+        }
+
+        /* ===== 列表 ===== */
         .feed-list {
             display: flex;
             flex-direction: column;
@@ -147,64 +159,57 @@
 
         .feed-item {
             background: var(--bg-card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: 18px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px 22px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            box-shadow: var(--card-shadow);
+            box-shadow: var(--shadow-card);
             transition: all var(--transition-spring);
             cursor: pointer;
-            position: relative;
         }
         .feed-item:hover {
-            box-shadow: var(--card-hover-shadow);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
             border-color: var(--accent);
         }
         .feed-item:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
             transition-duration: 0.08s;
         }
 
-        .feed-header {
+        .feed-item .feed-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 8px;
         }
-        .feed-header .avatar {
-            width: 40px;
-            height: 40px;
+        .feed-item .feed-header .avatar {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            overflow: hidden;
-            background: var(--bg-body);
-            flex-shrink: 0;
-            border: 1px solid var(--card-border);
-        }
-        .feed-header .avatar img {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
-        .feed-header .info {
+        .feed-item .feed-header .meta {
             flex: 1;
             min-width: 0;
         }
-        .feed-header .info .name {
+        .feed-item .feed-header .meta .name {
             font-size: 15px;
             font-weight: 600;
             color: var(--text-primary);
             transition: color 0.5s ease;
         }
-        .feed-header .info .time {
+        .feed-item .feed-header .meta .date {
             font-size: 12px;
             color: var(--text-muted);
-            margin-top: 1px;
             transition: color 0.5s ease;
         }
 
-        .feed-title {
+        .feed-item .feed-title {
             font-size: 17px;
             font-weight: 600;
             color: var(--text-primary);
@@ -215,7 +220,7 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        .feed-title .pinned-tag {
+        .feed-item .feed-title .pinned-tag {
             font-size: 11px;
             font-weight: 500;
             color: var(--pinned-tag-text);
@@ -226,169 +231,86 @@
             transition: all 0.5s ease;
         }
 
-        .feed-body {
+        .feed-item .feed-content {
             font-size: 15px;
             line-height: 1.8;
             color: var(--text-secondary);
+            transition: color 0.5s ease;
             white-space: pre-wrap;
             word-break: break-word;
+        }
+        .feed-item .feed-content img {
+            max-width: 100%;
+            border-radius: var(--radius-md);
+            margin: 6px 0;
+        }
+
+        .feed-item .feed-media {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 12px;
+        }
+        .feed-item .feed-media.one {
+            grid-template-columns: 1fr;
+        }
+        .feed-item .feed-media.two {
+            grid-template-columns: 1fr 1fr;
+        }
+        .feed-item .feed-media img,
+        .feed-item .feed-media video {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            background: var(--bg-body);
+            cursor: pointer;
+            transition: transform var(--transition-base);
+        }
+        .feed-item .feed-media img:hover,
+        .feed-item .feed-media video:hover {
+            transform: scale(1.02);
+        }
+
+        .feed-item .feed-modified {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
             transition: color 0.5s ease;
         }
-        .feed-body:empty {
-            display: none;
-        }
-        .feed-body img {
-            max-width: 100%;
-            border-radius: var(--radius-sm);
-            margin: 4px 0;
-        }
 
-        .feed-images {
-            display: grid;
-            gap: 4px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            margin-top: 8px;
-        }
-        .feed-images.single {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
-        .feed-images.single img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            display: block;
-            background: var(--bg-body);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-        }
-        .feed-images.multi {
-            grid-template-columns: repeat(3, 1fr);
-            grid-auto-rows: 1fr;
-        }
-        .feed-images.multi.two {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .feed-images.multi img {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            display: block;
-            background: var(--bg-body);
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .feed-videos {
-            display: grid;
-            gap: 4px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            margin-top: 8px;
-            background: #000;
-        }
-        .feed-videos.single {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
-        .feed-videos.single video {
-            width: 100%;
-            max-height: 400px;
-            display: block;
-            border-radius: var(--radius-sm);
-            background: #000;
-        }
-        .feed-videos.multi {
-            grid-template-columns: repeat(3, 1fr);
-            grid-auto-rows: 1fr;
-        }
-        .feed-videos.multi video {
-            width: 100%;
-            height: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            display: block;
-            background: #000;
-            border-radius: 4px;
-        }
-
-        .feed-tags {
-            margin-top: 10px;
+        .feed-item .feed-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;
+            margin-top: 10px;
         }
-        .feed-tags .tag {
-            background: var(--glass-bg);
-            padding: 2px 10px;
-            border-radius: 12px;
+        .feed-item .feed-tags .tag {
             font-size: 12px;
             color: var(--text-muted);
-            border: 1px solid var(--card-border);
+            background: var(--bg-body);
+            padding: 2px 12px;
+            border-radius: 12px;
             transition: all 0.5s ease;
         }
 
-        .badge-pin,
-        .badge-modified {
-            font-size: 12px;
-            margin-left: 6px;
-        }
-        .badge-pin {
-            color: var(--pinned-tag-text);
-        }
-        .badge-modified {
-            color: var(--accent);
-        }
-
-        .empty-state,
-        .loading-state {
+        /* ===== 空状态 ===== */
+        .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: var(--text-muted);
             background: var(--bg-card);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             transition: all 0.5s ease;
         }
-        .loading-state .spinner {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid var(--card-border);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .empty-state .empty-icon {
+            font-size: 40px;
             margin-bottom: 8px;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
 
-        .retry-btn {
-            padding: 8px 20px;
-            border-radius: 30px;
-            border: 1px solid var(--card-border);
-            background: var(--glass-bg);
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--text-secondary);
-            transition: all var(--transition-base);
-            font-family: inherit;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-        .retry-btn:hover {
-            background: var(--bg-card);
-            border-color: var(--accent);
-            color: var(--text-primary);
-        }
-
+        /* ===== 图片模态框 ===== */
         .img-modal {
             display: none;
             position: fixed;
@@ -398,7 +320,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             z-index: 9999;
             align-items: center;
             justify-content: center;
@@ -409,11 +330,10 @@
             display: flex;
         }
         .img-modal img {
-            max-width: 95%;
-            max-height: 92%;
+            max-width: 90%;
+            max-height: 85%;
             object-fit: contain;
             border-radius: var(--radius-sm);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
             animation: modalZoom 0.35s cubic-bezier(0.22, 1, 0.36, 1);
         }
         @keyframes modalZoom {
@@ -433,79 +353,96 @@
             transform: translateX(-50%);
             color: rgba(255, 255, 255, 0.3);
             font-size: 13px;
-            letter-spacing: 0.5px;
-            pointer-events: none;
         }
 
-        @media (max-width: 480px) {
+        /* ===== 响应式 ===== */
+        @media (max-width: 600px) {
             body {
-                padding: 12px 12px 40px;
+                padding: 12px 10px 40px;
+            }
+            .header {
+                padding: 8px 0 12px;
+            }
+            .header-left .logo {
+                font-size: 15px;
+            }
+            .header-left .back-link {
+                font-size: 12px;
+                padding: 4px 10px;
+            }
+            .theme-toggle {
+                padding: 4px 10px;
+                font-size: 12px;
+            }
+            .theme-toggle .theme-label {
+                font-size: 10px;
+            }
+            .count-badge {
+                font-size: 11px;
+                padding: 3px 10px;
             }
             .feed-item {
                 padding: 14px 16px;
             }
-            .feed-header .avatar {
-                width: 34px;
-                height: 34px;
-            }
-            .feed-body {
-                font-size: 14px;
-            }
-            .feed-title {
+            .feed-item .feed-title {
                 font-size: 15px;
             }
-            .feed-images.multi {
-                gap: 3px;
+            .feed-item .feed-content {
+                font-size: 14px;
             }
-            .feed-images.single img {
-                max-height: 280px;
+            .feed-item .feed-media {
+                grid-template-columns: repeat(3, 1fr);
             }
-            .feed-videos.single video {
-                max-height: 280px;
+            .feed-item .feed-media.one {
+                grid-template-columns: 1fr;
             }
-            .nav-bar .nav-title {
-                font-size: 16px;
+            .feed-item .feed-media.two {
+                grid-template-columns: 1fr 1fr;
             }
-            .nav-bar .back-link {
-                font-size: 13px;
-                padding: 4px 10px;
-            }
-            .nav-bar .theme-toggle {
-                padding: 4px 10px;
-                font-size: 12px;
+            .feed-item .feed-header .avatar {
+                width: 36px;
+                height: 36px;
             }
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
+        @media (max-width: 400px) {
+            .feed-item .feed-title {
+                font-size: 14px;
+            }
+            .feed-item .feed-content {
+                font-size: 13px;
             }
         }
     </style>
 </head>
 <body>
 
-    <nav class="nav-bar">
-        <a class="back-link" href="index.html">← 返回</a>
-        <div class="nav-title">
-            🦔 开发者的小朋友圈
-            <span class="sub">偶尔写写，记录一些瞬间</span>
-        </div>
-        <button class="theme-toggle" id="themeToggle" title="切换主题">
-            <span id="themeIcon">🌙</span>
-        </button>
-    </nav>
+    <div class="container">
 
-    <div id="feedList" class="feed-list">
-        <div class="loading-state">
-            <div class="spinner"></div>
-            <div>加载中...</div>
+        <header class="header">
+            <div class="header-left">
+                <a class="back-link" href="index.html">← 返回</a>
+                <div class="logo">🦔 <span>朋友圈</span></div>
+            </div>
+            <div class="header-right">
+                <span class="count-badge" id="countBadge">0 条</span>
+                <button class="theme-toggle" id="themeToggle">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-label" id="themeLabel">深色</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="feed-list" id="feedList">
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <div>加载中...</div>
+            </div>
         </div>
+
     </div>
 
+    <!-- ===== 图片模态框 ===== -->
     <div class="img-modal" id="imgModal" onclick="closeImgModal()">
         <img id="modalImg" src="" alt="查看大图" />
         <div class="close-hint">点击任意处关闭</div>
@@ -517,32 +454,38 @@
         // ================================================================
         const MANAGER_REPO = 'xiaociwei01/CiweiManager';
         const CONFIG_PATH = 'config.json';
-        const THEME_KEY = 'ciwei_friendquan_theme';
-        const AVATAR_URL = 'https://xiaociwei01.github.io/CiweiHome/ciweitouxiang.jpg';
-        const NICKNAME = '小刺猬';
+        const THEME_KEY = 'ciwei_home_theme';
+        const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
         const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
 
+        // ================================================================
+        // DOM 引用
+        // ================================================================
         const $ = id => document.getElementById(id);
 
         // ================================================================
         // 工具函数
         // ================================================================
-        function buildCdnUrl(path, sha = 'main') {
+        function buildCdnUrl(path) {
             if (!path) return '';
             if (path.startsWith('http://') || path.startsWith('https://')) return path;
-            if (path === 'ciweitouxiang.jpg') {
-                return AVATAR_URL;
+            if (path === DEFAULT_AVATAR) {
+                return `https://xiaociwei01.github.io/CiweiHome/${DEFAULT_AVATAR}`;
             }
-            return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@${sha}/${path}`;
+            return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${path}`;
         }
 
-        function formatDate(dateStr) {
+        function formatDateToMinute(dateStr) {
             if (!dateStr) return '未知日期';
             try {
                 const d = new Date(dateStr);
                 if (isNaN(d.getTime())) return dateStr;
-                const pad = n => String(n).padStart(2, '0');
-                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const h = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return `${y}-${m}-${day} ${h}:${min}`;
             } catch {
                 return dateStr;
             }
@@ -553,7 +496,7 @@
             let html = text
                 .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
                     const fullUrl = url.startsWith('http') ? url : buildCdnUrl(url);
-                    return `<img src="${fullUrl}" alt="图片" loading="lazy" />`;
+                    return `<img src="${fullUrl}" alt="图片" loading="lazy" onclick="openImgModal(this.src)" />`;
                 })
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br />');
@@ -561,7 +504,7 @@
         }
 
         // ================================================================
-        // 主题切换
+        // 主题
         // ================================================================
         function getPreferredTheme() {
             const saved = localStorage.getItem(THEME_KEY);
@@ -572,30 +515,36 @@
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem(THEME_KEY, theme);
-            $('themeIcon').textContent = theme === 'dark' ? '☀️' : '🌙';
+            const icon = $('themeIcon');
+            const label = $('themeLabel');
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                label.textContent = '浅色';
+            } else {
+                icon.textContent = '🌙';
+                label.textContent = '深色';
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
         }
 
         applyTheme(getPreferredTheme());
-
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (!localStorage.getItem(THEME_KEY)) {
                 applyTheme(e.matches ? 'dark' : 'light');
             }
         });
-
-        $('themeToggle').addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme') || 'light';
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-        });
+        $('themeToggle').addEventListener('click', toggleTheme);
 
         // ================================================================
         // 加载数据
         // ================================================================
-        async function loadPosts() {
-            const container = $('feedList');
-            container.innerHTML =
-                `<div class="loading-state"><div class="spinner"></div><div>加载中...</div></div>`;
+        let configData = null;
 
+        async function loadConfig() {
             try {
                 const cdnUrl =
                     `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${Date.now()}`;
@@ -604,37 +553,39 @@
                     const rawUrl =
                         `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${Date.now()}`;
                     res = await fetch(rawUrl, { cache: 'no-store' });
-                    if (!res.ok) throw new Error('加载配置失败');
+                    if (!res.ok) throw new Error('加载失败');
                 }
-                const data = await res.json();
-                const friends = data.friends || [];
-
-                if (friends.length === 0) {
-                    container.innerHTML =
-                        `<div class="empty-state"><div style="font-size:32px;margin-bottom:8px;">📭</div><div>还没有动态，写一篇吧 ✍️</div></div>`;
-                    return;
-                }
-
-                renderFeed(friends);
+                configData = await res.json();
+                renderFriends();
             } catch (err) {
                 console.warn('加载失败', err);
-                container.innerHTML = `
-                            <div class="empty-state">
-                                <div style="font-size:32px;margin-bottom:8px;">⚠️</div>
-                                <div>加载失败，请检查网络或稍后重试</div>
-                                <div style="margin-top:14px;">
-                                    <button class="retry-btn" onclick="loadPosts()">🔄 重试</button>
-                                </div>
-                            </div>
-                        `;
+                $('feedList').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">⚠️</div>
+                            <div>加载失败，请稍后重试</div>
+                        </div>
+                    `;
             }
         }
 
         // ================================================================
-        // 渲染朋友圈
+        // 渲染
         // ================================================================
-        function renderFeed(friends) {
+        function renderFriends() {
             const container = $('feedList');
+            const friends = configData?.friends || [];
+
+            $('countBadge').textContent = friends.length + ' 条';
+
+            if (friends.length === 0) {
+                container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📭</div>
+                            <div>暂无动态</div>
+                        </div>
+                    `;
+                return;
+            }
 
             const sorted = [...friends].sort((a, b) => {
                 if (a.pinned && !b.pinned) return -1;
@@ -643,82 +594,70 @@
             });
 
             let html = '';
-            sorted.forEach((post) => {
-                const pinnedTag = post.pinned ? '<span class="pinned-tag">🔝 置顶</span>' : '';
-                const contentHtml = renderMarkdown(post.content || '');
+            sorted.forEach((friend) => {
+                const pinnedTag = friend.pinned ? '<span class="pinned-tag">🔝 置顶</span>' : '';
+                const contentHtml = renderMarkdown(friend.content || '');
+                const displayDate = formatDateToMinute(friend.date);
 
-                const images = (post.images || []).map(url => buildCdnUrl(url));
-                const videos = (post.videos || []).map(url => buildCdnUrl(url));
+                const allMedia = [...(friend.images || []), ...(friend.videos || [])];
+                let mediaHtml = '';
+                if (allMedia.length > 0) {
+                    const count = allMedia.length;
+                    let gridClass = 'one';
+                    if (count === 2) gridClass = 'two';
+                    else if (count >= 3) gridClass = '';
 
-                let imagesHtml = '';
-                if (images.length > 0) {
-                    const cls = images.length === 1 ? 'single' : (images.length === 2 ? 'multi two' : 'multi');
-                    const imgs = images.map(src =>
-                        `<img src="${src}" alt="图片" onclick="openImgModal(event, this.src)" loading="lazy" />`
-                    ).join('');
-                    imagesHtml = `<div class="feed-images ${cls}">${imgs}</div>`;
+                    const items = allMedia.slice(0, 6).map(url => {
+                        const fullUrl = buildCdnUrl(url);
+                        const isVideo = url.match(/\.(mp4|mov|webm)$/i);
+                        if (isVideo) {
+                            return `<video src="${fullUrl}" muted playsinline loading="lazy"></video>`;
+                        }
+                        return `<img src="${fullUrl}" alt="媒体" loading="lazy" onclick="openImgModal(this.src)" />`;
+                    }).join('');
+
+                    mediaHtml = `<div class="feed-media ${gridClass}">${items}</div>`;
+                    if (count > 6) {
+                        mediaHtml +=
+                            `<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">+${count - 6} 更多</div>`;
+                    }
                 }
 
-                let videosHtml = '';
-                if (videos.length > 0) {
-                    const cls = videos.length === 1 ? 'single' : 'multi';
-                    const vids = videos.map(src =>
-                        `<video controls src="${src}" preload="metadata" playsinline></video>`
-                    ).join('');
-                    videosHtml = `<div class="feed-videos ${cls}">${vids}</div>`;
-                }
+                const modifiedHtml = friend.modified ?
+                    `<div class="feed-modified">✏️ 已修改 ${formatDateToMinute(friend.modified)}</div>` : '';
 
-                const tagsHtml = post.tags && post.tags.length > 0 ?
-                    `<div class="feed-tags">${post.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>` :
-                    '';
-
-                const modifiedHtml = post.modified ?
-                    `<span class="badge-modified">✏️ 已修改</span>` :
+                const tagsHtml = friend.tags && friend.tags.length ?
+                    `<div class="feed-tags">${friend.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>` :
                     '';
 
                 html += `
-                            <div class="feed-item" data-file="${post.id || ''}">
-                                <div class="feed-header">
-                                    <div class="avatar"><img src="${AVATAR_URL}" alt="头像" loading="lazy" /></div>
-                                    <div class="info">
-                                        <div class="name">${NICKNAME}</div>
-                                        <div class="time">${formatDate(post.date)}</div>
-                                    </div>
-                                </div>
-                                <div class="feed-title">
-                                    ${post.title || '无标题'} ${pinnedTag}
-                                </div>
-                                <div class="feed-body">${contentHtml}</div>
-                                ${imagesHtml}
-                                ${videosHtml}
-                                ${tagsHtml}
-                                <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-                                    ${post.pinned ? '<span class="badge-pin">📌 置顶</span>' : ''}
-                                    ${modifiedHtml}
+                        <div class="feed-item" onclick="window.open('${DETAIL_PAGE}?file=${encodeURIComponent(friend.id || '')}', '_blank')">
+                            <div class="feed-header">
+                                <img class="avatar" src="${buildCdnUrl(configData?.site?.avatar || DEFAULT_AVATAR)}" alt="头像" />
+                                <div class="meta">
+                                    <div class="name">${configData?.site?.title || '小刺猬'}</div>
+                                    <div class="date">${displayDate}</div>
                                 </div>
                             </div>
-                        `;
+                            <div class="feed-title">
+                                ${friend.title || '无标题'} ${pinnedTag}
+                            </div>
+                            <div class="feed-content">${contentHtml}</div>
+                            ${mediaHtml}
+                            ${modifiedHtml}
+                            ${tagsHtml}
+                        </div>
+                    `;
             });
 
             container.innerHTML = html;
-
-            // 点击卡片跳转详情
-            document.querySelectorAll('.feed-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (e.target.closest('.feed-images') || e.target.closest('.feed-videos')) return;
-                    const filename = this.dataset.file;
-                    if (filename) {
-                        window.open(`${DETAIL_PAGE}?file=${encodeURIComponent(filename)}`, '_blank');
-                    }
-                });
-            });
         }
 
         // ================================================================
-        // 图片查看
+        // 图片模态框
         // ================================================================
-        function openImgModal(event, src) {
-            event.stopPropagation();
+        function openImgModal(src) {
+            if (!src) return;
             const modal = $('imgModal');
             const img = $('modalImg');
             img.src = src;
@@ -727,7 +666,8 @@
         }
 
         function closeImgModal() {
-            $('imgModal').classList.remove('active');
+            const modal = $('imgModal');
+            modal.classList.remove('active');
             document.body.style.overflow = '';
         }
 
@@ -738,10 +678,8 @@
         // ================================================================
         // 启动
         // ================================================================
-        document.addEventListener('DOMContentLoaded', loadPosts);
-
-        console.log('🦔 FriendQuan 已启动 (改造版)');
-        console.log('📦 配置仓库:', MANAGER_REPO);
+        loadConfig();
+        console.log('🦔 FriendQuan 已启动 (修复版)');
     </script>
 
 </body>

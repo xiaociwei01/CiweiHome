@@ -5,54 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>刺猬的家</title>
 
+    <!-- Google Font (Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
 
+    <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
 
     <style>
+        /* ================================================================
+               CSS 变量：浅色 / 深色模式
+            ================================================================ */
         :root {
+            /* 浅色模式 (默认) */
             --bg-body: #f0f2f5;
             --bg-hero: #e8ecf0;
             --text-primary: #1a1a2e;
             --text-secondary: #444;
             --text-muted: #888;
+            --text-inverse: #fff;
+
             --card-bg: rgba(255, 255, 255, 0.75);
             --card-border: rgba(255, 255, 255, 0.5);
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
             --card-hover-shadow: 0 16px 48px rgba(0, 0, 0, 0.10);
+
             --glass-bg: rgba(255, 255, 255, 0.5);
             --glass-border: rgba(255, 255, 255, 0.4);
+
             --accent: #58a6ff;
             --accent-glow: rgba(88, 166, 255, 0.25);
             --pinned-tag-bg: rgba(0, 0, 0, 0.06);
             --pinned-tag-text: #888;
+
             --radius-md: 16px;
             --radius-lg: 24px;
             --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
             --max-width: 1024px;
             --font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
         }
 
+        /* 深色模式 */
         [data-theme="dark"] {
             --bg-body: #0a0a0f;
             --bg-hero: #0d0d16;
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.75);
             --text-muted: rgba(255, 255, 255, 0.4);
+            --text-inverse: #1a1a2e;
+
             --card-bg: rgba(255, 255, 255, 0.05);
             --card-border: rgba(255, 255, 255, 0.06);
             --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             --card-hover-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+
             --glass-bg: rgba(255, 255, 255, 0.04);
             --glass-border: rgba(255, 255, 255, 0.06);
+
             --pinned-tag-bg: rgba(255, 255, 255, 0.06);
             --pinned-tag-text: rgba(255, 255, 255, 0.4);
         }
 
+        /* ================================================================
+               全局重置
+            ================================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -74,6 +94,9 @@
             overflow-x: hidden;
         }
 
+        /* ================================================================
+               动态光晕背景
+            ================================================================ */
         .bg-glow {
             position: fixed;
             top: 0;
@@ -115,6 +138,9 @@
             background: radial-gradient(circle, rgba(255, 180, 60, 0.12) 0%, transparent 70%);
         }
 
+        /* ================================================================
+               容器
+            ================================================================ */
         .container {
             position: relative;
             z-index: 1;
@@ -123,6 +149,9 @@
             padding: 0 24px 60px;
         }
 
+        /* ================================================================
+               顶部导航
+            ================================================================ */
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -185,6 +214,7 @@
             transform: translateY(-1px);
         }
 
+        /* 主题切换按钮 */
         .theme-toggle {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -215,6 +245,9 @@
             font-weight: 500;
         }
 
+        /* ================================================================
+               Hero 区域
+            ================================================================ */
         .hero {
             padding: 40px 0 48px;
             text-align: center;
@@ -305,6 +338,9 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
+        /* ================================================================
+               区块标题
+            ================================================================ */
         .section-title {
             font-size: 14px;
             font-weight: 600;
@@ -319,6 +355,9 @@
             opacity: 0.6;
         }
 
+        /* ================================================================
+               作品网格
+            ================================================================ */
         .works-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -482,6 +521,9 @@
             border-color: var(--text-secondary);
         }
 
+        /* ================================================================
+               朋友圈板块
+            ================================================================ */
         .friends-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -619,6 +661,9 @@
             transition: color 0.5s ease;
         }
 
+        /* ================================================================
+               空状态
+            ================================================================ */
         .empty-state {
             text-align: center;
             padding: 32px 20px;
@@ -638,6 +683,9 @@
             font-size: 14px;
         }
 
+        /* ================================================================
+               页脚
+            ================================================================ */
         .footer {
             margin-top: 48px;
             padding-top: 20px;
@@ -672,6 +720,9 @@
             }
         }
 
+        /* ================================================================
+               图片查看模态框
+            ================================================================ */
         .img-modal {
             display: none;
             position: fixed;
@@ -720,6 +771,9 @@
             pointer-events: none;
         }
 
+        /* ================================================================
+               响应式调整
+            ================================================================ */
         @media (max-width: 600px) {
             .container {
                 padding: 0 16px 40px;
@@ -815,6 +869,9 @@
             }
         }
 
+        /* ================================================================
+               GSAP 初始隐藏 (滚动入场)
+            ================================================================ */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
@@ -824,6 +881,9 @@
             transform: scale(0.92) translateY(20px);
         }
 
+        /* ================================================================
+               减少动画偏好
+            ================================================================ */
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -842,10 +902,15 @@
 </head>
 <body>
 
+    <!-- ===== 动态光晕背景 ===== -->
     <div class="bg-glow"></div>
 
+    <!-- ================================================================ -->
+    <!-- 容器 -->
+    <!-- ================================================================ -->
     <div class="container">
 
+        <!-- ===== 顶部导航 ===== -->
         <header class="header">
             <div class="header-left">
                 <div class="logo">🦔 <span>刺猬</span>的家</div>
@@ -860,6 +925,7 @@
             </div>
         </header>
 
+        <!-- ===== Hero 区域 ===== -->
         <section class="hero">
             <img class="hero-avatar reveal" id="heroAvatar" src="" alt="头像" loading="lazy" />
             <h1 class="hero-title reveal">
@@ -875,32 +941,38 @@
             </div>
         </section>
 
+        <!-- ===== 作品区 ===== -->
         <div class="section-title reveal">
             📦 作品 <span class="count" id="worksCount">(0)</span>
         </div>
         <div class="works-grid" id="worksGrid">
+            <!-- 由 JS 动态渲染 -->
             <div class="empty-state">
                 <div class="empty-icon">📭</div>
                 <div class="empty-text">暂无作品</div>
             </div>
         </div>
 
+        <!-- ===== 朋友圈区 ===== -->
         <div class="section-title reveal" style="margin-top:56px;">
             📝 朋友圈 <span class="count" id="friendsCount">(0)</span>
         </div>
         <div class="friends-grid" id="friendsGrid">
+            <!-- 由 JS 动态渲染 -->
             <div class="empty-state">
                 <div class="empty-icon">📭</div>
                 <div class="empty-text">暂无动态</div>
             </div>
         </div>
 
+        <!-- ===== 页脚 ===== -->
         <div class="footer reveal">
             <span class="heart">✦</span> 小刺猬 · 2026 <span class="heart">✦</span>
         </div>
 
     </div>
 
+    <!-- ===== 图片查看模态框 ===== -->
     <div class="img-modal" id="imgModal" onclick="closeImgModal()">
         <img id="modalImg" src="" alt="查看大图" />
         <div class="close-hint">点击任意处关闭</div>
@@ -913,6 +985,8 @@
         const MANAGER_REPO = 'xiaociwei01/CiweiManager';
         const CONFIG_PATH = 'config.json';
         const THEME_KEY = 'ciwei_home_theme';
+
+        // 默认头像 (CiweiHome 仓库里的)
         const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
 
         // ================================================================
@@ -921,31 +995,29 @@
         const $ = id => document.getElementById(id);
 
         // ================================================================
-        // 工具函数（修复：头像路径正确解析）
+        // 工具函数
         // ================================================================
         function buildCdnUrl(path, sha = 'main') {
             if (!path) return '';
-            // 如果已经是完整 URL，直接返回
             if (path.startsWith('http://') || path.startsWith('https://')) return path;
-
-            // 如果是默认头像，从 CiweiHome 仓库加载（修复关键）
+            // 如果是默认头像，从 CiweiHome 仓库加载
             if (path === DEFAULT_AVATAR) {
                 return `https://xiaociwei01.github.io/CiweiHome/${DEFAULT_AVATAR}`;
             }
-
-            // 其他情况：从 CiweiManager 仓库加载
-            // 注意：如果路径以 images/ 开头，直接拼接 CDN
             return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@${sha}/${path}`;
         }
 
-        function formatDate(dateStr) {
+        function formatDateToMinute(dateStr) {
             if (!dateStr) return '未知日期';
             try {
                 const d = new Date(dateStr);
                 if (isNaN(d.getTime())) return dateStr;
-                // 修复：只显示到分钟，不显示秒
-                const pad = n => String(n).padStart(2, '0');
-                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const h = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return `${y}-${m}-${day} ${h}:${min}`;
             } catch {
                 return dateStr;
             }
@@ -953,6 +1025,7 @@
 
         function renderMarkdown(text) {
             if (!text) return '';
+            // 简单的 Markdown 渲染：图片、加粗、换行
             let html = text
                 .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
                     const fullUrl = url.startsWith('http') ? url : buildCdnUrl(url);
@@ -986,18 +1059,22 @@
             }
         }
 
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        // 初始化主题
         applyTheme(getPreferredTheme());
 
+        // 监听系统主题变化
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
             if (!localStorage.getItem(THEME_KEY)) {
                 applyTheme(e.matches ? 'dark' : 'light');
             }
         });
 
-        $('themeToggle').addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme') || 'light';
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-        });
+        $('themeToggle').addEventListener('click', toggleTheme);
 
         // ================================================================
         // 加载配置数据
@@ -1007,10 +1084,12 @@
 
         async function loadConfig() {
             try {
+                // 优先从 jsDelivr 加载
                 const cdnUrl =
                     `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${Date.now()}`;
                 let res = await fetch(cdnUrl, { cache: 'no-store' });
                 if (!res.ok) {
+                    // 回退 raw
                     const rawUrl =
                         `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${Date.now()}`;
                     res = await fetch(rawUrl, { cache: 'no-store' });
@@ -1019,9 +1098,11 @@
                 configData = await res.json();
                 console.log('✅ 配置加载成功', configData);
                 renderAll();
+                // 启动 GSAP 入场动画
                 initGSAP();
             } catch (err) {
                 console.warn('加载配置失败，使用默认数据', err);
+                // 使用默认数据（让页面不至于空白）
                 configData = {
                     site: {
                         title: '刺猬',
@@ -1048,25 +1129,32 @@
             renderWorks();
             renderFriends();
             updateCounts();
+            // 初始化平台切换器状态
             initPlatformSwitchers();
         }
 
+        // ----- 网站信息 -----
         function renderSite() {
             const site = configData.site || {};
+
+            // 标题
             $('heroTitle').textContent = site.title || '刺猬';
             $('headerTagline').textContent = site.subtitle || '独立开发者';
             $('heroSub').textContent = site.subtitle || '独立开发者';
 
+            // 头像
             const avatarPath = site.avatar || DEFAULT_AVATAR;
             $('heroAvatar').src = buildCdnUrl(avatarPath);
             $('heroAvatar').alt = site.title + '的头像';
 
+            // 签名 (支持 Markdown)
             if (site.signature) {
                 $('heroSignature').innerHTML = renderMarkdown(site.signature);
             } else {
                 $('heroSignature').textContent = '本站点使用 HTML+CSS+JavaScript 语言开发。';
             }
 
+            // 社交
             const wechat = site.wechat || 'As08_0831';
             const qq = site.qq || '2586279833';
             $('socialWechat').textContent = '💬 微信 ' + wechat;
@@ -1081,20 +1169,22 @@
                 e.preventDefault();
                 alert('QQ: ' + qq);
             };
+
+            // GitHub 链接保持不变
         }
 
+        // ----- 作品 -----
         function renderWorks() {
             const container = $('worksGrid');
             const works = (configData.works || []).filter(w => w.enabled !== false);
 
             if (works.length === 0) {
-                container.innerHTML =
-                    `
-                            <div class="empty-state" style="grid-column:1/-1;">
-                                <div class="empty-icon">📭</div>
-                                <div class="empty-text">暂无作品</div>
-                            </div>
-                        `;
+                container.innerHTML = `
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">暂无作品</div>
+                        </div>
+                    `;
                 return;
             }
 
@@ -1105,6 +1195,7 @@
                 const fallbackLink = work.fallbackLink || '#';
                 const workId = work.id || 'work-' + index;
 
+                // 存储链接配置供 JS 使用
                 linkConfig[workId] = {
                     primary: primaryLink,
                     fallback: fallbackLink,
@@ -1112,64 +1203,72 @@
                 };
 
                 html += `
-                            <div class="work-card reveal" data-work-id="${workId}">
-                                ${coverUrl ? `<img class="work-cover" src="${coverUrl}" alt="${work.name || '作品封面'}" loading="lazy" onclick="openImgModal(this.src)" />` : ''}
-                                <div class="work-name">${work.name || '未命名作品'}</div>
-                                ${work.tags ? `<div class="work-tags">${work.tags}</div>` : ''}
-                                ${work.desc ? `<div class="work-desc">${work.desc}</div>` : ''}
-                                <div class="work-actions">
-                                    <a class="work-link" id="work-link-${workId}" href="${primaryLink || fallbackLink}" target="_blank">
-                                        🚀 进入
-                                    </a>
-                                    ${primaryLink || fallbackLink !== '#' ? `
-                                        <button class="platform-switcher" data-work-id="${workId}" onclick="togglePlatform('${workId}')" title="点击切换平台">
-                                            <span class="dot netlify" id="dot-${workId}"></span>
-                                            <span class="label" id="label-${workId}">${primaryLink ? 'Netlify' : 'GitHub Pages'}</span>
-                                            <span style="font-size:10px;color:var(--text-muted);">⇄</span>
-                                        </button>
-                                    ` : ''}
-                                </div>
-                                ${primaryLink && fallbackLink && fallbackLink !== '#' ? `
-                                    <div style="margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);">
-                                        <span>📡 <span id="primary-label-${workId}">主: ${primaryLink ? 'Netlify' : 'GitHub Pages'}</span></span>
-                                        <a href="#" class="fallback-link" onclick="directNavigate('${workId}', 'fallback'); return false;">🔁 备用: ${primaryLink ? 'GitHub Pages' : 'Netlify'}</a>
-                                    </div>
+                        <div class="work-card reveal" data-work-id="${workId}">
+                            ${coverUrl ? `<img class="work-cover" src="${coverUrl}" alt="${work.name || '作品封面'}" loading="lazy" onclick="openImgModal(this.src)" />` : ''}
+                            <div class="work-name">${work.name || '未命名作品'}</div>
+                            ${work.tags ? `<div class="work-tags">${work.tags}</div>` : ''}
+                            ${work.desc ? `<div class="work-desc">${work.desc}</div>` : ''}
+                            <div class="work-actions">
+                                <a class="work-link" id="work-link-${workId}" href="${primaryLink || fallbackLink}" target="_blank">
+                                    🚀 进入
+                                </a>
+                                ${primaryLink || fallbackLink !== '#' ? `
+                                    <button class="platform-switcher" data-work-id="${workId}" onclick="togglePlatform('${workId}')" title="点击切换平台">
+                                        <span class="dot netlify" id="dot-${workId}"></span>
+                                        <span class="label" id="label-${workId}">${primaryLink ? 'Netlify' : 'GitHub Pages'}</span>
+                                        <span style="font-size:10px;color:var(--text-muted);">⇄</span>
+                                    </button>
                                 ` : ''}
                             </div>
-                        `;
+                            ${primaryLink && fallbackLink && fallbackLink !== '#' ? `
+                                <div style="margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);">
+                                    <span>📡 <span id="primary-label-${workId}">主: ${primaryLink ? 'Netlify' : 'GitHub Pages'}</span></span>
+                                    <a href="#" class="fallback-link" onclick="directNavigate('${workId}', 'fallback'); return false;">🔁 备用: ${primaryLink ? 'GitHub Pages' : 'Netlify'}</a>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
             });
 
             container.innerHTML = html;
         }
 
+        // ----- 朋友圈 -----
         function renderFriends() {
             const container = $('friendsGrid');
             const friends = configData.friends || [];
 
             if (friends.length === 0) {
-                container.innerHTML =
-                    `
-                            <div class="empty-state" style="grid-column:1/-1;">
-                                <div class="empty-icon">📭</div>
-                                <div class="empty-text">暂无动态</div>
-                            </div>
-                        `;
+                container.innerHTML = `
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">暂无动态</div>
+                        </div>
+                    `;
                 return;
             }
 
+            // 排序：置顶优先
             const sorted = [...friends].sort((a, b) => {
                 if (a.pinned && !b.pinned) return -1;
                 if (!a.pinned && b.pinned) return 1;
                 return (b.id || '').localeCompare(a.id || '');
             });
 
+            // 只显示最近 6 条（首页展示）
             const display = sorted.slice(0, 6);
             const hasMore = sorted.length > 6;
+
+            // 获取头像
+            const avatarUrl = buildCdnUrl(configData.site?.avatar || DEFAULT_AVATAR);
 
             let html = '';
             display.forEach((friend) => {
                 const pinnedTag = friend.pinned ? '<span class="pinned-tag">🔝 置顶</span>' : '';
                 const contentHtml = renderMarkdown(friend.content || '');
+                const displayDate = formatDateToMinute(friend.date);
+
+                // 媒体
                 const allMedia = [...(friend.images || []), ...(friend.videos || [])];
                 let mediaHtml = '';
                 if (allMedia.length > 0) {
@@ -1195,34 +1294,35 @@
                 }
 
                 html += `
-                            <div class="friend-card reveal" onclick="window.open('https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(friend.id || '')}', '_blank')">
-                                <div class="friend-header">
-                                    <img class="friend-avatar" src="${$('heroAvatar').src || DEFAULT_AVATAR}" alt="头像" />
-                                    <div class="friend-meta">
-                                        <div class="friend-name">小刺猬</div>
-                                        <div class="friend-date">${formatDate(friend.date)}</div>
-                                    </div>
+                        <div class="friend-card reveal" onclick="window.open('https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(friend.id || '')}', '_blank')">
+                            <div class="friend-header">
+                                <img class="friend-avatar" src="${avatarUrl}" alt="头像" />
+                                <div class="friend-meta">
+                                    <div class="friend-name">${configData.site?.title || '小刺猬'}</div>
+                                    <div class="friend-date">${displayDate}</div>
                                 </div>
-                                <div class="friend-title">
-                                    ${friend.title || '无标题'} ${pinnedTag}
-                                </div>
-                                <div class="friend-content">${contentHtml}</div>
-                                ${mediaHtml}
                             </div>
-                        `;
+                            <div class="friend-title">
+                                ${friend.title || '无标题'} ${pinnedTag}
+                            </div>
+                            <div class="friend-content">${contentHtml}</div>
+                            ${mediaHtml}
+                        </div>
+                    `;
             });
 
             if (hasMore) {
                 html += `
-                            <div class="empty-state" style="grid-column:1/-1;padding:20px;cursor:pointer;" onclick="window.open('FriendQuan.html', '_blank')">
-                                <div style="font-size:14px;color:var(--text-secondary);">📖 查看全部 ${sorted.length} 条动态 →</div>
-                            </div>
-                        `;
+                        <div class="empty-state" style="grid-column:1/-1;padding:20px;cursor:pointer;" onclick="window.open('FriendQuan.html', '_blank')">
+                            <div style="font-size:14px;color:var(--text-secondary);">📖 查看全部 ${sorted.length} 条动态 →</div>
+                        </div>
+                    `;
             }
 
             container.innerHTML = html;
         }
 
+        // ----- 计数 -----
         function updateCounts() {
             const works = (configData.works || []).filter(w => w.enabled !== false);
             const friends = configData.friends || [];
@@ -1267,6 +1367,7 @@
             if (link) {
                 const url = isPrimary ? cfg.primary : cfg.fallback;
                 link.href = url || '#';
+                // 更新备用链接的 href
                 const fallbackLinks = document.querySelectorAll(`.fallback-link[onclick*="${workId}"]`);
                 fallbackLinks.forEach(el => {
                     const target = isPrimary ? cfg.fallback : cfg.primary;
@@ -1279,6 +1380,7 @@
                 });
             }
 
+            // 更新平台切换器的 onclick 里的提示
             const switcher = document.querySelector(`.platform-switcher[data-work-id="${workId}"]`);
             if (switcher) {
                 switcher.title = '当前: ' + getCurrentPlatform(workId);
@@ -1289,6 +1391,7 @@
             const cfg = linkConfig[workId];
             if (!cfg) return;
             if (!cfg.primary || !cfg.fallback || cfg.fallback === '#') {
+                // 如果没有备用链接，不切换
                 return;
             }
             cfg.selected = cfg.selected === 'primary' ? 'fallback' : 'primary';
@@ -1340,57 +1443,65 @@
         // GSAP 滚动入场动画
         // ================================================================
         function initGSAP() {
+            // 检查 GSAP 是否加载完成
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                // 如果还没加载，等待一下再试
                 setTimeout(initGSAP, 500);
                 return;
             }
 
             gsap.registerPlugin(ScrollTrigger);
 
+            // 所有 .reveal 元素
             const reveals = document.querySelectorAll('.reveal');
 
             reveals.forEach((el, i) => {
+                // 如果是空的占位状态，跳过
                 if (el.querySelector('.empty-state')) return;
 
                 gsap.fromTo(el, {
-                    opacity: 0,
-                    y: 40,
-                    scale: 0.96,
-                }, {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    duration: 0.9,
-                    ease: 'power4.out',
-                    delay: i * 0.06,
-                    scrollTrigger: {
-                        trigger: el,
-                        start: 'top 88%',
-                        toggleActions: 'play none none none',
-                    },
-                });
+                        opacity: 0,
+                        y: 40,
+                        scale: 0.96,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.9,
+                        ease: 'power4.out',
+                        delay: i * 0.06,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 88%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
             });
 
+            // 作品卡片和朋友圈卡片单独处理 (延迟稍长)
             document.querySelectorAll('.work-card.reveal, .friend-card.reveal').forEach((el, i) => {
                 gsap.fromTo(el, {
-                    opacity: 0,
-                    y: 50,
-                    scale: 0.94,
-                }, {
-                    opacity: 1,
-                    y: 0,
-                    scale: 1,
-                    duration: 0.8,
-                    ease: 'power4.out',
-                    delay: i * 0.05 + 0.1,
-                    scrollTrigger: {
-                        trigger: el,
-                        start: 'top 90%',
-                        toggleActions: 'play none none none',
-                    },
-                });
+                        opacity: 0,
+                        y: 50,
+                        scale: 0.94,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.8,
+                        ease: 'power4.out',
+                        delay: i * 0.05 + 0.1,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 90%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
             });
 
+            // 头像特殊处理 (更柔和)
             const avatar = document.querySelector('.hero-avatar');
             if (avatar) {
                 gsap.from(avatar, {
