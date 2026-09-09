@@ -653,112 +653,191 @@
         .empty-state .empty-text { font-size: 14px; }
 
         /* ================================================================
-           关于本站 模态框
-        ================================================================ */
-        .about-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-        .about-modal.active {
+   关于本站 模态框（高级感版本）
+=============================================================== */
+.about-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+.about-modal.active {
+    display: flex;
+}
+
+.about-modal-content {
+    background: var(--card-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    max-width: 420px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 28px 30px 24px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+}
+[data-theme="dark"] .about-modal-content {
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* 滚动条 */
+.about-modal-content::-webkit-scrollbar {
+    width: 3px;
+}
+.about-modal-content::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 4px;
+}
+.about-modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.about-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-shrink: 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+.about-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.about-modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.about-modal-close:hover {
+    background: var(--bg-body);
+    color: var(--text-primary);
+}
+
+.about-modal-body {
+    color: var(--text-secondary);
+}
+
+/* ===== 区块分隔 ===== */
+.about-section {
+    margin-bottom: 18px;
+}
+.about-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.about-section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+/* ===== 竖向标签列表 ===== */
+.about-tag-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.about-tag {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: var(--bg-body);
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+.about-tag:hover {
+    border-color: var(--accent);
+    background: var(--card-bg);
+}
+
+/* ===== 仓库链接（竖向） ===== */
+.about-link-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.about-link {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    transition: all 0.25s;
+}
+.about-link:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateX(4px);
+}
+
+/* ===== 底部说明 ===== */
+.about-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 14px;
+    margin-top: 6px;
+}
+.about-footer p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+        /* 源码仓库区域分组 */
+        .about-repo-group {
             display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 2px;
         }
-
-        .about-modal-content {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            max-width: 480px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 24px 26px 22px;
-            box-shadow: var(--card-hover-shadow);
-            animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .about-modal-content::-webkit-scrollbar {
-            width: 4px;
-        }
-        .about-modal-content::-webkit-scrollbar-thumb {
-            background: var(--text-muted);
-            border-radius: 4px;
-        }
-        .about-modal-content::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .about-modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            flex-shrink: 0;
-        }
-        .about-modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        .about-modal-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        .about-modal-close:hover {
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .about-modal-body {
-            color: var(--text-secondary);
-        }
-
-        .about-tag {
-            display: inline-block;
-            font-size: 12px;
-            color: var(--text-secondary);
-            background: var(--bg-body);
-            padding: 3px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .about-link {
-            display: inline-block;
-            font-size: 13px;
+        .about-repo-label {
+            font-size: 11px;
             font-weight: 500;
-            color: var(--accent);
-            text-decoration: none;
-            padding: 3px 12px;
-            border-radius: 12px;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            transition: all 0.25s;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-top: 4px;
         }
-        .about-link:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            transform: translateY(-1px);
+        .about-repo-label:first-of-type {
+            margin-top: 0;
         }
 
         @keyframes scaleIn {
@@ -831,8 +910,8 @@
             </h1>
             <p class="hero-sub reveal" id="heroSub">独立开发者</p>
             <div class="hero-signature reveal" id="heroSignature">
-                <p>欢迎来看我的站点<p> 
-                <p>本站点使用Netlify和GitHub Pages作为加载服务 加载服务可系统检测 也可手动选择</p>
+                <p>欢迎来看我的站点</p>
+                <p>本站点使用 Netlify 和 GitHub Pages 作为加载服务 加载服务可系统检测 也可手动选择</p>
                 <p>本站点使用 HTML+CSS+JavaScript 语言开发 评论系统由 Cusdis 实现</p>
                 <p>加载速度有点慢 请耐心等等 谅解一下</p>
             </div>
@@ -905,56 +984,64 @@
         </div>
     </div>
 
-    <!-- ===== 关于本站 模态框 ===== -->
-    <div class="about-modal" id="aboutModal" onclick="closeAboutModal(event)">
-        <div class="about-modal-content" onclick="event.stopPropagation()">
-            <div class="about-modal-header">
-                <span class="about-modal-title">🦔 关于本站</span>
-                <button class="about-modal-close" onclick="closeAboutModal()">✕</button>
+   <!-- ===== 关于本站 模态框 ===== -->
+<div class="about-modal" id="aboutModal" onclick="closeAboutModal(event)">
+    <div class="about-modal-content" onclick="event.stopPropagation()">
+        <div class="about-modal-header">
+            <span class="about-modal-title">🦔 关于本站</span>
+            <button class="about-modal-close" onclick="closeAboutModal()">✕</button>
+        </div>
+        <div class="about-modal-body">
+
+            <!-- 站点信息 -->
+            <div class="about-section">
+                <p style="font-size:16px;font-weight:600;color:var(--text-primary);">刺猬之家 · CiweiHome</p>
+                <p style="font-size:14px;color:var(--text-secondary);">独立开发者 · LouFoong</p>
             </div>
-            <div class="about-modal-body">
-                <p style="font-size:16px;font-weight:600;margin-bottom:6px;">CiweiHome · 小刺猬的家</p>
-                <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">独立开发者 · LouFoong</p>
 
-                <div style="margin-bottom:14px;">
-                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">🛠️ 技术栈</p>
-                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                        <span class="about-tag">HTML + CSS + JavaScript</span>
-                        <span class="about-tag">GitHub REST API</span>
-                        <span class="about-tag">Cusdis 评论</span>
-                        <span class="about-tag">GSAP + ScrollTrigger</span>
-                    </div>
-                </div>
-
-                <div style="margin-bottom:14px;">
-                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">📦 托管平台</p>
-                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                        <span class="about-tag">GitHub Pages</span>
-                        <span class="about-tag">Netlify</span>
-                    </div>
-                </div>
-
-                <div style="margin-bottom:14px;">
-                    <p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">📂 源码仓库</p>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                        <a href="https://github.com/xiaociwei01/CiweiHome" target="_blank" class="about-link">CiweiHome（主站）</a>
-                        <a href="https://github.com/xiaociwei01/CiweiBlog" target="_blank" class="about-link">CiweiBlog（博客后台）</a>
-                    </div>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.6;">
-                        CiweiHome 是本站的主页面，负责展示个人信息、作品和朋友圈入口。<br>
-                        CiweiBlog 是后台管理系统，包含文章管理、写文章、详情页和评论功能。
-                    </p>
-                </div>
-
-                <div style="border-top:1px solid var(--border-color);padding-top:12px;margin-top:4px;">
-                    <p style="font-size:12px;color:var(--text-muted);line-height:1.6;">
-                        💡 本站为纯前端项目，无需服务器，所有数据通过 GitHub API 读写。<br>
-                        代码开源，欢迎 Star ⭐ 或 Fork 学习。
-                    </p>
+            <!-- 技术栈（竖向） -->
+            <div class="about-section">
+                <div class="about-section-label">🛠️ 技术栈</div>
+                <div class="about-tag-list">
+                    <span class="about-tag">页面：HTML + CSS + JavaScript</span>
+<span class="about-tag">数据接口：GitHub REST API</span>
+<span class="about-tag">评论：Cusdis</span>
+<span class="about-tag">滚动动画：GSAP + ScrollTrigger</span>
                 </div>
             </div>
+
+            <!-- 托管平台（竖向） -->
+            <div class="about-section">
+                <div class="about-section-label">📦 托管平台</div>
+                <div class="about-tag-list">
+                    <span class="about-tag">GitHub Pages</span>
+                    <span class="about-tag">Netlify</span>
+                </div>
+            </div>
+
+            <!-- 源码仓库（竖向） -->
+            <div class="about-section">
+                <div class="about-section-label">📂 源码GitHub仓库</div>
+                <div class="about-link-list">
+                    <a href="https://github.com/xiaociwei01/CiweiHome" target="_blank" class="about-link">CiweiHome（主站）</a>
+                    <a href="https://github.com/xiaociwei01/CiweiBlog" target="_blank" class="about-link">CiweiBlog（博客后台）</a>
+                    <a href="https://github.com/xiaociwei01/xiaotaiyang" target="_blank" class="about-link">3D太阳系</a>
+                    <a href="https://github.com/xiaociwei01/diyue" target="_blank" class="about-link">3D地月系</a>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted);margin-top:8px;line-height:1.6;">
+                    CiweiHome 是本站的主页面 负责展示个人信息 作品和朋友圈入口 <br>
+                    CiweiBlog 是后台管理系统 包含文章管理 写文章 详情页和评论功能 
+                </p>
+            </div>
+
+            <!-- 底部 -->
+            <div class="about-footer">
+                <p>💡 本站为纯前端项目 所有数据通过 GitHub API 读写 代码开源于 GitHub</p>
+            </div>
+
         </div>
     </div>
+</div>
 
     <script>
         // ================================================================

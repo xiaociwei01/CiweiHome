@@ -320,16 +320,19 @@
         .feed-item .feed-media.two {
             grid-template-columns: 1fr 1fr;
         }
+
+        /* ===== ✅ 修复：图片比例不对，局部放大 → 改为 contain ===== */
         .feed-item .feed-media img,
         .feed-item .feed-media video {
             width: 100%;
             aspect-ratio: 1 / 1;
-            object-fit: cover;
+            object-fit: contain;  /* 原来是 cover，改成 contain 保证完整显示 */
             border-radius: var(--radius-sm);
             background: var(--bg-body);
             cursor: pointer;
             transition: transform var(--transition-base);
         }
+
         .feed-item .feed-media img:hover,
         .feed-item .feed-media video:hover {
             transform: scale(1.02);
@@ -938,7 +941,7 @@
 
         setTimeout(initGSAP, 500);
 
-        console.log('🦔 FriendQuan 已启动（修复版：置顶标签兼容布尔值/字符串）');
+        console.log('🦔 FriendQuan 已启动（修复版：置顶标签兼容 + 图片 contain）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>
