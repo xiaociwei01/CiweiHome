@@ -449,6 +449,11 @@
             border-color: var(--text-secondary);
         }
 
+        /* ===== 平台控制：隐藏被禁用的平台元素 ===== */
+        .platform-hidden {
+            display: none !important;
+        }
+
         /* ===== 朋友圈预览（从 CiweiBlog 加载） ===== */
         .recent-posts {
             margin: 6px 0 14px;
@@ -653,173 +658,168 @@
         .empty-state .empty-text { font-size: 14px; }
 
         /* ================================================================
-   关于本站 模态框（高级感版本）
-=============================================================== */
-.about-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    animation: fadeIn 0.3s ease;
-}
-.about-modal.active {
-    display: flex;
-}
+           关于本站 模态框（高级感版本）
+        ================================================================ */
+        .about-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        .about-modal.active {
+            display: flex;
+        }
 
-.about-modal-content {
-    background: var(--card-bg);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-lg);
-    max-width: 420px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 28px 30px 24px;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    position: relative;
-}
-[data-theme="dark"] .about-modal-content {
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
+        .about-modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            max-width: 420px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 28px 30px 24px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+        [data-theme="dark"] .about-modal-content {
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
 
-/* 滚动条 */
-.about-modal-content::-webkit-scrollbar {
-    width: 3px;
-}
-.about-modal-content::-webkit-scrollbar-thumb {
-    background: var(--text-muted);
-    border-radius: 4px;
-}
-.about-modal-content::-webkit-scrollbar-track {
-    background: transparent;
-}
+        .about-modal-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .about-modal-content::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+        }
+        .about-modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-.about-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-    flex-shrink: 0;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
-}
-.about-modal-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-.about-modal-close {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-.about-modal-close:hover {
-    background: var(--bg-body);
-    color: var(--text-primary);
-}
+        .about-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-shrink: 0;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .about-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .about-modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .about-modal-close:hover {
+            background: var(--bg-body);
+            color: var(--text-primary);
+        }
 
-.about-modal-body {
-    color: var(--text-secondary);
-}
+        .about-modal-body {
+            color: var(--text-secondary);
+        }
 
-/* ===== 区块分隔 ===== */
-.about-section {
-    margin-bottom: 18px;
-}
-.about-section:last-of-type {
-    margin-bottom: 0;
-}
+        .about-section {
+            margin-bottom: 18px;
+        }
+        .about-section:last-of-type {
+            margin-bottom: 0;
+        }
 
-.about-section-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-}
+        .about-section-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
 
-/* ===== 竖向标签列表 ===== */
-.about-tag-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
+        .about-tag-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
 
-.about-tag {
-    display: block;
-    font-size: 13px;
-    color: var(--text-secondary);
-    background: var(--bg-body);
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s;
-}
-.about-tag:hover {
-    border-color: var(--accent);
-    background: var(--card-bg);
-}
+        .about-tag {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg-body);
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+        .about-tag:hover {
+            border-color: var(--accent);
+            background: var(--card-bg);
+        }
 
-/* ===== 仓库链接（竖向） ===== */
-.about-link-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
+        .about-link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
 
-.about-link {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--accent);
-    text-decoration: none;
-    padding: 6px 14px;
-    border-radius: 8px;
-    background: var(--bg-body);
-    border: 1px solid var(--border-color);
-    transition: all 0.25s;
-}
-.about-link:hover {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    transform: translateX(4px);
-}
+        .about-link {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            transition: all 0.25s;
+        }
+        .about-link:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
 
-/* ===== 底部说明 ===== */
-.about-footer {
-    border-top: 1px solid var(--border-color);
-    padding-top: 14px;
-    margin-top: 6px;
-}
-.about-footer p {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.6;
-}
+        .about-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+            margin-top: 6px;
+        }
+        .about-footer p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
 
         /* 源码仓库区域分组 */
         .about-repo-group {
@@ -1045,14 +1045,22 @@
 
     <script>
         // ================================================================
-        // 配置（原版逻辑）
+        // 配置
         // ================================================================
         const BLOG_REPO = 'xiaociwei01/CiweiBlog';
         const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
         const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
         const THEME_KEY = 'ciwei_home_theme';
+        const PLATFORM_FILE = 'platform.json';
 
+        // ================================================================
+        // 平台配置（从 platform.json 读取）
+        // ================================================================
+        let platformConfig = { netlify: true, github: true };
+
+        // ================================================================
         // 硬编码作品
+        // ================================================================
         const WORKS = [{
             id: 'solar',
             name: '3D太阳系',
@@ -1204,6 +1212,99 @@
         }
 
         // ================================================================
+        // 加载平台配置（从 CiweiBlog/platform.json）
+        // ================================================================
+        async function loadPlatformConfig() {
+            try {
+                const url = `https://raw.githubusercontent.com/${BLOG_REPO}/main/${PLATFORM_FILE}?t=${Date.now()}`;
+                const res = await fetch(url, { cache: 'no-store' });
+                if (res.ok) {
+                    const config = await res.json();
+                    platformConfig.netlify = config.netlify !== undefined ? config.netlify : true;
+                    platformConfig.github = config.github !== undefined ? config.github : true;
+                    console.log('✅ 平台配置已加载:', platformConfig);
+                } else {
+                    // 文件不存在，使用默认配置
+                    platformConfig = { netlify: true, github: true };
+                    console.log('⚠️ platform.json 不存在，使用默认配置');
+                }
+                applyPlatformConfig();
+            } catch (err) {
+                console.warn('加载平台配置失败，使用默认配置', err);
+                platformConfig = { netlify: true, github: true };
+                applyPlatformConfig();
+            }
+        }
+
+        // ================================================================
+        // 应用平台配置（显示/隐藏对应的平台元素）
+        // ================================================================
+        function applyPlatformConfig() {
+            // 处理所有作品的平台切换器
+            const workKeys = ['solar', 'lunar'];
+            workKeys.forEach(key => {
+                const switcher = document.getElementById('switcher-' + key);
+                const fallbackLink = document.getElementById('fallback-link-' + key);
+                const primaryLabel = document.getElementById('primary-label-' + key);
+
+                // 如果 Netlify 被禁用，隐藏主平台标签和切换器
+                if (!platformConfig.netlify) {
+                    if (switcher) switcher.classList.add('platform-hidden');
+                    if (primaryLabel) {
+                        const labelText = platformConfig.github ? '备用: GitHub Pages' : '无可用平台';
+                        primaryLabel.textContent = platformConfig.github ? '主: GitHub Pages' : '⚠️ 无可用平台';
+                    }
+                } else {
+                    if (switcher) switcher.classList.remove('platform-hidden');
+                }
+
+                // 如果 GitHub Pages 被禁用，隐藏备用链接
+                if (!platformConfig.github) {
+                    if (fallbackLink) fallbackLink.classList.add('platform-hidden');
+                } else {
+                    if (fallbackLink) fallbackLink.classList.remove('platform-hidden');
+                }
+
+                // 如果两个都被禁用，隐藏整个 work-actions
+                if (!platformConfig.netlify && !platformConfig.github) {
+                    const actions = document.querySelector(`#work-${key} .work-actions`);
+                    if (actions) actions.classList.add('platform-hidden');
+                } else {
+                    const actions = document.querySelector(`#work-${key} .work-actions`);
+                    if (actions) actions.classList.remove('platform-hidden');
+                }
+            });
+
+            // 处理朋友圈
+            const friendsSwitcher = document.getElementById('switcher-friends');
+            const friendsFallback = document.getElementById('fallback-link-friends');
+            const friendsPrimaryLabel = document.getElementById('primary-label-friends');
+
+            if (!platformConfig.netlify) {
+                if (friendsSwitcher) friendsSwitcher.classList.add('platform-hidden');
+                if (friendsPrimaryLabel) {
+                    friendsPrimaryLabel.textContent = platformConfig.github ? '主: GitHub Pages' : '⚠️ 无可用平台';
+                }
+            } else {
+                if (friendsSwitcher) friendsSwitcher.classList.remove('platform-hidden');
+            }
+
+            if (!platformConfig.github) {
+                if (friendsFallback) friendsFallback.classList.add('platform-hidden');
+            } else {
+                if (friendsFallback) friendsFallback.classList.remove('platform-hidden');
+            }
+
+            if (!platformConfig.netlify && !platformConfig.github) {
+                const friendsActions = document.querySelector('#work-friends .work-actions');
+                if (friendsActions) friendsActions.classList.add('platform-hidden');
+            } else {
+                const friendsActions = document.querySelector('#work-friends .work-actions');
+                if (friendsActions) friendsActions.classList.remove('platform-hidden');
+            }
+        }
+
+        // ================================================================
         // 渲染作品（硬编码）
         // ================================================================
         function renderWorks() {
@@ -1222,7 +1323,7 @@
                         <div class="work-desc">${work.desc}</div>
                         <div class="work-actions">
                             <a class="work-link" id="work-link-${work.id}" href="${work.primaryLink}" target="_blank">🚀 进入</a>
-                            <button class="platform-switcher" onclick="togglePlatform('${work.id}')" title="点击切换平台">
+                            <button class="platform-switcher" id="switcher-${work.id}" onclick="togglePlatform('${work.id}')" title="点击切换平台">
                                 <span class="dot ${dotClass}" id="dot-${work.id}"></span>
                                 <span class="label" id="label-${work.id}">${labelText}</span>
                                 <span class="arrow">⇄</span>
@@ -1230,7 +1331,7 @@
                         </div>
                         <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
                             <span>📡 <span id="primary-label-${work.id}">主: ${labelText}</span></span>
-                            <a href="#" class="fallback-link" onclick="directNavigate('${work.id}', 'fallback'); return false;">🔁 备用: ${labelText === 'Netlify' ? 'GitHub Pages' : 'Netlify'}</a>
+                            <a href="#" id="fallback-link-${work.id}" class="fallback-link" onclick="directNavigate('${work.id}', 'fallback'); return false;">🔁 备用: ${labelText === 'Netlify' ? 'GitHub Pages' : 'Netlify'}</a>
                         </div>
                     </div>
                 `;
@@ -1247,6 +1348,9 @@
                     }
                 }
             });
+
+            // 渲染完成后应用平台配置
+            applyPlatformConfig();
         }
 
         // ================================================================
@@ -1657,10 +1761,13 @@
                 btn.title = '当前目标: ' + getCurrentPlatform('friends');
             }
 
+            // 加载平台配置
+            loadPlatformConfig();
+
             setTimeout(initGSAP, 300);
         });
 
-        console.log('🦔 CiweiHome 已启动（视觉新版 + 朋友圈原版逻辑 + 关于本站）');
+        console.log('🦔 CiweiHome 已启动（视觉新版 + 朋友圈原版逻辑 + 关于本站 + 平台开关）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>
