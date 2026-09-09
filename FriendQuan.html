@@ -32,7 +32,6 @@
             --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             --accent: #58a6ff;
             --glass-border: rgba(255, 255, 255, 0.5);
-            /* 置顶标签（微信风格） */
             --pinned-tag-bg: rgba(0, 0, 0, 0.06);
             --pinned-tag-text: #888;
         }
@@ -216,7 +215,6 @@
             gap: 16px;
         }
 
-        /* ===== 卡片样式（玻璃拟态 + 微信风格置顶） ===== */
         .feed-item {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -239,10 +237,6 @@
             transition-duration: 0.08s;
         }
 
-        /* ===== 置顶样式：微信风格标签（非黄线） ===== */
-        .feed-item.pinned {
-            /* 去掉黄线 */
-        }
         .feed-item .pinned-tag {
             font-size: 11px;
             font-weight: 500;
@@ -257,7 +251,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* ===== 卡片头部 ===== */
         .feed-item .feed-header {
             display: flex;
             align-items: center;
@@ -289,7 +282,6 @@
             transition: color 0.5s ease;
         }
 
-        /* ===== 卡片标题（置顶标签在这里） ===== */
         .feed-item .feed-title {
             font-size: 17px;
             font-weight: 600;
@@ -302,7 +294,6 @@
             flex-wrap: wrap;
         }
 
-        /* ===== 卡片内容 ===== */
         .feed-item .feed-content {
             font-size: 15px;
             line-height: 1.8;
@@ -317,7 +308,6 @@
             margin: 6px 0;
         }
 
-        /* ===== 媒体网格 ===== */
         .feed-item .feed-media {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -345,7 +335,6 @@
             transform: scale(1.02);
         }
 
-        /* ===== 修改标记 ===== */
         .feed-item .feed-modified {
             font-size: 12px;
             color: var(--text-muted);
@@ -585,27 +574,27 @@
         }
 
         function renderMarkdown(text) {
-    if (!text) return '';
+            if (!text) return '';
 
-    // 先转义所有 HTML 标签（让 <br> <dr> 等显示为纯文本）
-    let html = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+            // 先转义所有 HTML 标签（让 <br> <dr> 等显示为纯文本）
+            let html = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
 
-    // 再处理 Markdown 语法
-    html = html
-        .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
-            const fullUrl = buildCdnUrl(url);
-            return `<img src="${fullUrl}" alt="图片" loading="lazy" onclick="openImgModal(this.src)" />`;
-        })
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n/g, '<br />');
+            // 再处理 Markdown 语法
+            html = html
+                .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
+                    const fullUrl = buildCdnUrl(url);
+                    return `<img src="${fullUrl}" alt="图片" loading="lazy" onclick="openImgModal(this.src)" />`;
+                })
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br />');
 
-    return html;
-}
+            return html;
+        }
 
         // ================================================================
         // 主题切换
@@ -644,7 +633,7 @@
         $('themeToggle').addEventListener('click', toggleTheme);
 
         // ================================================================
-        // 加载数据（原版逻辑：从 CiweiBlog 加载）
+        // 加载数据
         // ================================================================
         let loadedPosts = [];
 
@@ -719,7 +708,7 @@
         }
 
         // ================================================================
-        // 解析 Markdown（原版逻辑）
+        // 解析 Markdown
         // ================================================================
         function parsePostFromMarkdown(contentText, filename) {
             const lines = contentText.split('\n');
@@ -746,7 +735,6 @@
 
             const body = lines.slice(bodyStart).join('\n').trim();
 
-            // 提取图片
             const images = [];
             const imgRegex = /!\[.*?\]\((.*?)\)/g;
             let imgMatch;
@@ -758,7 +746,6 @@
                 images.push(url);
             }
 
-            // 提取视频
             const videos = [];
             const vidRegex = /<video[^>]*src="([^"]*)"[^>]*>/g;
             let vidMatch;
@@ -791,7 +778,7 @@
         }
 
         // ================================================================
-        // 渲染朋友圈（微信风格置顶标签）
+        // 渲染朋友圈
         // ================================================================
         function renderPosts(posts) {
             if (!posts || posts.length === 0) {
@@ -812,15 +799,15 @@
 
             let html = '';
             sorted.forEach((post) => {
-                // ===== 微信风格置顶标签 =====
-                const pinnedTag = post.pinned ?
+                // ===== 置顶标签判断（兼容布尔值和字符串） =====
+                const isPinned = post.pinned === true || post.pinned === 'true';
+                const pinnedTag = isPinned ?
                     `<span class="pinned-tag">🔝 置顶</span>` :
                     '';
 
                 const contentHtml = renderMarkdown(post.body || '');
                 const displayDate = formatDate(post.date);
 
-                // 媒体
                 const allMedia = [...(post.images || []), ...(post.videos || [])];
                 let mediaHtml = '';
                 if (allMedia.length > 0) {
@@ -848,11 +835,10 @@
                     `<div class="feed-modified">✏️ 已修改 ${formatDate(post.modified)}</div>` :
                     '';
 
-                // 卡片点击跳转详情页
                 const detailUrl = `${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}`;
 
                 html += `
-                    <div class="feed-item reveal ${post.pinned ? 'pinned' : ''}" onclick="window.open('${detailUrl}', '_blank')">
+                    <div class="feed-item reveal" onclick="window.open('${detailUrl}', '_blank')">
                         <div class="feed-header">
                             <img class="avatar" src="${AVATAR_URL}" alt="头像" />
                             <div class="meta">
@@ -931,7 +917,6 @@
                 );
             });
 
-            // 头部
             const header = document.querySelector('.header');
             if (header) {
                 gsap.from(header, {
@@ -951,10 +936,9 @@
         // ================================================================
         loadPosts();
 
-        // 延迟启动 GSAP，等待 DOM 渲染
         setTimeout(initGSAP, 500);
 
-        console.log('🦔 FriendQuan 已启动（新版视觉 + 微信置顶标签 + 原版数据）');
+        console.log('🦔 FriendQuan 已启动（修复版：置顶标签兼容布尔值/字符串）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>
