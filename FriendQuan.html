@@ -66,7 +66,6 @@
             margin: 0 auto;
         }
 
-        /* ===== 顶部 ===== */
         .header {
             display: flex;
             align-items: center;
@@ -150,7 +149,6 @@
             transition: all 0.5s ease;
         }
 
-        /* ===== 列表 ===== */
         .feed-list {
             display: flex;
             flex-direction: column;
@@ -163,7 +161,6 @@
             border-radius: var(--radius-lg);
             padding: 20px 22px;
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             box-shadow: var(--shadow-card);
             transition: all var(--transition-spring);
             cursor: pointer;
@@ -279,22 +276,6 @@
             transition: color 0.5s ease;
         }
 
-        .feed-item .feed-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 10px;
-        }
-        .feed-item .feed-tags .tag {
-            font-size: 12px;
-            color: var(--text-muted);
-            background: var(--bg-body);
-            padding: 2px 12px;
-            border-radius: 12px;
-            transition: all 0.5s ease;
-        }
-
-        /* ===== 空状态 ===== */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -310,7 +291,6 @@
             margin-bottom: 8px;
         }
 
-        /* ===== 图片模态框 ===== */
         .img-modal {
             display: none;
             position: fixed;
@@ -355,7 +335,6 @@
             font-size: 13px;
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 600px) {
             body {
                 padding: 12px 10px 40px;
@@ -404,7 +383,6 @@
                 height: 36px;
             }
         }
-
         @media (max-width: 400px) {
             .feed-item .feed-title {
                 font-size: 14px;
@@ -442,7 +420,6 @@
 
     </div>
 
-    <!-- ===== 图片模态框 ===== -->
     <div class="img-modal" id="imgModal" onclick="closeImgModal()">
         <img id="modalImg" src="" alt="查看大图" />
         <div class="close-hint">点击任意处关闭</div>
@@ -455,12 +432,9 @@
         const MANAGER_REPO = 'xiaociwei01/CiweiManager';
         const CONFIG_PATH = 'config.json';
         const THEME_KEY = 'ciwei_home_theme';
+        const DETAIL_PAGE = 'Xiangqingye.html';
         const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
-        const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
 
-        // ================================================================
-        // DOM 引用
-        // ================================================================
         const $ = id => document.getElementById(id);
 
         // ================================================================
@@ -469,8 +443,9 @@
         function buildCdnUrl(path) {
             if (!path) return '';
             if (path.startsWith('http://') || path.startsWith('https://')) return path;
-            if (path === DEFAULT_AVATAR) {
-                return `https://xiaociwei01.github.io/CiweiHome/${DEFAULT_AVATAR}`;
+            const localImages = ['ciweitouxiang.jpg', 'wechat_qr.jpg', 'qq_qr.jpg'];
+            if (localImages.includes(path)) {
+                return `https://xiaociwei01.github.io/CiweiHome/${path}`;
             }
             return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${path}`;
         }
@@ -495,7 +470,7 @@
             if (!text) return '';
             let html = text
                 .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
-                    const fullUrl = url.startsWith('http') ? url : buildCdnUrl(url);
+                    const fullUrl = buildCdnUrl(url);
                     return `<img src="${fullUrl}" alt="图片" loading="lazy" onclick="openImgModal(this.src)" />`;
                 })
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -543,29 +518,44 @@
         // 加载数据
         // ================================================================
         let configData = null;
+        let configLoaded = false;
 
         async function loadConfig() {
             try {
+                const t = Date.now();
                 const cdnUrl =
-                    `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${Date.now()}`;
+                    `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${t}`;
                 let res = await fetch(cdnUrl, { cache: 'no-store' });
                 if (!res.ok) {
                     const rawUrl =
-                        `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${Date.now()}`;
+                        `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${t}`;
                     res = await fetch(rawUrl, { cache: 'no-store' });
                     if (!res.ok) throw new Error('加载失败');
                 }
                 configData = await res.json();
+                configLoaded = true;
                 renderFriends();
             } catch (err) {
                 console.warn('加载失败', err);
-                $('feedList').innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">⚠️</div>
-                            <div>加载失败，请稍后重试</div>
-                        </div>
-                    `;
+                configData = null;
+                configLoaded = false;
+                $('feedList').innerHTML =
+                    `<div class="empty-state"><div class="empty-icon">⚠️</div><div>加载失败，请稍后重试</div></div>`;
             }
+        }
+
+        function getSiteConfig() {
+            if (configData && configData.site) {
+                return configData.site;
+            }
+            return { title: '小刺猬', avatar: DEFAULT_AVATAR };
+        }
+
+        function getFriends() {
+            if (configData && configData.friends && configData.friends.length > 0) {
+                return configData.friends;
+            }
+            return [];
         }
 
         // ================================================================
@@ -573,17 +563,14 @@
         // ================================================================
         function renderFriends() {
             const container = $('feedList');
-            const friends = configData?.friends || [];
+            const friends = getFriends();
+            const site = getSiteConfig();
 
             $('countBadge').textContent = friends.length + ' 条';
 
             if (friends.length === 0) {
-                container.innerHTML = `
-                        <div class="empty-state">
-                            <div class="empty-icon">📭</div>
-                            <div>暂无动态</div>
-                        </div>
-                    `;
+                container.innerHTML =
+                    `<div class="empty-state"><div class="empty-icon">📭</div><div>暂无动态</div></div>`;
                 return;
             }
 
@@ -592,6 +579,9 @@
                 if (!a.pinned && b.pinned) return 1;
                 return (b.id || '').localeCompare(a.id || '');
             });
+
+            const avatarUrl = buildCdnUrl(site.avatar || DEFAULT_AVATAR);
+            const authorName = site.title || '小刺猬';
 
             let html = '';
             sorted.forEach((friend) => {
@@ -626,16 +616,12 @@
                 const modifiedHtml = friend.modified ?
                     `<div class="feed-modified">✏️ 已修改 ${formatDateToMinute(friend.modified)}</div>` : '';
 
-                const tagsHtml = friend.tags && friend.tags.length ?
-                    `<div class="feed-tags">${friend.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>` :
-                    '';
-
                 html += `
-                        <div class="feed-item" onclick="window.open('${DETAIL_PAGE}?file=${encodeURIComponent(friend.id || '')}', '_blank')">
+                        <div class="feed-item" onclick="window.open('${DETAIL_PAGE}?postId=${encodeURIComponent(friend.id || '')}', '_blank')">
                             <div class="feed-header">
-                                <img class="avatar" src="${buildCdnUrl(configData?.site?.avatar || DEFAULT_AVATAR)}" alt="头像" />
+                                <img class="avatar" src="${avatarUrl}" alt="头像" />
                                 <div class="meta">
-                                    <div class="name">${configData?.site?.title || '小刺猬'}</div>
+                                    <div class="name">${authorName}</div>
                                     <div class="date">${displayDate}</div>
                                 </div>
                             </div>
@@ -645,7 +631,6 @@
                             <div class="feed-content">${contentHtml}</div>
                             ${mediaHtml}
                             ${modifiedHtml}
-                            ${tagsHtml}
                         </div>
                     `;
             });
@@ -679,7 +664,7 @@
         // 启动
         // ================================================================
         loadConfig();
-        console.log('🦔 FriendQuan 已启动 (修复版)');
+        console.log('🦔 FriendQuan 已启动');
     </script>
 
 </body>
