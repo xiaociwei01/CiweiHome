@@ -2,71 +2,72 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CiweiHome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>文章管理 · 后台</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
 
     <style>
+        /* ================================================================
+           深色/浅色模式
+        ================================================================ */
         :root {
             --bg-body: #f0f2f5;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-card-hover: rgba(255, 255, 255, 0.95);
             --text-primary: #1a1a2e;
             --text-secondary: #444;
             --text-muted: #888;
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(255, 255, 255, 0.5);
-            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-            --card-hover-shadow: 0 16px 48px rgba(0, 0, 0, 0.10);
-            --glass-bg: rgba(255, 255, 255, 0.5);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --accent: #58a6ff;
-            --accent-glow: rgba(88, 166, 255, 0.25);
-            --pinned-tag-bg: rgba(0, 0, 0, 0.06);
-            --pinned-tag-text: #888;
-            --radius-sm: 12px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-color: rgba(0, 0, 0, 0.06);
+            --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --max-width: 1024px;
-            --font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
-            --section-gap: 56px;
+            --accent: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
         }
 
         [data-theme="dark"] {
             --bg-body: #0a0a0f;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-card-hover: rgba(255, 255, 255, 0.08);
             --text-primary: #ffffff;
             --text-secondary: rgba(255, 255, 255, 0.75);
             --text-muted: rgba(255, 255, 255, 0.4);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --card-hover-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
-            --glass-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
             --glass-border: rgba(255, 255, 255, 0.06);
-            --pinned-tag-bg: rgba(255, 255, 255, 0.06);
-            --pinned-tag-text: rgba(255, 255, 255, 0.4);
         }
 
+        /* ================================================================
+           全局
+        ================================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
 
         body {
-            font-family: var(--font-family);
+            font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-body);
             color: var(--text-primary);
             min-height: 100vh;
-            transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                        color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            padding: 20px 16px 60px;
+            transition: background 0.5s ease, color 0.5s ease;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+            display: flex;
+            justify-content: center;
         }
 
+        /* ===== 动态光晕背景 ===== */
         .bg-glow {
             position: fixed;
             top: 0;
@@ -86,91 +87,78 @@
             transition: all 2s ease;
         }
         .bg-glow::before {
-            width: 600px;
-            height: 600px;
-            top: -10%;
-            left: -10%;
-            background: radial-gradient(circle, rgba(88, 166, 255, 0.15) 0%, transparent 70%);
-        }
-        .bg-glow::after {
             width: 500px;
             height: 500px;
+            top: -10%;
+            left: -10%;
+            background: radial-gradient(circle, rgba(88, 166, 255, 0.10) 0%, transparent 70%);
+        }
+        .bg-glow::after {
+            width: 400px;
+            height: 400px;
             bottom: -10%;
             right: -10%;
-            background: radial-gradient(circle, rgba(255, 180, 60, 0.10) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 180, 60, 0.08) 0%, transparent 70%);
         }
         [data-theme="dark"] .bg-glow::before {
-            background: radial-gradient(circle, rgba(88, 166, 255, 0.20) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(88, 166, 255, 0.15) 0%, transparent 70%);
         }
         [data-theme="dark"] .bg-glow::after {
-            background: radial-gradient(circle, rgba(255, 180, 60, 0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255, 180, 60, 0.10) 0%, transparent 70%);
         }
 
+        /* ===== 容器 ===== */
         .container {
             position: relative;
             z-index: 1;
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: 0 24px 60px;
+            max-width: 820px;
+            width: 100%;
         }
 
-        .header {
+        /* ===== 顶部导航 ===== */
+        .nav-bar {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            padding: 20px 0 16px;
-            border-bottom: 1px solid var(--card-border);
-            margin-bottom: 32px;
+            padding: 12px 0 16px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 8px;
             transition: border-color 0.5s ease;
         }
-        .header-left {
+        .nav-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .header-left .logo {
-            font-size: 24px;
+        .nav-left .logo {
+            font-size: 22px;
             font-weight: 700;
-            letter-spacing: -0.02em;
             color: var(--text-primary);
             transition: color 0.5s ease;
         }
-        .header-left .logo span { color: var(--accent); }
-        .header-left .tagline {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 400;
-            transition: color 0.5s ease;
+        .nav-left .logo span {
+            color: var(--accent);
         }
-        .header-right {
+        .nav-left .badge {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 2px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.5s ease;
+        }
+        .nav-right {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-        .header-right a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 6px 12px;
-            border-radius: 30px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            transition: all var(--transition-base);
-            backdrop-filter: blur(12px);
-        }
-        .header-right a:hover {
-            background: var(--card-bg);
-            border-color: var(--accent);
-            color: var(--text-primary);
-            transform: translateY(-1px);
+            gap: 8px;
         }
 
         .theme-toggle {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 30px;
             padding: 6px 14px;
             cursor: pointer;
@@ -179,973 +167,573 @@
             transition: all var(--transition-base);
             font-family: inherit;
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             gap: 4px;
         }
         .theme-toggle:hover {
-            background: var(--card-bg);
+            background: var(--bg-card-hover);
             border-color: var(--accent);
             color: var(--text-primary);
         }
-        .theme-toggle:active { transform: scale(0.93); }
-        .theme-toggle .theme-label { font-size: 12px; font-weight: 500; }
-
-        .hero {
-            padding: 40px 0 48px;
-            text-align: center;
-            position: relative;
+        .theme-toggle:active {
+            transform: scale(0.93);
         }
-        .hero-avatar {
-            width: 96px;
-            height: 96px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--card-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-            transition: all var(--transition-spring);
-            cursor: pointer;
-            background: var(--bg-body);
-        }
-        .hero-avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
-        }
-        .hero-title {
-            font-size: clamp(40px, 8vw, 80px);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            line-height: 1.05;
-            margin-top: 16px;
-            color: var(--text-primary);
-            transition: color 0.5s ease;
-        }
-        .hero-title .highlight {
-            background: linear-gradient(135deg, var(--accent), #ffb347);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero-sub {
-            font-size: clamp(16px, 2vw, 22px);
-            color: var(--text-secondary);
-            margin-top: 8px;
-            font-weight: 400;
-            transition: color 0.5s ease;
-        }
-        .hero-signature {
-            max-width: 640px;
-            margin: 20px auto 0;
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text-secondary);
-            transition: color 0.5s ease;
-        }
-        .hero-signature img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: var(--radius-md);
-            margin: 8px 0;
-        }
-        .hero-social {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 24px;
-        }
-        .hero-social a {
-            padding: 8px 20px;
-            border-radius: 40px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
+        .theme-toggle .theme-label {
+            font-size: 12px;
             font-weight: 500;
-            transition: all var(--transition-base);
-            backdrop-filter: blur(12px);
-            cursor: pointer;
-        }
-        .hero-social a:hover {
-            background: var(--card-bg);
-            border-color: var(--accent);
-            color: var(--text-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-top: var(--section-gap);
-            margin-bottom: 20px;
-            transition: color 0.5s ease;
-        }
-        .section-title .count { font-weight: 400; opacity: 0.6; }
-        .section-title:first-of-type { margin-top: 0; }
-
-        .works-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-        @media (max-width: 720px) {
-            .works-grid { grid-template-columns: 1fr; gap: 18px; }
-        }
-
-        .work-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 24px 24px 22px;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--card-shadow);
-            transition: all var(--transition-spring);
-            cursor: default;
-            position: relative;
-            overflow: hidden;
-        }
-        .work-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--card-hover-shadow);
-            border-color: var(--accent);
-        }
-        .work-card:active { transform: scale(0.97); transition-duration: 0.08s; }
-
-        .work-card .work-cover {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            object-fit: contain;
-            background: var(--bg-body);
-            border-radius: var(--radius-sm);
-            margin-bottom: 14px;
-            transition: transform var(--transition-base);
-            cursor: pointer;
-            display: block;
-        }
-        .work-card:hover .work-cover { transform: scale(1.02); }
-
-        .work-card .work-name {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: color 0.5s ease;
-        }
-        .work-card .work-tags {
+        .token-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 13px;
             color: var(--text-muted);
-            margin-top: 2px;
-            transition: color 0.5s ease;
+            background: var(--bg-card);
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            font-family: inherit;
         }
-        .work-card .work-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-top: 8px;
-            transition: color 0.5s ease;
+        .token-status-bar:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
         }
-        .work-card .work-actions {
+        .token-status-bar .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+        .token-status-bar .dot.active {
+            background: var(--success);
+        }
+        .token-status-bar .dot.inactive {
+            background: var(--text-muted);
+        }
+
+        /* ===== 操作栏 ===== */
+        .action-bar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 10px;
-            margin-top: 16px;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        .work-link {
+        .action-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .action-right {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: color 0.5s ease;
+        }
+
+        .btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 10px 24px;
+            padding: 10px 22px;
             border-radius: 40px;
             font-size: 14px;
             font-weight: 500;
             border: none;
             cursor: pointer;
             text-decoration: none;
-            transition: all var(--transition-base);
+            transition: all 0.2s;
             font-family: inherit;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+        .btn-primary {
             background: var(--accent);
             color: #fff;
         }
-        .work-link:hover {
+        .btn-primary:hover {
             background: #4a8edb;
-            box-shadow: 0 4px 20px var(--accent-glow);
-            transform: translateY(-2px);
-        }
-        .work-link:active { transform: scale(0.93); }
-        .work-link.loading {
-            background: #555;
-            cursor: wait;
-            pointer-events: none;
-        }
-
-        .platform-switcher {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-muted);
-            background: var(--glass-bg);
-            padding: 4px 12px 4px 14px;
-            border-radius: 20px;
-            border: 1px solid var(--card-border);
-            cursor: pointer;
-            transition: all var(--transition-base);
-            backdrop-filter: blur(8px);
-            user-select: none;
-            font-family: inherit;
-        }
-        .platform-switcher:hover {
-            border-color: var(--accent);
-            background: var(--card-bg);
+            box-shadow: 0 4px 16px var(--accent-glow);
             transform: translateY(-1px);
         }
-        .platform-switcher:active { transform: scale(0.92); }
-        .platform-switcher .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-        .platform-switcher .dot.netlify { background: #00ad9f; }
-        .platform-switcher .dot.github { background: #6e5494; }
-        .platform-switcher .label {
-            font-weight: 500;
-            font-size: 12px;
+        .btn-outline {
+            background: var(--bg-card);
             color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
-        .platform-switcher .arrow {
-            font-size: 10px;
-            color: var(--text-muted);
-            display: inline-block;
-            transition: transform 0.3s ease;
-        }
-        .platform-switcher:hover .arrow { transform: translateX(3px) rotate(180deg); }
-
-        @keyframes pulseDot {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.6); }
-            100% { transform: scale(1); }
-        }
-        .platform-switcher .dot.switching { animation: pulseDot 0.4s ease; }
-
-        .fallback-link {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--text-muted);
-            transition: all var(--transition-base);
-            cursor: pointer;
-        }
-        .fallback-link:hover {
-            color: var(--text-secondary);
-            border-color: var(--text-secondary);
-        }
-
-        /* ===== 朋友圈预览（从 CiweiBlog 加载） ===== */
-        .recent-posts {
-            margin: 6px 0 14px;
-            padding: 12px 14px;
-            background: var(--glass-bg);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--card-border);
-            transition: all var(--transition-base);
-        }
-        .recent-posts:hover {
-            background: var(--card-bg);
+        .btn-outline:hover {
+            background: var(--bg-card-hover);
             border-color: var(--accent);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-        .recent-posts .rp-title {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            margin-bottom: 6px;
-        }
-        .recent-posts .rp-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            border-bottom: 1px dashed var(--card-border);
-            transition: all var(--transition-base);
-            border-radius: 6px;
-            position: relative;
-            cursor: pointer;
-        }
-        .recent-posts .rp-item:last-child { border-bottom: none; }
-        .recent-posts .rp-item::before {
-            content: '→';
-            position: absolute;
-            left: -2px;
-            opacity: 0;
-            transition: all var(--transition-base);
-            transform: translateX(-6px);
-            color: var(--accent);
-        }
-        .recent-posts .rp-item:hover {
             color: var(--text-primary);
-            padding-left: 16px;
-            background: var(--card-bg);
-            border-radius: 6px;
         }
-        .recent-posts .rp-item:hover::before {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .recent-posts .rp-item .rp-date {
-            font-size: 12px;
-            color: var(--text-muted);
-            flex-shrink: 0;
-            margin-left: 12px;
-            transition: color var(--transition-base);
-        }
-        .recent-posts .rp-item:hover .rp-date { color: var(--text-muted); }
-        .recent-posts .rp-empty {
+        .btn-sm {
+            padding: 6px 16px;
             font-size: 13px;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 8px 0;
         }
-        .recent-posts .rp-loading {
-            font-size: 13px;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 8px 0;
-            animation: pulseText 1.5s ease-in-out infinite;
+        .btn-danger {
+            background: var(--danger);
+            color: #fff;
         }
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
         }
 
-        .modal,
-        .qr-modal {
+        /* ===== 文章列表 ===== */
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .post-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all var(--transition-spring);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-card);
+            gap: 10px;
+        }
+        .post-item:hover {
+            box-shadow: var(--shadow-hover);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .post-item.deleting {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.25s;
+        }
+        .post-item .left {
+            flex: 1;
+            min-width: 0;
+            cursor: pointer;
+        }
+        .post-item .left .title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: block;
+            text-decoration: none;
+            transition: color 0.5s ease;
+        }
+        .post-item .left .title .badge-pin {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg-body);
+            padding: 1px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-left: 6px;
+        }
+        .post-item .left .title .badge-modified {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg-body);
+            padding: 1px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-left: 6px;
+        }
+        .post-item .left .meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            transition: color 0.5s ease;
+        }
+        .post-item .right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .post-item .right .btn-icon {
+            background: none;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .post-item .right .btn-icon:hover {
+            background: var(--bg-body);
+            color: var(--danger);
+        }
+        .post-item .right .btn-icon.pin-active {
+            color: var(--warning);
+        }
+        .post-item .right .btn-icon.pin-active:hover {
+            color: var(--warning);
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .post-item .right .btn-icon:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .post-item .right .view-link {
+            background: none;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: var(--text-muted);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .post-item .right .view-link:hover {
+            background: var(--bg-body);
+            color: var(--text-primary);
+        }
+
+        /* ===== 状态 ===== */
+        .empty-state,
+        .loading-state,
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.5s ease;
+        }
+        .loading-state .spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .error-state {
+            color: var(--danger);
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: var(--shadow-hover);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.error {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        /* ===== Token 模态框 ===== */
+        .token-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 9999;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             padding: 20px;
-            animation: fadeIn 0.3s ease;
-            backdrop-filter: blur(6px);
         }
-        .modal.active,
-        .qr-modal.active { display: flex; }
-
-        .modal { background: rgba(0, 0, 0, 0.85); }
-        .qr-modal { background: rgba(0, 0, 0, 0.75); }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        .token-modal.active {
+            display: flex;
         }
-        .modal .close-hint {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-        }
-
-        .qr-modal .qr-content {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px 24px 20px;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            cursor: default;
+        .token-modal .modal-box {
+            background: var(--bg-card);
             backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-        }
-        .qr-modal .qr-content .qr-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
-        .qr-modal .qr-content img {
-            width: 100%;
-            max-width: 280px;
-            aspect-ratio: 1 / 1;
-            object-fit: contain;
-            border-radius: 8px;
-            display: block;
-            margin: 0 auto;
-        }
-        .qr-modal .qr-content .qr-close-hint {
-            margin-top: 12px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .modal.closing { animation: fadeOut 0.25s ease forwards; }
-        .modal.closing img { animation: scaleOut 0.25s ease forwards; }
-        .qr-modal.closing { animation: fadeOut 0.2s ease forwards; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes scaleIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes scaleOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.85); opacity: 0; } }
-
-        .footer {
-            margin-top: 48px;
-            padding-top: 20px;
-            border-top: 1px solid var(--card-border);
-            font-size: 13px;
-            color: var(--text-muted);
-            text-align: center;
-            transition: all 0.5s ease;
-            letter-spacing: 0.3px;
-        }
-        .footer .heart {
-            color: #ef4444;
-            display: inline-block;
-            animation: heartbeat 1.8s ease-in-out infinite;
-        }
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            15% { transform: scale(1.2); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
-        }
-
-        .reveal { opacity: 0; transform: translateY(40px); }
-
-        .empty-state {
-            text-align: center;
-            padding: 32px 20px;
-            color: var(--text-muted);
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: var(--radius-lg);
-            backdrop-filter: blur(12px);
+            padding: 28px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-hover);
+            border: 1px solid var(--border-color);
             transition: all 0.5s ease;
         }
-        .empty-state .empty-icon { font-size: 32px; margin-bottom: 6px; }
-        .empty-state .empty-text { font-size: 14px; }
-
-        @media (max-width: 600px) {
-            .container { padding: 0 16px 40px; }
-            .header { padding: 14px 0 12px; }
-            .header-left .logo { font-size: 19px; }
-            .header-left .tagline { font-size: 12px; }
-            .header-right a { font-size: 12px; padding: 4px 10px; }
-            .theme-toggle { padding: 4px 10px; font-size: 12px; }
-            .theme-toggle .theme-label { font-size: 11px; }
-            .hero { padding: 20px 0 28px; }
-            .hero-avatar { width: 72px; height: 72px; }
-            .hero-signature { font-size: 14px; line-height: 1.7; }
-            .section-title { font-size: 12px; margin-top: 40px; margin-bottom: 14px; }
-            .work-card { padding: 16px 16px 18px; }
-            .work-card .work-name { font-size: 17px; }
-            .work-card .work-actions { flex-direction: column; align-items: stretch; }
-            .work-link { justify-content: center; }
-            .platform-switcher { justify-content: center; padding: 6px 12px; }
-            .recent-posts .rp-item { font-size: 13px; flex-wrap: wrap; }
+        .token-modal .modal-box .title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            transition: color 0.5s ease;
         }
+        .token-modal .modal-box .desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            transition: color 0.5s ease;
+        }
+        .token-modal .modal-box input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            outline: none;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: all var(--transition-base);
+            font-family: inherit;
+        }
+        .token-modal .modal-box input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .token-modal .modal-box .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            transition: color 0.5s ease;
+        }
+        .token-modal .modal-box .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        /* ================================================================
+           响应式
+        ================================================================ */
+        @media (max-width: 600px) {
+            body {
+                padding: 12px 10px 40px;
+            }
+            .nav-bar {
+                padding: 8px 0 12px;
+            }
+            .nav-left .logo {
+                font-size: 18px;
+            }
+            .nav-left .badge {
+                font-size: 10px;
+                padding: 1px 10px;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .action-left .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            .action-right {
+                text-align: center;
+            }
+            .post-item {
+                padding: 14px;
+                flex-wrap: wrap;
+            }
+            .post-item .right {
+                margin-left: 0;
+                margin-top: 8px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .theme-toggle .theme-label {
+                display: none;
+            }
+            .token-status-bar .token-label-text {
+                display: none;
+            }
+        }
+
         @media (max-width: 400px) {
-            .hero-title { font-size: 32px; }
-            .hero-social a { font-size: 12px; padding: 6px 14px; }
-            .work-card .work-desc { font-size: 13px; }
+            .post-item .left .title {
+                font-size: 14px;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 8px 14px;
+            }
+            .btn-sm {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-            .reveal { opacity: 1 !important; transform: none !important; }
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== 光晕背景 ===== -->
     <div class="bg-glow"></div>
 
+    <!-- ===== 容器 ===== -->
     <div class="container">
 
-        <header class="header">
-            <div class="header-left">
-                <div class="logo">🦔 <span>CiweiHome</div>
-                <span class="tagline" id="headerTagline">独立开发者</span>
+        <!-- ===== 顶部导航 ===== -->
+        <nav class="nav-bar">
+            <div class="nav-left">
+                <span class="logo">📂 <span>文章管理</span></span>
+                <span class="badge" id="postCount">0 篇</span>
             </div>
-            <div class="header-right">
-                <a href="https://github.com/xiaociwei01" target="_blank">GitHub</a>
+            <div class="nav-right">
                 <button class="theme-toggle" id="themeToggle" title="切换主题">
                     <span id="themeIcon">🌙</span>
                     <span class="theme-label" id="themeLabel">深色</span>
                 </button>
+                <button class="token-status-bar" id="tokenStatusBar" title="点击管理 Token">
+                    <span class="dot inactive" id="tokenDot"></span>
+                    <span class="token-label-text" id="tokenLabel">未配置</span>
+                    <span>▾</span>
+                </button>
             </div>
-        </header>
+        </nav>
 
-        <section class="hero">
-            <img class="hero-avatar reveal" id="heroAvatar" src="ciweitouxiang.jpg" alt="小刺猬头像" loading="lazy" onclick="openAvatarModal()" />
-            <h1 class="hero-title reveal">
-                <span class="highlight" id="heroTitle">LouFoong</span>
-            </h1>
-            <p class="hero-sub reveal" id="heroSub">独立开发者</p>
-            <div class="hero-signature reveal" id="heroSignature">
-           <p>欢迎来看我的站点<p>
-           <p>本站点使用 HTML+CSS+JavaScript 语言开发 评论系统由 Cusdis 实现<p>
-           <p>加载速度有点慢 请耐心等等 谅解一下<p>
+        <!-- ===== 操作栏 ===== -->
+        <div class="action-bar">
+            <div class="action-left">
+                <a href="write.html" class="btn btn-primary">✍️ 写新文章</a>
+                <button class="btn btn-outline btn-sm" onclick="loadPosts()">🔄 刷新</button>
+                <button class="btn btn-outline btn-sm" onclick="rebuildIndex()">📇 重建索引</button>
             </div>
-            <div class="hero-social reveal">
-                <a id="socialWechat">💬 微信</a>
-                <a id="socialQQ">🐧 QQ</a>
-            </div>
-        </section>
-
-        <!-- ===== 作品区（硬编码） ===== -->
-        <div class="section-title reveal">🧰 我的作品</div>
-        <div class="works-grid" id="worksGrid">
-            <!-- 由 JS 硬编码渲染 -->
+            <span class="action-right" id="lastUpdateTime"></span>
         </div>
 
-        <!-- ===== 朋友圈区（从 CiweiBlog 加载） ===== -->
-        <div class="section-title reveal">🦔 开发者的小朋友圈</div>
-        <div class="works-grid" id="friendsGrid">
-            <div class="work-card reveal" id="work-friends" style="grid-column:1/-1;">
-                <div class="work-cover" onclick="openImageModal(this)">
-                    <img src="FriendQuan.jpg" alt="朋友圈封面图" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);">
-                </div>
-                <div class="work-body" style="padding-top:14px;">
-                    <div class="work-name">📝 开发者的小朋友圈</div>
-                    <div class="work-tags">偶尔写写，记录一些瞬间</div>
-                    <div class="recent-posts" id="recentPosts">
-                        <div class="rp-title">📖 最近更新</div>
-                        <div class="rp-loading">加载中...</div>
-                    </div>
-                    <div class="work-actions">
-                        <button class="work-link" id="btn-friends" onclick="smartNavigate('friends')">
-                            📝 进入朋友圈
-                        </button>
-                        <div class="platform-switcher" id="switcher-friends" onclick="togglePlatform('friends')" title="点击切换平台">
-                            <span class="dot netlify" id="dot-friends"></span>
-                            <span class="label" id="label-friends">Netlify</span>
-                            <span class="arrow">⇄</span>
-                        </div>
-                    </div>
-                    <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
-                        <span>📡 <span id="primary-label-friends">主: Netlify</span></span>
-                        <a href="#" id="fallback-link-friends" class="fallback-link" onclick="directNavigate('friends', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
-                    </div>
-                </div>
+        <!-- ===== 文章列表 ===== -->
+        <div id="postList" class="post-list">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <div>加载中...</div>
             </div>
-        </div>
-
-        <div class="footer reveal">
-            <span class="heart">✦</span> CiweiHome · 2026 <span class="heart">✦</span>
         </div>
 
     </div>
 
-    <div class="modal" id="imageModal" onclick="closeImageModal()">
-        <img id="modalImage" src="" alt="大图">
-        <div class="close-hint">点击任意处关闭</div>
-    </div>
+    <!-- ===== Toast ===== -->
+    <div class="toast" id="toast"></div>
 
-    <div class="qr-modal" id="qrModal" onclick="closeQR()">
-        <div class="qr-content" onclick="event.stopPropagation()">
-            <div class="qr-label" id="qrLabel">微信二维码</div>
-            <img id="qrImage" src="" alt="二维码">
-            <div class="qr-close-hint">点击任意处关闭</div>
+    <!-- ===== Token 模态框 ===== -->
+    <div class="token-modal" id="tokenModal">
+        <div class="modal-box">
+            <div class="title">🔑 GitHub Token</div>
+            <div class="desc">用于删除文章、修改文章和置顶操作，Token 仅保存在你的浏览器中。</div>
+            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+            <div class="hint" id="tokenHint">输入后自动保存</div>
+            <div class="actions">
+                <button class="btn btn-outline btn-sm" onclick="clearToken()">清除</button>
+                <button class="btn btn-primary btn-sm" onclick="saveTokenAndClose()">保存</button>
+            </div>
         </div>
     </div>
 
     <script>
         // ================================================================
-        // 配置（原版逻辑）
+        // 配置
         // ================================================================
-        const BLOG_REPO = 'xiaociwei01/CiweiBlog';
-        const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
-        const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
-        const THEME_KEY = 'ciwei_home_theme';
+        const REPO = 'xiaociwei01/CiweiBlog';
+        const POSTS_PATH = 'posts';
+        const API_URL = `https://api.github.com/repos/${REPO}/contents/${POSTS_PATH}`;
+        const STORAGE_KEY = 'ciwei_blog_token';
+        const THEME_KEY = 'ciwei_blog_theme';
+        const DETAIL_PAGE = 'Xiangqingye.html';
+        const EDIT_PAGE = 'write.html';
 
-        // 硬编码作品
-        const WORKS = [{
-            id: 'solar',
-            name: '3D太阳系',
-            tags: 'Three.js · 开普勒轨道 · 哈勃望远镜 · 旅行者一号',
-            desc: '真实光照 · 椭圆轨道 · 行星轴倾斜 · 土星环 · 破坏工具箱 · 哈勃望远镜模式 · 旅行者一号深空飞行轨迹路线图',
-            cover: 'xiaotaiyang.jpg',
-            primaryLink: 'https://xiaotaiyang.netlify.app',
-            fallbackLink: 'https://xiaociwei01.github.io/xiaotaiyang/'
-        }, {
-            id: 'lunar',
-            name: '3D地月系',
-            tags: '开普勒轨道 · 月相 · ISS · 天宫空间站',
-            desc: '地球开普勒公转 · 节气跳转 · 日食/月食实时检测 · 月相模拟 · ISS 与天宫双空间站 · 地轴倾斜。',
-            cover: 'diyue.jpg',
-            primaryLink: 'https://diyue.netlify.app',
-            fallbackLink: 'https://xiaociwei01.github.io/diyue/'
-        }];
+        let token = '';
+        let postsData = [];
 
-        const LINK_CONFIG = {
-            solar: {
-                primary: 'https://xiaotaiyang.netlify.app',
-                fallback: 'https://xiaociwei01.github.io/xiaotaiyang/',
-                selected: 'primary'
-            },
-            lunar: {
-                primary: 'https://diyue.netlify.app',
-                fallback: 'https://xiaociwei01.github.io/diyue/',
-                selected: 'primary'
-            },
-            friends: {
-                primary: 'https://ciweihome.netlify.app/FriendQuan.html',
-                fallback: 'https://xiaociwei01.github.io/CiweiHome/FriendQuan.html',
-                selected: 'primary'
-            }
-        };
-
+        // ================================================================
+        // DOM 引用
+        // ================================================================
         const $ = id => document.getElementById(id);
-        const worksGrid = $('worksGrid');
+        const postList = $('postList');
+        const toast = $('toast');
+        const tokenModal = $('tokenModal');
+        const tokenInput = $('tokenInput');
+        const tokenHint = $('tokenHint');
+        const tokenDot = $('tokenDot');
+        const tokenLabel = $('tokenLabel');
+
+        let toastTimer = null;
 
         // ================================================================
-        // 工具函数
+        // Toast
         // ================================================================
-        function buildCdnUrl(path) {
-            if (!path) return '';
-            if (path.startsWith('http://') || path.startsWith('https://')) return path;
-            const localImages = ['xiaotaiyang.jpg', 'diyue.jpg', 'FriendQuan.jpg', 'ciweitouxiang.jpg', 'wechat_qr.jpg', 'qq_qr.jpg'];
-            if (localImages.includes(path)) {
-                return `https://xiaociwei01.github.io/CiweiHome/${path}`;
-            }
-            return `https://cdn.jsdelivr.net/gh/xiaociwei01/CiweiManager@main/${path}`;
-        }
-
-        function getCurrentLink(key) {
-            const config = LINK_CONFIG[key];
-            return config.selected === 'primary' ? config.primary : config.fallback;
-        }
-
-        function getCurrentPlatform(key) {
-            const config = LINK_CONFIG[key];
-            return config.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
-        }
-
-        function updatePlatformUI(key) {
-            const config = LINK_CONFIG[key];
-            const isPrimary = config.selected === 'primary';
-            const dot = document.getElementById('dot-' + key);
-            const label = document.getElementById('label-' + key);
-            const primaryLabel = document.getElementById('primary-label-' + key);
-
-            if (dot) {
-                dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
-            }
-            if (label) {
-                label.textContent = isPrimary ? 'Netlify' : 'GitHub Pages';
-            }
-            if (primaryLabel) {
-                primaryLabel.textContent = isPrimary ? '主: Netlify' : '主: GitHub Pages';
-            }
-
-            const fallbackLink = document.getElementById('fallback-link-' + key);
-            if (fallbackLink) {
-                const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
-                fallbackLink.textContent = '🔁 备用: ' + fbLabel;
-                const target = isPrimary ? config.fallback : config.primary;
-                fallbackLink.href = target;
-                fallbackLink.onclick = function(e) {
-                    e.preventDefault();
-                    directNavigate(key, 'fallback');
-                };
-            }
-        }
-
-        function togglePlatform(key) {
-            const config = LINK_CONFIG[key];
-            config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
-
-            const dot = document.getElementById('dot-' + key);
-            if (dot) {
-                dot.classList.add('switching');
-                setTimeout(() => dot.classList.remove('switching'), 400);
-            }
-
-            updatePlatformUI(key);
-            const btn = document.getElementById('btn-' + key);
-            if (btn) {
-                btn.title = '当前目标: ' + getCurrentPlatform(key);
-            }
-        }
-
-        function smartNavigate(key) {
-            const config = LINK_CONFIG[key];
-            const btn = document.getElementById('btn-' + key);
-            const originalText = btn.innerHTML;
-
-            btn.classList.add('loading');
-            btn.innerHTML = '⏳ 检测中...';
-
-            const primaryUrl = config.primary;
-            const fallbackUrl = config.fallback;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-            fetch(primaryUrl, {
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    signal: controller.signal
-                })
-                .then(() => {
-                    clearTimeout(timeoutId);
-                    btn.classList.remove('loading');
-                    btn.innerHTML = originalText;
-                    window.open(primaryUrl, '_blank');
-                })
-                .catch(() => {
-                    clearTimeout(timeoutId);
-                    config.selected = 'fallback';
-                    updatePlatformUI(key);
-                    btn.classList.remove('loading');
-                    btn.innerHTML = originalText;
-                    window.open(fallbackUrl, '_blank');
-                });
-        }
-
-        function directNavigate(key, target) {
-            const config = LINK_CONFIG[key];
-            const url = target === 'fallback' ? config.fallback : config.primary;
-            window.open(url, '_blank');
+        function showToast(msg, type = 'success') {
+            toast.textContent = msg;
+            toast.className = 'toast ' + type;
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+            requestAnimationFrame(() => toast.classList.add('show'));
         }
 
         // ================================================================
-        // 渲染作品（硬编码）
-        // ================================================================
-        function renderWorks() {
-            let html = '';
-            WORKS.forEach((work) => {
-                const cfg = LINK_CONFIG[work.id];
-                const isPrimary = cfg.selected === 'primary';
-                const dotClass = isPrimary ? 'netlify' : 'github';
-                const labelText = isPrimary ? 'Netlify' : 'GitHub Pages';
-
-                html += `
-                    <div class="work-card reveal" id="work-${work.id}">
-                        <img class="work-cover" src="${work.cover}" alt="${work.name}展示图" loading="lazy" onclick="openImageModal(this.src)" />
-                        <div class="work-name">${work.name}</div>
-                        <div class="work-tags">${work.tags}</div>
-                        <div class="work-desc">${work.desc}</div>
-                        <div class="work-actions">
-                            <a class="work-link" id="work-link-${work.id}" href="${work.primaryLink}" target="_blank">🚀 进入</a>
-                            <button class="platform-switcher" onclick="togglePlatform('${work.id}')" title="点击切换平台">
-                                <span class="dot ${dotClass}" id="dot-${work.id}"></span>
-                                <span class="label" id="label-${work.id}">${labelText}</span>
-                                <span class="arrow">⇄</span>
-                            </button>
-                        </div>
-                        <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
-                            <span>📡 <span id="primary-label-${work.id}">主: ${labelText}</span></span>
-                            <a href="#" class="fallback-link" onclick="directNavigate('${work.id}', 'fallback'); return false;">🔁 备用: ${labelText === 'Netlify' ? 'GitHub Pages' : 'Netlify'}</a>
-                        </div>
-                    </div>
-                `;
-            });
-
-            worksGrid.innerHTML = html;
-
-            Object.keys(LINK_CONFIG).forEach(key => {
-                if (key !== 'friends') {
-                    updatePlatformUI(key);
-                    const btn = document.getElementById('btn-' + key);
-                    if (btn) {
-                        btn.title = '当前目标: ' + getCurrentPlatform(key);
-                    }
-                }
-            });
-        }
-
-        // ================================================================
-        // 加载朋友圈（从 CiweiBlog 读取 - 原版逻辑）
-        // ================================================================
-        async function fetchRecentPosts() {
-            const container = document.getElementById('recentPosts');
-            try {
-                const res = await fetch(BLOG_API);
-                if (!res.ok) throw new Error('无法读取文章列表');
-                const files = await res.json();
-                const posts = files.filter(f => f.name.endsWith('.md'));
-
-                if (posts.length === 0) {
-                    container.innerHTML = `
-                        <div class="rp-title">📖 最近更新</div>
-                        <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
-                    `;
-                    return;
-                }
-
-                posts.sort((a, b) => b.name.localeCompare(a.name));
-                const recent = posts.slice(0, 3);
-
-                const tasks = recent.map(async (post) => {
-                    try {
-                        const contentRes = await fetch(post.download_url);
-                        const contentText = await contentRes.text();
-                        const titleMatch = contentText.match(/title:\s*(.+)/);
-                        const dateMatch = contentText.match(/date:\s*(.+)/);
-                        const title = titleMatch ? titleMatch[1].trim() : post.name.replace('.md', '');
-                        const date = dateMatch ? dateMatch[1].trim() : '未知日期';
-                        // 只取日期部分，去掉时间
-                        const dateOnly = date.includes(' ') ? date.split(' ')[0] : date;
-                        return { title, date: dateOnly, filename: post.name };
-                    } catch (e) {
-                        return null;
-                    }
-                });
-
-                const results = await Promise.all(tasks);
-                const validPosts = results.filter(p => p !== null);
-
-                if (validPosts.length === 0) {
-                    container.innerHTML = `
-                        <div class="rp-title">📖 最近更新</div>
-                        <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
-                    `;
-                    return;
-                }
-
-                let html = `<div class="rp-title">📖 最近更新</div>`;
-                for (const post of validPosts) {
-                    html += `
-                        <a href="${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}" target="_blank" class="rp-item">
-                            <span>${post.title}</span>
-                            <span class="rp-date">${post.date}</span>
-                        </a>
-                    `;
-                }
-                container.innerHTML = html;
-
-                const items = container.querySelectorAll('.rp-item');
-                items.forEach((item, index) => {
-                    item.style.opacity = '0';
-                    item.style.transform = 'translateY(8px)';
-                    item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s, padding-left 0.25s ease, color 0.25s ease`;
-                    requestAnimationFrame(() => {
-                        item.style.opacity = '1';
-                        item.style.transform = 'translateY(0)';
-                    });
-                });
-            } catch (err) {
-                container.innerHTML = `
-                    <div class="rp-title">📖 最近更新</div>
-                    <div class="rp-empty">加载失败，请稍后重试</div>
-                `;
-            }
-        }
-
-        // ================================================================
-        // 图片/二维码模态框
-        // ================================================================
-        function openImageModal(src) {
-            if (!src) return;
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modalImg.src = src;
-            modal.classList.remove('closing');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function openAvatarModal() {
-            const avatarImg = document.getElementById('heroAvatar');
-            if (!avatarImg) return;
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modalImg.src = avatarImg.src;
-            modalImg.alt = avatarImg.alt || '头像';
-            modal.classList.remove('closing');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            modal.classList.add('closing');
-            setTimeout(() => {
-                modal.classList.remove('active');
-                modal.classList.remove('closing');
-                document.body.style.overflow = '';
-            }, 250);
-        }
-
-        function openQR(type) {
-            const modal = document.getElementById('qrModal');
-            const qrImg = document.getElementById('qrImage');
-            const qrLabel = document.getElementById('qrLabel');
-
-            if (type === 'wechat') {
-                qrImg.src = 'wechat_qr.jpg';
-                qrLabel.textContent = '📱 微信二维码';
-            } else if (type === 'qq') {
-                qrImg.src = 'qq_qr.jpg';
-                qrLabel.textContent = '💬 QQ二维码';
-            } else {
-                return;
-            }
-
-            modal.classList.remove('closing');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeQR() {
-            const modal = document.getElementById('qrModal');
-            modal.classList.add('closing');
-            setTimeout(() => {
-                modal.classList.remove('active');
-                modal.classList.remove('closing');
-                document.body.style.overflow = '';
-            }, 200);
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeImageModal();
-                closeQR();
-            }
-        });
-
-        // ================================================================
-        // 微信/QQ 点击
-        // ================================================================
-        document.getElementById('socialWechat').addEventListener('click', function(e) {
-            e.preventDefault();
-            openQR('wechat');
-        });
-        document.getElementById('socialQQ').addEventListener('click', function(e) {
-            e.preventDefault();
-            openQR('qq');
-        });
-
-        // ================================================================
-        // 主题切换
+        // 主题
         // ================================================================
         function getPreferredTheme() {
             const saved = localStorage.getItem(THEME_KEY);
@@ -1156,8 +744,8 @@
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem(THEME_KEY, theme);
-            const icon = document.getElementById('themeIcon');
-            const label = document.getElementById('themeLabel');
+            const icon = $('themeIcon');
+            const label = $('themeLabel');
             if (theme === 'dark') {
                 icon.textContent = '☀️';
                 label.textContent = '浅色';
@@ -1178,195 +766,442 @@
                 applyTheme(e.matches ? 'dark' : 'light');
             }
         });
-        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        $('themeToggle').addEventListener('click', toggleTheme);
 
         // ================================================================
-        // GSAP 滚动入场动画（双向触发）
+        // Token
         // ================================================================
-        function initGSAP() {
-            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-                setTimeout(initGSAP, 500);
+        function loadToken() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved && saved.startsWith('ghp_')) {
+                token = saved;
+                tokenInput.value = saved;
+                tokenDot.className = 'dot active';
+                tokenLabel.textContent = '已配置';
+                tokenHint.textContent = '✅ Token 已配置';
+            } else {
+                token = '';
+                tokenDot.className = 'dot inactive';
+                tokenLabel.textContent = '未配置';
+                tokenHint.textContent = '⚠️ 请配置 Token 以删除/置顶/编辑文章';
+            }
+        }
+
+        function saveTokenAndClose() {
+            const val = tokenInput.value.trim();
+            if (val && val.startsWith('ghp_')) {
+                localStorage.setItem(STORAGE_KEY, val);
+                token = val;
+                tokenDot.className = 'dot active';
+                tokenLabel.textContent = '已配置';
+                tokenHint.textContent = '✅ Token 已配置';
+                showToast('✅ Token 已保存');
+                tokenModal.classList.remove('active');
+                loadPosts();
+            } else if (!val) {
+                clearToken();
+            } else {
+                tokenHint.textContent = '⚠️ Token 格式错误，应以 ghp_ 开头';
+                showToast('⚠️ Token 格式错误', 'error');
+            }
+        }
+
+        function clearToken() {
+            localStorage.removeItem(STORAGE_KEY);
+            token = '';
+            tokenInput.value = '';
+            tokenDot.className = 'dot inactive';
+            tokenLabel.textContent = '未配置';
+            tokenHint.textContent = '⚠️ 请配置 Token 以删除/置顶/编辑文章';
+            tokenModal.classList.remove('active');
+            showToast('Token 已清除');
+        }
+
+        $('tokenStatusBar').addEventListener('click', () => {
+            tokenModal.classList.add('active');
+            tokenInput.focus();
+        });
+        tokenModal.addEventListener('click', e => {
+            if (e.target === tokenModal) tokenModal.classList.remove('active');
+        });
+        tokenInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') saveTokenAndClose();
+        });
+
+        // ================================================================
+        // 核心功能（原版逻辑，完全保留）
+        // ================================================================
+        function parseFrontmatter(contentText) {
+            const result = { title: '', date: '', tags: '', pinned: false, modified: '' };
+            const lines = contentText.split('\n');
+            if (lines[0] === '---') {
+                const end = lines.indexOf('---', 1);
+                if (end !== -1) {
+                    lines.slice(1, end).forEach(line => {
+                        if (line.startsWith('title:')) result.title = line.replace('title:', '').trim();
+                        if (line.startsWith('date:')) result.date = line.replace('date:', '').trim();
+                        if (line.startsWith('tags:')) result.tags = line.replace('tags:', '').trim();
+                        if (line.startsWith('pinned:')) result.pinned = line.replace('pinned:', '').trim() === 'true';
+                        if (line.startsWith('modified:')) result.modified = line.replace('modified:', '').trim();
+                    });
+                    result.bodyStart = end + 1;
+                    result.body = lines.slice(end + 1).join('\n').trim();
+                }
+            }
+            return result;
+        }
+
+        async function fetchPosts() {
+            const headers = token ? { 'Authorization': `token ${token}` } : {};
+            const res = await fetch(API_URL, { headers });
+            if (!res.ok) throw new Error(`API 请求失败 (状态码 ${res.status})`);
+            const files = await res.json();
+            const posts = files.filter(f => f.name.endsWith('.md'));
+
+            const tasks = posts.map(async (post) => {
+                try {
+                    const contentRes = await fetch(post.download_url);
+                    if (!contentRes.ok) return null;
+                    const contentText = await contentRes.text();
+                    const meta = parseFrontmatter(contentText);
+                    return {
+                        filename: post.name,
+                        sha: post.sha,
+                        contentText: contentText,
+                        title: meta.title || post.name.replace('.md', ''),
+                        date: meta.date || '未知日期',
+                        tags: meta.tags,
+                        pinned: meta.pinned,
+                        modified: meta.modified,
+                        dateObj: meta.date !== '未知日期' ? new Date(meta.date) : null
+                    };
+                } catch { return null; }
+            });
+            const results = await Promise.all(tasks);
+            return results.filter(p => p !== null);
+        }
+
+        function renderPosts(posts) {
+            postsData = posts;
+            $('postCount').textContent = posts.length + ' 篇';
+            $('lastUpdateTime').textContent = '更新于 ' + new Date().toLocaleTimeString();
+
+            const sorted = [...posts].sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return b.filename.localeCompare(a.filename);
+            });
+
+            if (sorted.length === 0) {
+                postList.innerHTML =
+                    `<div class="empty-state"><div>📝 还没有文章，点「写新文章」开始创作</div></div>`;
                 return;
             }
 
-            gsap.registerPlugin(ScrollTrigger);
+            let html = '';
+            for (const post of sorted) {
+                const detailUrl = `${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}`;
+                const editUrl = `${EDIT_PAGE}?file=${encodeURIComponent(post.filename)}`;
+                const pinClass = post.pinned ? 'pin-active' : '';
+                const pinBadge = post.pinned ? '<span class="badge-pin">📌 置顶</span>' : '';
+                const modifiedBadge = post.modified ? '<span class="badge-modified">✏️ 已修改</span>' : '';
 
-            document.querySelectorAll('.hero .reveal').forEach((el, i) => {
-                gsap.fromTo(el, {
-                        opacity: 0,
-                        y: 40,
-                        scale: 0.96,
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        scale: 1,
-                        duration: 1.0,
-                        ease: 'power3.out',
-                        delay: i * 0.08,
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 90%',
-                            end: 'top 40%',
-                            scrub: 1.0,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
-            });
-
-            document.querySelectorAll('.section-title.reveal').forEach((el) => {
-                gsap.fromTo(el, {
-                        opacity: 0,
-                        y: 30,
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.8,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 88%',
-                            end: 'top 50%',
-                            scrub: 0.8,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
-            });
-
-            document.querySelectorAll('.work-card.reveal').forEach((el, i) => {
-                gsap.fromTo(el, {
-                        opacity: 0,
-                        y: 50,
-                        scale: 0.94,
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        scale: 1,
-                        duration: 1.0,
-                        ease: 'power4.out',
-                        delay: i * 0.06,
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 92%',
-                            end: 'top 40%',
-                            scrub: 1.0,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
-            });
-
-            const friendCard = document.querySelector('#work-friends.reveal');
-            if (friendCard) {
-                gsap.fromTo(friendCard, {
-                        opacity: 0,
-                        y: 50,
-                        scale: 0.94,
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        scale: 1,
-                        duration: 1.0,
-                        ease: 'power4.out',
-                        scrollTrigger: {
-                            trigger: friendCard,
-                            start: 'top 92%',
-                            end: 'top 40%',
-                            scrub: 1.0,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
+                html += `
+                        <div class="post-item ${post.pinned ? 'pinned' : ''}" data-filename="${post.filename}" data-sha="${post.sha}">
+                            <div class="left" onclick="window.open('${detailUrl}', '_blank')">
+                                <span class="title">${post.title} ${pinBadge}${modifiedBadge}</span>
+                                <div class="meta"><span>${post.date}</span></div>
+                            </div>
+                            <div class="right">
+                                <button class="btn-icon ${pinClass}" onclick="togglePin(this)" title="${post.pinned ? '取消置顶' : '置顶文章'}">📌</button>
+                                <a href="${editUrl}" class="view-link" title="编辑">✏️</a>
+                                <a href="${detailUrl}" target="_blank" class="view-link" title="查看">👁️</a>
+                                <button class="btn-icon" onclick="deletePost(this)" title="删除">🗑️</button>
+                            </div>
+                        </div>
+                    `;
             }
+            postList.innerHTML = html;
+        }
 
-            const footer = document.querySelector('.footer.reveal');
-            if (footer) {
-                gsap.fromTo(footer, {
-                        opacity: 0,
-                        y: 30,
-                    }, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.8,
-                        ease: 'power3.out',
-                        scrollTrigger: {
-                            trigger: footer,
-                            start: 'top 90%',
-                            end: 'top 60%',
-                            scrub: 0.8,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
+        async function loadPosts() {
+            postList.innerHTML =
+                `<div class="loading-state"><div class="spinner"></div><div>加载中...</div></div>`;
+            try {
+                const posts = await fetchPosts();
+                renderPosts(posts);
+            } catch (err) {
+                postList.innerHTML =
+                    `<div class="error-state"><div>⚠️ 加载失败：${err.message}</div><div style="margin-top:10px;"><button class="btn btn-outline btn-sm" onclick="loadPosts()">🔄 重试</button></div></div>`;
+                showToast('❌ 加载失败', 'error');
             }
+        }
 
-            const avatar = document.querySelector('.hero-avatar');
-            if (avatar) {
-                gsap.fromTo(avatar, {
-                        opacity: 0,
-                        scale: 0.8,
-                        rotation: -3,
-                    }, {
-                        opacity: 1,
-                        scale: 1,
-                        rotation: 0,
-                        duration: 1.2,
-                        ease: 'power4.out',
-                        scrollTrigger: {
-                            trigger: avatar,
-                            start: 'top 95%',
-                            end: 'top 50%',
-                            scrub: 0.8,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
+        function updatePinnedInContent(contentText, pinned) {
+            const lines = contentText.split('\n');
+            let hasPinned = false;
+            let inFrontmatter = false;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i] === '---') {
+                    if (!inFrontmatter) { inFrontmatter = true; continue; } else break;
+                }
+                if (inFrontmatter && lines[i].startsWith('pinned:')) {
+                    lines[i] = `pinned: ${pinned}`;
+                    hasPinned = true;
+                    break;
+                }
             }
+            if (!hasPinned) {
+                let insertIndex = -1;
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].startsWith('date:') || lines[i].startsWith('tags:')) insertIndex = i;
+                }
+                if (insertIndex !== -1) lines.splice(insertIndex + 1, 0, `pinned: ${pinned}`);
+                else lines.splice(1, 0, `pinned: ${pinned}`);
+            }
+            return lines.join('\n');
+        }
 
-            document.querySelectorAll('.recent-posts .rp-item').forEach((el, i) => {
-                gsap.fromTo(el, {
-                        opacity: 0,
-                        x: -15,
-                    }, {
-                        opacity: 1,
-                        x: 0,
-                        duration: 0.6,
-                        ease: 'power3.out',
-                        delay: i * 0.08,
-                        scrollTrigger: {
-                            trigger: el,
-                            start: 'top 92%',
-                            end: 'top 60%',
-                            scrub: 0.6,
-                            toggleActions: 'play reverse play reverse',
-                        },
-                    }
-                );
-            });
+        async function togglePin(btn) {
+            const item = btn.closest('.post-item');
+            const filename = item.dataset.filename;
+            const sha = item.dataset.sha;
+            if (!token) {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved && saved.startsWith('ghp_')) { token = saved; } else {
+                    showToast('⚠️ 请先配置 Token', 'error');
+                    tokenModal.classList.add('active');
+                    return;
+                }
+            }
+            const post = postsData.find(p => p.filename === filename);
+            if (!post) return;
+            const newPinned = !post.pinned;
+            btn.disabled = true;
+            try {
+                const newContent = updatePinnedInContent(post.contentText, newPinned);
+                const url = `https://api.github.com/repos/${REPO}/contents/${POSTS_PATH}/${filename}`;
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `${newPinned ? '置顶' : '取消置顶'}文章: ${filename}`,
+                        content: btoa(unescape(encodeURIComponent(newContent))),
+                        sha: sha,
+                        branch: 'main'
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    post.pinned = newPinned;
+                    post.sha = data.content.sha;
+                    post.contentText = newContent;
+                    renderPosts(postsData);
+                    await rebuildIndex();
+                    showToast(newPinned ? '✅ 已置顶，索引已同步' : '✅ 已取消置顶，索引已同步');
+                } else {
+                    const err = await res.json();
+                    showToast(`❌ 操作失败：${err.message}`, 'error');
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showToast(`❌ 网络错误：${err.message}`, 'error');
+                btn.disabled = false;
+            }
+        }
 
-            console.log('🚀 GSAP 滚动驱动动画已启动');
+        function extractMediaPaths(markdown) {
+            const paths = [];
+            const imgRegex = /!\[.*?\]\((.*?)\)/g;
+            let m;
+            while ((m = imgRegex.exec(markdown)) !== null) {
+                const path = extractRepoPath(m[1]);
+                if (path) paths.push(path);
+            }
+            const vidRegex = /<video[^>]*src="([^"]*)"[^>]*>/g;
+            while ((m = vidRegex.exec(markdown)) !== null) {
+                const path = extractRepoPath(m[1]);
+                if (path) paths.push(path);
+            }
+            return [...new Set(paths)];
+        }
+
+        function extractRepoPath(url) {
+            if (url.includes('raw.githubusercontent.com/' + REPO + '/main/'))
+                return url.split('raw.githubusercontent.com/' + REPO + '/main/')[1];
+            if (url.includes('cdn.jsdelivr.net/gh/' + REPO + '@main/'))
+                return url.split('cdn.jsdelivr.net/gh/' + REPO + '@main/')[1];
+            if (url.includes('github.com/' + REPO + '/blob/main/'))
+                return url.split('github.com/' + REPO + '/blob/main/')[1];
+            return null;
+        }
+
+        async function deletePost(btn) {
+            const item = btn.closest('.post-item');
+            const filename = item.dataset.filename;
+            const sha = item.dataset.sha;
+            if (!token) {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved && saved.startsWith('ghp_')) token = saved;
+                else {
+                    showToast('⚠️ 请先配置 Token', 'error');
+                    tokenModal.classList.add('active');
+                    return;
+                }
+            }
+            if (!confirm(`确定要删除「${filename}」吗？\n文章中的图片/视频也会一并删除！`)) return;
+            btn.disabled = true;
+            btn.textContent = '⏳';
+            try {
+                const post = postsData.find(p => p.filename === filename);
+                let mediaPaths = [];
+                if (post) mediaPaths = extractMediaPaths(post.contentText);
+                const deleteUrl = `https://api.github.com/repos/${REPO}/contents/${POSTS_PATH}/${filename}`;
+                const res = await fetch(deleteUrl, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `删除文章: ${filename}`, sha: sha, branch: 'main' })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    showToast(`❌ 删除失败：${err.message}`, 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🗑️';
+                    return;
+                }
+                let deletedMedia = 0;
+                for (const mediaPath of mediaPaths) {
+                    try {
+                        const mRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${mediaPath}`, {
+                            headers: { 'Authorization': `token ${token}` }
+                        });
+                        if (mRes.ok) {
+                            const mData = await mRes.json();
+                            const dRes = await fetch(`https://api.github.com/repos/${REPO}/contents/${mediaPath}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ message: `删除媒体: ${mediaPath}`, sha: mData.sha,
+                                    branch: 'main' })
+                            });
+                            if (dRes.ok) deletedMedia++;
+                        }
+                    } catch {}
+                }
+                item.classList.add('deleting');
+                setTimeout(async () => {
+                    postsData = postsData.filter(p => p.filename !== filename);
+                    renderPosts(postsData);
+                    await rebuildIndex();
+                    showToast(deletedMedia > 0 ? `✅ 已删除文章，清理了 ${deletedMedia} 个媒体文件` :
+                        '✅ 已删除文章，索引已同步');
+                }, 250);
+            } catch (err) {
+                showToast(`❌ 网络错误：${err.message}`, 'error');
+                btn.disabled = false;
+                btn.textContent = '🗑️';
+            }
+        }
+
+        function buildMediaUrl(url) {
+            if (!url) return '';
+            if (url.includes('cdn.jsdelivr.net')) return url;
+            if (url.includes('raw.githubusercontent.com/' + REPO + '/main/')) {
+                const path = url.split('raw.githubusercontent.com/' + REPO + '/main/')[1];
+                return `https://cdn.jsdelivr.net/gh/${REPO}@main/${path}`;
+            }
+            if (url.includes('github.com/' + REPO + '/blob/main/')) {
+                const path = url.split('github.com/' + REPO + '/blob/main/')[1];
+                return `https://cdn.jsdelivr.net/gh/${REPO}@main/${path}`;
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://'))
+                return `https://cdn.jsdelivr.net/gh/${REPO}@main/${url.replace(/^\.?\//, '')}`;
+            return url;
+        }
+
+        function parsePostToIndexItem(contentText, filename) {
+    const meta = parseFrontmatter(contentText);
+    const images = [...meta.body.matchAll(/!\[.*?\]\((.*?)\)/g)].map(m => buildMediaUrl(m[1]));
+    const videos = [...meta.body.matchAll(/<video[^>]*src="([^"]*)"[^>]*>/g)].map(m => buildMediaUrl(m[1]));
+    let textBody = meta.body.replace(/!\[.*?\]\(.*?\)/g, '').replace(/<video[^>]*>.*?<\/video>/g, '').replace(/\n{3,}/g, '\n\n').trim();
+    return {
+        filename,
+        title: meta.title || filename.replace('.md', ''),
+        date: meta.date || '未知日期',
+        tags: meta.tags.split(',').map(t => t.trim()).filter(t => t),
+        body: textBody,
+        images,
+        videos,
+        pinned: meta.pinned,      // 👈 加上这一行
+        modified: meta.modified
+    };
+}
+
+        async function rebuildIndex() {
+            if (!token) {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved && saved.startsWith('ghp_')) token = saved;
+                else {
+                    showToast('⚠️ 请先配置 Token', 'error');
+                    tokenModal.classList.add('active');
+                    return;
+                }
+            }
+            try {
+                const indexPath = 'posts/index.json';
+                const indexUrl = `https://api.github.com/repos/${REPO}/contents/${indexPath}`;
+                let sha = '';
+                try {
+                    const getRes = await fetch(indexUrl, { headers: { 'Authorization': `token ${token}` } });
+                    if (getRes.ok) { const data = await getRes.json();
+                        sha = data.sha; }
+                } catch (e) {}
+
+                const postsRes = await fetch(API_URL, { headers: { 'Authorization': `token ${token}` } });
+                if (!postsRes.ok) throw new Error('无法读取文章列表');
+                const files = await postsRes.json();
+                const mdFiles = files.filter(f => f.name.endsWith('.md'));
+                const tasks = mdFiles.map(async post => {
+                    try {
+                        const contentRes = await fetch(post.download_url);
+                        if (!contentRes.ok) return null;
+                        const contentText = await contentRes.text();
+                        return parsePostToIndexItem(contentText, post.name);
+                    } catch { return null; }
+                });
+                const results = await Promise.all(tasks);
+                const index = results.filter(p => p !== null);
+                index.sort((a, b) => {
+                    if (a.pinned && !b.pinned) return -1;
+                    if (!a.pinned && b.pinned) return 1;
+                    return (b.filename || '').localeCompare(a.filename || '');
+                });
+                const content = JSON.stringify(index, null, 2);
+                const payload = {
+                    message: `更新索引: ${new Date().toLocaleString()}`,
+                    content: btoa(unescape(encodeURIComponent(content))),
+                    branch: 'main'
+                };
+                if (sha) payload.sha = sha;
+                const putRes = await fetch(indexUrl, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (putRes.ok) showToast('✅ 索引已重建');
+                else showToast('❌ 索引重建失败', 'error');
+            } catch (err) {
+                showToast(`❌ 索引重建失败：${err.message}`, 'error');
+            }
         }
 
         // ================================================================
         // 启动
         // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            renderWorks();
-            fetchRecentPosts();
+        loadToken();
+        loadPosts();
 
-            updatePlatformUI('friends');
-            const btn = document.getElementById('btn-friends');
-            if (btn) {
-                btn.title = '当前目标: ' + getCurrentPlatform('friends');
-            }
-
-            setTimeout(initGSAP, 300);
-        });
-
-        console.log('🦔 CiweiHome 已启动（视觉新版 + 朋友圈原版逻辑）');
-        console.log('📦 博客仓库:', BLOG_REPO);
-        console.log('📄 详情页:', DETAIL_PAGE);
+        console.log('🦔 文章管理后台已启动（深色玻璃拟态版）');
+        console.log('📦 仓库:', REPO);
     </script>
 
 </body>
