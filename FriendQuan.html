@@ -585,16 +585,27 @@
         }
 
         function renderMarkdown(text) {
-            if (!text) return '';
-            let html = text
-                .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
-                    const fullUrl = buildCdnUrl(url);
-                    return `<img src="${fullUrl}" alt="图片" loading="lazy" onclick="openImgModal(this.src)" />`;
-                })
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\n/g, '<br />');
-            return html;
-        }
+    if (!text) return '';
+
+    // 先转义所有 HTML 标签（让 <br> <dr> 等显示为纯文本）
+    let html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    // 再处理 Markdown 语法
+    html = html
+        .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
+            const fullUrl = buildCdnUrl(url);
+            return `<img src="${fullUrl}" alt="图片" loading="lazy" onclick="openImgModal(this.src)" />`;
+        })
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br />');
+
+    return html;
+}
 
         // ================================================================
         // 主题切换
