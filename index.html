@@ -384,7 +384,6 @@
             pointer-events: none;
         }
 
-        /* ===== 平台切换器（受平台开关控制） ===== */
         .platform-switcher {
             display: flex;
             align-items: center;
@@ -1119,19 +1118,15 @@
         // ================================================================
         function getAvailablePlatform(key) {
             const config = LINK_CONFIG[key];
-            // 检查平台是否可用
             const primaryAvailable = platformConfig.netlify;
             const fallbackAvailable = platformConfig.github;
 
-            // 如果主平台可用，返回主平台
             if (primaryAvailable) {
                 return { url: config.primary, label: 'Netlify', type: 'primary' };
             }
-            // 如果主平台不可用但备用平台可用，返回备用平台
             if (fallbackAvailable) {
                 return { url: config.fallback, label: 'GitHub Pages', type: 'fallback' };
             }
-            // 两个都不可用
             return null;
         }
 
@@ -1152,18 +1147,15 @@
             const label = document.getElementById('label-' + key);
             const primaryLabel = document.getElementById('primary-label-' + key);
 
-            // 检查平台是否可用
             const primaryAvailable = platformConfig.netlify;
             const fallbackAvailable = platformConfig.github;
 
-            // 如果当前选中的平台不可用，自动切换到可用的平台
             if (isPrimary && !primaryAvailable && fallbackAvailable) {
                 config.selected = 'fallback';
             } else if (!isPrimary && !fallbackAvailable && primaryAvailable) {
                 config.selected = 'primary';
             }
 
-            // 更新 UI
             const currentIsPrimary = config.selected === 'primary';
             if (dot) {
                 dot.className = 'dot ' + (currentIsPrimary ? 'netlify' : 'github');
@@ -1176,7 +1168,6 @@
                 primaryLabel.textContent = '主: ' + mainLabel;
             }
 
-            // 更新进入按钮的链接
             const btn = document.getElementById('btn-' + key);
             if (btn) {
                 const available = getAvailablePlatform(key);
@@ -1188,12 +1179,10 @@
                 }
             }
 
-            // 更新备用链接
             const fallbackLink = document.getElementById('fallback-link-' + key);
             if (fallbackLink) {
                 const fbLabel = currentIsPrimary ? 'GitHub Pages' : 'Netlify';
                 const target = currentIsPrimary ? config.fallback : config.primary;
-                // 检查备用平台是否可用
                 const fbAvailable = currentIsPrimary ? fallbackAvailable : primaryAvailable;
                 if (fbAvailable) {
                     fallbackLink.textContent = '🔁 备用: ' + fbLabel;
@@ -1214,20 +1203,16 @@
             const primaryAvailable = platformConfig.netlify;
             const fallbackAvailable = platformConfig.github;
 
-            // 如果两个平台都不可用，不允许切换
             if (!primaryAvailable && !fallbackAvailable) {
                 return;
             }
 
-            // 如果当前选中的是主平台，尝试切换到备用平台
             if (config.selected === 'primary') {
-                // 如果备用平台不可用，不允许切换
                 if (!fallbackAvailable) {
                     return;
                 }
                 config.selected = 'fallback';
             } else {
-                // 如果主平台不可用，不允许切换
                 if (!primaryAvailable) {
                     return;
                 }
@@ -1313,7 +1298,7 @@
         }
 
         // ================================================================
-        // 应用平台配置（显示/隐藏对应的平台元素）
+        // 应用平台配置（显示/隐藏对应的平台元素 + 最近更新区域）
         // ================================================================
         function applyPlatformConfig() {
             const workKeys = ['solar', 'lunar', 'friends'];
@@ -1325,12 +1310,10 @@
                 const btn = document.getElementById('btn-' + key);
                 const actions = document.querySelector(key === 'friends' ? '#work-friends .work-actions' : `#work-${key} .work-actions`);
 
-                // 判断平台可用性
                 const primaryAvailable = platformConfig.netlify;
                 const fallbackAvailable = platformConfig.github;
                 const anyAvailable = primaryAvailable || fallbackAvailable;
 
-                // 更新切换器（仅当至少一个平台可用时才显示）
                 if (!anyAvailable) {
                     if (switcher) switcher.classList.add('platform-hidden');
                     if (btn) btn.classList.add('platform-hidden');
@@ -1342,10 +1325,8 @@
                     if (btn) btn.classList.remove('platform-hidden');
                     if (actions) actions.classList.remove('platform-hidden');
 
-                    // 更新切换器的可见状态（禁用不可用的平台）
                     if (switcher) {
                         const currentIsPrimary = LINK_CONFIG[key]?.selected === 'primary';
-                        // 如果当前选中的平台不可用，自动切换
                         if (currentIsPrimary && !primaryAvailable && fallbackAvailable) {
                             LINK_CONFIG[key].selected = 'fallback';
                         } else if (!currentIsPrimary && !fallbackAvailable && primaryAvailable) {
@@ -1353,7 +1334,6 @@
                         }
                     }
 
-                    // 更新进入按钮
                     if (btn) {
                         const available = getAvailablePlatform(key);
                         if (available) {
@@ -1365,7 +1345,6 @@
                         }
                     }
 
-                    // 更新备用链接
                     if (fallbackLink) {
                         const config = LINK_CONFIG[key];
                         const isPrimary = config?.selected === 'primary';
@@ -1389,12 +1368,10 @@
                         }
                     }
 
-                    // 更新主平台标签
                     if (primaryLabel) {
                         const config = LINK_CONFIG[key];
                         const isPrimary = config?.selected === 'primary';
                         const mainLabel = isPrimary ? 'Netlify' : 'GitHub Pages';
-                        // 如果主平台被禁用，显示备用平台为主
                         if (isPrimary && !primaryAvailable && fallbackAvailable) {
                             primaryLabel.textContent = '主: GitHub Pages';
                         } else if (!isPrimary && !fallbackAvailable && primaryAvailable) {
@@ -1404,12 +1381,26 @@
                         }
                     }
 
-                    // 更新切换器 UI
                     updatePlatformUI(key);
                 }
             });
 
-            // 更新朋友圈的进入按钮（特殊处理）
+            // ================================================================
+            // 🆕 控制「最近更新」区域的显示（两个平台都关则隐藏）
+            // ================================================================
+            const recentPosts = document.getElementById('recentPosts');
+            const anyAvailable = platformConfig.netlify || platformConfig.github;
+            if (recentPosts) {
+                if (!anyAvailable) {
+                    recentPosts.classList.add('platform-hidden');
+                    console.log('🔒 所有平台已禁用，隐藏最近更新');
+                } else {
+                    recentPosts.classList.remove('platform-hidden');
+                    console.log('🔓 至少一个平台可用，显示最近更新');
+                }
+            }
+
+            // 更新朋友圈的进入按钮
             const friendsBtn = document.getElementById('btn-friends');
             if (friendsBtn) {
                 const available = getAvailablePlatform('friends');
@@ -1504,7 +1495,6 @@
 
             worksGrid.innerHTML = html;
 
-            // 初始化各作品平台 UI
             WORKS.forEach((work) => {
                 updatePlatformUI(work.id);
             });
@@ -1912,7 +1902,6 @@
             renderWorks();
             fetchRecentPosts();
 
-            // 初始化朋友圈
             updatePlatformUI('friends');
             const friendsBtn = document.getElementById('btn-friends');
             if (friendsBtn) {
@@ -1922,13 +1911,12 @@
                 }
             }
 
-            // 加载平台配置
             loadPlatformConfig();
 
             setTimeout(initGSAP, 300);
         });
 
-        console.log('🦔 CiweiHome 已启动（平台开关全面修复版）');
+        console.log('🦔 CiweiHome 已启动（平台开关 + 最近更新联动）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>
