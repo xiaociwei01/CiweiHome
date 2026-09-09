@@ -384,6 +384,7 @@
             pointer-events: none;
         }
 
+        /* ===== 平台切换器（受平台开关控制） ===== */
         .platform-switcher {
             display: flex;
             align-items: center;
@@ -942,7 +943,7 @@
                         <div class="rp-loading">加载中...</div>
                     </div>
                     <div class="work-actions">
-                        <button class="work-link" id="btn-friends" onclick="smartNavigate('friends')">
+                        <button class="work-link" id="btn-friends" onclick="handleNavigate('friends')">
                             📝 进入朋友圈
                         </button>
                         <div class="platform-switcher" id="switcher-friends" onclick="togglePlatform('friends')" title="点击切换平台">
@@ -1004,9 +1005,9 @@
                 <div class="about-section-label">🛠️ 技术栈</div>
                 <div class="about-tag-list">
                     <span class="about-tag">页面：HTML + CSS + JavaScript</span>
-<span class="about-tag">数据接口：GitHub REST API</span>
-<span class="about-tag">评论：Cusdis</span>
-<span class="about-tag">滚动动画：GSAP + ScrollTrigger</span>
+                    <span class="about-tag">数据接口：GitHub REST API</span>
+                    <span class="about-tag">评论：Cusdis</span>
+                    <span class="about-tag">滚动动画：GSAP + ScrollTrigger</span>
                 </div>
             </div>
 
@@ -1113,6 +1114,27 @@
             return `https://cdn.jsdelivr.net/gh/xiaociwei01/CiweiManager@main/${path}`;
         }
 
+        // ================================================================
+        // 获取当前可用的平台链接（受平台开关控制）
+        // ================================================================
+        function getAvailablePlatform(key) {
+            const config = LINK_CONFIG[key];
+            // 检查平台是否可用
+            const primaryAvailable = platformConfig.netlify;
+            const fallbackAvailable = platformConfig.github;
+
+            // 如果主平台可用，返回主平台
+            if (primaryAvailable) {
+                return { url: config.primary, label: 'Netlify', type: 'primary' };
+            }
+            // 如果主平台不可用但备用平台可用，返回备用平台
+            if (fallbackAvailable) {
+                return { url: config.fallback, label: 'GitHub Pages', type: 'fallback' };
+            }
+            // 两个都不可用
+            return null;
+        }
+
         function getCurrentLink(key) {
             const config = LINK_CONFIG[key];
             return config.selected === 'primary' ? config.primary : config.fallback;
@@ -1130,32 +1152,87 @@
             const label = document.getElementById('label-' + key);
             const primaryLabel = document.getElementById('primary-label-' + key);
 
-            if (dot) {
-                dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
-            }
-            if (label) {
-                label.textContent = isPrimary ? 'Netlify' : 'GitHub Pages';
-            }
-            if (primaryLabel) {
-                primaryLabel.textContent = isPrimary ? '主: Netlify' : '主: GitHub Pages';
+            // 检查平台是否可用
+            const primaryAvailable = platformConfig.netlify;
+            const fallbackAvailable = platformConfig.github;
+
+            // 如果当前选中的平台不可用，自动切换到可用的平台
+            if (isPrimary && !primaryAvailable && fallbackAvailable) {
+                config.selected = 'fallback';
+            } else if (!isPrimary && !fallbackAvailable && primaryAvailable) {
+                config.selected = 'primary';
             }
 
+            // 更新 UI
+            const currentIsPrimary = config.selected === 'primary';
+            if (dot) {
+                dot.className = 'dot ' + (currentIsPrimary ? 'netlify' : 'github');
+            }
+            if (label) {
+                label.textContent = currentIsPrimary ? 'Netlify' : 'GitHub Pages';
+            }
+            if (primaryLabel) {
+                const mainLabel = currentIsPrimary ? 'Netlify' : 'GitHub Pages';
+                primaryLabel.textContent = '主: ' + mainLabel;
+            }
+
+            // 更新进入按钮的链接
+            const btn = document.getElementById('btn-' + key);
+            if (btn) {
+                const available = getAvailablePlatform(key);
+                if (available) {
+                    btn.onclick = function() {
+                        window.open(available.url, '_blank');
+                    };
+                    btn.title = '当前目标: ' + available.label;
+                }
+            }
+
+            // 更新备用链接
             const fallbackLink = document.getElementById('fallback-link-' + key);
             if (fallbackLink) {
-                const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
-                fallbackLink.textContent = '🔁 备用: ' + fbLabel;
-                const target = isPrimary ? config.fallback : config.primary;
-                fallbackLink.href = target;
-                fallbackLink.onclick = function(e) {
-                    e.preventDefault();
-                    directNavigate(key, 'fallback');
-                };
+                const fbLabel = currentIsPrimary ? 'GitHub Pages' : 'Netlify';
+                const target = currentIsPrimary ? config.fallback : config.primary;
+                // 检查备用平台是否可用
+                const fbAvailable = currentIsPrimary ? fallbackAvailable : primaryAvailable;
+                if (fbAvailable) {
+                    fallbackLink.textContent = '🔁 备用: ' + fbLabel;
+                    fallbackLink.href = target;
+                    fallbackLink.onclick = function(e) {
+                        e.preventDefault();
+                        window.open(target, '_blank');
+                    };
+                    fallbackLink.classList.remove('platform-hidden');
+                } else {
+                    fallbackLink.classList.add('platform-hidden');
+                }
             }
         }
 
         function togglePlatform(key) {
             const config = LINK_CONFIG[key];
-            config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
+            const primaryAvailable = platformConfig.netlify;
+            const fallbackAvailable = platformConfig.github;
+
+            // 如果两个平台都不可用，不允许切换
+            if (!primaryAvailable && !fallbackAvailable) {
+                return;
+            }
+
+            // 如果当前选中的是主平台，尝试切换到备用平台
+            if (config.selected === 'primary') {
+                // 如果备用平台不可用，不允许切换
+                if (!fallbackAvailable) {
+                    return;
+                }
+                config.selected = 'fallback';
+            } else {
+                // 如果主平台不可用，不允许切换
+                if (!primaryAvailable) {
+                    return;
+                }
+                config.selected = 'primary';
+            }
 
             const dot = document.getElementById('dot-' + key);
             if (dot) {
@@ -1166,48 +1243,47 @@
             updatePlatformUI(key);
             const btn = document.getElementById('btn-' + key);
             if (btn) {
-                btn.title = '当前目标: ' + getCurrentPlatform(key);
+                const available = getAvailablePlatform(key);
+                if (available) {
+                    btn.title = '当前目标: ' + available.label;
+                }
             }
         }
 
-        function smartNavigate(key) {
-            const config = LINK_CONFIG[key];
-            const btn = document.getElementById('btn-' + key);
-            const originalText = btn.innerHTML;
-
-            btn.classList.add('loading');
-            btn.innerHTML = '⏳ 检测中...';
-
-            const primaryUrl = config.primary;
-            const fallbackUrl = config.fallback;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-            fetch(primaryUrl, {
-                    method: 'HEAD',
-                    mode: 'no-cors',
-                    signal: controller.signal
-                })
-                .then(() => {
-                    clearTimeout(timeoutId);
-                    btn.classList.remove('loading');
-                    btn.innerHTML = originalText;
-                    window.open(primaryUrl, '_blank');
-                })
-                .catch(() => {
-                    clearTimeout(timeoutId);
-                    config.selected = 'fallback';
-                    updatePlatformUI(key);
-                    btn.classList.remove('loading');
-                    btn.innerHTML = originalText;
-                    window.open(fallbackUrl, '_blank');
-                });
+        // ================================================================
+        // 处理导航点击（受平台开关控制）
+        // ================================================================
+        function handleNavigate(key) {
+            const available = getAvailablePlatform(key);
+            if (available) {
+                window.open(available.url, '_blank');
+            } else {
+                showToast('⚠️ 所有平台已禁用，无法跳转', 'error');
+            }
         }
 
+        // ================================================================
+        // 直接跳转（受平台开关控制）
+        // ================================================================
         function directNavigate(key, target) {
             const config = LINK_CONFIG[key];
-            const url = target === 'fallback' ? config.fallback : config.primary;
+            const primaryAvailable = platformConfig.netlify;
+            const fallbackAvailable = platformConfig.github;
+
+            let url;
+            if (target === 'fallback') {
+                if (!fallbackAvailable) {
+                    showToast('⚠️ GitHub Pages 已禁用', 'error');
+                    return;
+                }
+                url = config.fallback;
+            } else {
+                if (!primaryAvailable) {
+                    showToast('⚠️ Netlify 已禁用', 'error');
+                    return;
+                }
+                url = config.primary;
+            }
             window.open(url, '_blank');
         }
 
@@ -1216,7 +1292,8 @@
         // ================================================================
         async function loadPlatformConfig() {
             try {
-                const url = `https://raw.githubusercontent.com/${BLOG_REPO}/main/${PLATFORM_FILE}?t=${Date.now()}`;
+                const t = Date.now();
+                const url = `https://raw.githubusercontent.com/${BLOG_REPO}/main/${PLATFORM_FILE}?t=${t}`;
                 const res = await fetch(url, { cache: 'no-store' });
                 if (res.ok) {
                     const config = await res.json();
@@ -1224,7 +1301,6 @@
                     platformConfig.github = config.github !== undefined ? config.github : true;
                     console.log('✅ 平台配置已加载:', platformConfig);
                 } else {
-                    // 文件不存在，使用默认配置
                     platformConfig = { netlify: true, github: true };
                     console.log('⚠️ platform.json 不存在，使用默认配置');
                 }
@@ -1240,68 +1316,157 @@
         // 应用平台配置（显示/隐藏对应的平台元素）
         // ================================================================
         function applyPlatformConfig() {
-            // 处理所有作品的平台切换器
-            const workKeys = ['solar', 'lunar'];
+            const workKeys = ['solar', 'lunar', 'friends'];
+
             workKeys.forEach(key => {
                 const switcher = document.getElementById('switcher-' + key);
                 const fallbackLink = document.getElementById('fallback-link-' + key);
                 const primaryLabel = document.getElementById('primary-label-' + key);
+                const btn = document.getElementById('btn-' + key);
+                const actions = document.querySelector(key === 'friends' ? '#work-friends .work-actions' : `#work-${key} .work-actions`);
 
-                // 如果 Netlify 被禁用，隐藏主平台标签和切换器
-                if (!platformConfig.netlify) {
+                // 判断平台可用性
+                const primaryAvailable = platformConfig.netlify;
+                const fallbackAvailable = platformConfig.github;
+                const anyAvailable = primaryAvailable || fallbackAvailable;
+
+                // 更新切换器（仅当至少一个平台可用时才显示）
+                if (!anyAvailable) {
                     if (switcher) switcher.classList.add('platform-hidden');
-                    if (primaryLabel) {
-                        const labelText = platformConfig.github ? '备用: GitHub Pages' : '无可用平台';
-                        primaryLabel.textContent = platformConfig.github ? '主: GitHub Pages' : '⚠️ 无可用平台';
-                    }
+                    if (btn) btn.classList.add('platform-hidden');
+                    if (fallbackLink) fallbackLink.classList.add('platform-hidden');
+                    if (actions) actions.classList.add('platform-hidden');
+                    if (primaryLabel) primaryLabel.textContent = '⚠️ 无可用平台';
                 } else {
                     if (switcher) switcher.classList.remove('platform-hidden');
-                }
-
-                // 如果 GitHub Pages 被禁用，隐藏备用链接
-                if (!platformConfig.github) {
-                    if (fallbackLink) fallbackLink.classList.add('platform-hidden');
-                } else {
-                    if (fallbackLink) fallbackLink.classList.remove('platform-hidden');
-                }
-
-                // 如果两个都被禁用，隐藏整个 work-actions
-                if (!platformConfig.netlify && !platformConfig.github) {
-                    const actions = document.querySelector(`#work-${key} .work-actions`);
-                    if (actions) actions.classList.add('platform-hidden');
-                } else {
-                    const actions = document.querySelector(`#work-${key} .work-actions`);
+                    if (btn) btn.classList.remove('platform-hidden');
                     if (actions) actions.classList.remove('platform-hidden');
+
+                    // 更新切换器的可见状态（禁用不可用的平台）
+                    if (switcher) {
+                        const currentIsPrimary = LINK_CONFIG[key]?.selected === 'primary';
+                        // 如果当前选中的平台不可用，自动切换
+                        if (currentIsPrimary && !primaryAvailable && fallbackAvailable) {
+                            LINK_CONFIG[key].selected = 'fallback';
+                        } else if (!currentIsPrimary && !fallbackAvailable && primaryAvailable) {
+                            LINK_CONFIG[key].selected = 'primary';
+                        }
+                    }
+
+                    // 更新进入按钮
+                    if (btn) {
+                        const available = getAvailablePlatform(key);
+                        if (available) {
+                            btn.onclick = function() {
+                                window.open(available.url, '_blank');
+                            };
+                            btn.title = '当前目标: ' + available.label;
+                            btn.classList.remove('platform-hidden');
+                        }
+                    }
+
+                    // 更新备用链接
+                    if (fallbackLink) {
+                        const config = LINK_CONFIG[key];
+                        const isPrimary = config?.selected === 'primary';
+                        const fbAvailable = isPrimary ? fallbackAvailable : primaryAvailable;
+                        if (fbAvailable) {
+                            const target = isPrimary ? config.fallback : config.primary;
+                            const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
+                            fallbackLink.textContent = '🔁 备用: ' + fbLabel;
+                            fallbackLink.href = target;
+                            fallbackLink.onclick = function(e) {
+                                e.preventDefault();
+                                if (!fbAvailable) {
+                                    showToast('⚠️ 该平台已禁用', 'error');
+                                    return;
+                                }
+                                window.open(target, '_blank');
+                            };
+                            fallbackLink.classList.remove('platform-hidden');
+                        } else {
+                            fallbackLink.classList.add('platform-hidden');
+                        }
+                    }
+
+                    // 更新主平台标签
+                    if (primaryLabel) {
+                        const config = LINK_CONFIG[key];
+                        const isPrimary = config?.selected === 'primary';
+                        const mainLabel = isPrimary ? 'Netlify' : 'GitHub Pages';
+                        // 如果主平台被禁用，显示备用平台为主
+                        if (isPrimary && !primaryAvailable && fallbackAvailable) {
+                            primaryLabel.textContent = '主: GitHub Pages';
+                        } else if (!isPrimary && !fallbackAvailable && primaryAvailable) {
+                            primaryLabel.textContent = '主: Netlify';
+                        } else {
+                            primaryLabel.textContent = '主: ' + mainLabel;
+                        }
+                    }
+
+                    // 更新切换器 UI
+                    updatePlatformUI(key);
                 }
             });
 
-            // 处理朋友圈
-            const friendsSwitcher = document.getElementById('switcher-friends');
-            const friendsFallback = document.getElementById('fallback-link-friends');
-            const friendsPrimaryLabel = document.getElementById('primary-label-friends');
-
-            if (!platformConfig.netlify) {
-                if (friendsSwitcher) friendsSwitcher.classList.add('platform-hidden');
-                if (friendsPrimaryLabel) {
-                    friendsPrimaryLabel.textContent = platformConfig.github ? '主: GitHub Pages' : '⚠️ 无可用平台';
+            // 更新朋友圈的进入按钮（特殊处理）
+            const friendsBtn = document.getElementById('btn-friends');
+            if (friendsBtn) {
+                const available = getAvailablePlatform('friends');
+                if (available) {
+                    friendsBtn.onclick = function() {
+                        window.open(available.url, '_blank');
+                    };
+                    friendsBtn.title = '当前目标: ' + available.label;
                 }
-            } else {
-                if (friendsSwitcher) friendsSwitcher.classList.remove('platform-hidden');
             }
+        }
 
-            if (!platformConfig.github) {
-                if (friendsFallback) friendsFallback.classList.add('platform-hidden');
-            } else {
-                if (friendsFallback) friendsFallback.classList.remove('platform-hidden');
+        // ================================================================
+        // Toast（用于显示禁用提示）
+        // ================================================================
+        function showToast(msg, type = 'success') {
+            let toast = document.getElementById('customToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'customToast';
+                toast.style.cssText = `
+                    position: fixed; bottom: 30px; left: 50%;
+                    transform: translateX(-50%) translateY(80px);
+                    background: var(--card-bg, rgba(255,255,255,0.85));
+                    backdrop-filter: blur(20px);
+                    border: 1px solid var(--border-color, rgba(0,0,0,0.06));
+                    color: var(--text-primary, #1a1a2e);
+                    padding: 12px 24px;
+                    border-radius: 40px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    opacity: 0;
+                    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+                    pointer-events: none;
+                    z-index: 2000;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+                    font-family: 'Inter', -apple-system, 'PingFang SC', sans-serif;
+                `;
+                if (type === 'error') {
+                    toast.style.borderColor = '#ef4444';
+                    toast.style.color = '#ef4444';
+                }
+                document.body.appendChild(toast);
             }
-
-            if (!platformConfig.netlify && !platformConfig.github) {
-                const friendsActions = document.querySelector('#work-friends .work-actions');
-                if (friendsActions) friendsActions.classList.add('platform-hidden');
-            } else {
-                const friendsActions = document.querySelector('#work-friends .work-actions');
-                if (friendsActions) friendsActions.classList.remove('platform-hidden');
-            }
+            toast.textContent = msg;
+            toast.className = type === 'error' ? 'toast-error' : '';
+            toast.style.borderColor = type === 'error' ? '#ef4444' : 'var(--border-color, rgba(0,0,0,0.06))';
+            toast.style.color = type === 'error' ? '#ef4444' : 'var(--text-primary, #1a1a2e)';
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            });
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(80px)';
+            }, 3000);
         }
 
         // ================================================================
@@ -1322,7 +1487,7 @@
                         <div class="work-tags">${work.tags}</div>
                         <div class="work-desc">${work.desc}</div>
                         <div class="work-actions">
-                            <a class="work-link" id="work-link-${work.id}" href="${work.primaryLink}" target="_blank">🚀 进入</a>
+                            <button class="work-link" id="btn-${work.id}" onclick="handleNavigate('${work.id}')">🚀 进入</button>
                             <button class="platform-switcher" id="switcher-${work.id}" onclick="togglePlatform('${work.id}')" title="点击切换平台">
                                 <span class="dot ${dotClass}" id="dot-${work.id}"></span>
                                 <span class="label" id="label-${work.id}">${labelText}</span>
@@ -1339,18 +1504,10 @@
 
             worksGrid.innerHTML = html;
 
-            Object.keys(LINK_CONFIG).forEach(key => {
-                if (key !== 'friends') {
-                    updatePlatformUI(key);
-                    const btn = document.getElementById('btn-' + key);
-                    if (btn) {
-                        btn.title = '当前目标: ' + getCurrentPlatform(key);
-                    }
-                }
+            // 初始化各作品平台 UI
+            WORKS.forEach((work) => {
+                updatePlatformUI(work.id);
             });
-
-            // 渲染完成后应用平台配置
-            applyPlatformConfig();
         }
 
         // ================================================================
@@ -1755,10 +1912,14 @@
             renderWorks();
             fetchRecentPosts();
 
+            // 初始化朋友圈
             updatePlatformUI('friends');
-            const btn = document.getElementById('btn-friends');
-            if (btn) {
-                btn.title = '当前目标: ' + getCurrentPlatform('friends');
+            const friendsBtn = document.getElementById('btn-friends');
+            if (friendsBtn) {
+                const available = getAvailablePlatform('friends');
+                if (available) {
+                    friendsBtn.title = '当前目标: ' + available.label;
+                }
             }
 
             // 加载平台配置
@@ -1767,7 +1928,7 @@
             setTimeout(initGSAP, 300);
         });
 
-        console.log('🦔 CiweiHome 已启动（视觉新版 + 朋友圈原版逻辑 + 关于本站 + 平台开关）');
+        console.log('🦔 CiweiHome 已启动（平台开关全面修复版）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>
