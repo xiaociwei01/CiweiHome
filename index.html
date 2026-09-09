@@ -53,14 +53,8 @@
             --pinned-tag-text: rgba(255, 255, 255, 0.4);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: var(--font-family);
@@ -68,7 +62,7 @@
             color: var(--text-primary);
             min-height: 100vh;
             transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-                color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+                        color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
@@ -143,9 +137,7 @@
             color: var(--text-primary);
             transition: color 0.5s ease;
         }
-        .header-left .logo span {
-            color: var(--accent);
-        }
+        .header-left .logo span { color: var(--accent); }
         .header-left .tagline {
             font-size: 14px;
             color: var(--text-muted);
@@ -196,13 +188,8 @@
             border-color: var(--accent);
             color: var(--text-primary);
         }
-        .theme-toggle:active {
-            transform: scale(0.93);
-        }
-        .theme-toggle .theme-label {
-            font-size: 12px;
-            font-weight: 500;
-        }
+        .theme-toggle:active { transform: scale(0.93); }
+        .theme-toggle .theme-label { font-size: 12px; font-weight: 500; }
 
         .hero {
             padding: 40px 0 48px;
@@ -288,7 +275,6 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
-        /* ===== 区块标题 - 统一间距 ===== */
         .section-title {
             font-size: 14px;
             font-weight: 600;
@@ -299,14 +285,8 @@
             margin-bottom: 20px;
             transition: color 0.5s ease;
         }
-        .section-title .count {
-            font-weight: 400;
-            opacity: 0.6;
-        }
-        /* 第一个区块不需要上边距 */
-        .section-title:first-of-type {
-            margin-top: 0;
-        }
+        .section-title .count { font-weight: 400; opacity: 0.6; }
+        .section-title:first-of-type { margin-top: 0; }
 
         .works-grid {
             display: grid;
@@ -314,10 +294,7 @@
             gap: 24px;
         }
         @media (max-width: 720px) {
-            .works-grid {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
+            .works-grid { grid-template-columns: 1fr; gap: 18px; }
         }
 
         .work-card {
@@ -337,12 +314,8 @@
             box-shadow: var(--card-hover-shadow);
             border-color: var(--accent);
         }
-        .work-card:active {
-            transform: scale(0.97);
-            transition-duration: 0.08s;
-        }
+        .work-card:active { transform: scale(0.97); transition-duration: 0.08s; }
 
-        /* ===== 作品封面图 - 修复比例 ===== */
         .work-card .work-cover {
             width: 100%;
             aspect-ratio: 16 / 9;
@@ -354,9 +327,7 @@
             cursor: pointer;
             display: block;
         }
-        .work-card:hover .work-cover {
-            transform: scale(1.02);
-        }
+        .work-card:hover .work-cover { transform: scale(1.02); }
 
         .work-card .work-name {
             font-size: 20px;
@@ -405,9 +376,7 @@
             box-shadow: 0 4px 20px var(--accent-glow);
             transform: translateY(-2px);
         }
-        .work-link:active {
-            transform: scale(0.93);
-        }
+        .work-link:active { transform: scale(0.93); }
         .work-link.loading {
             background: #555;
             cursor: wait;
@@ -435,9 +404,7 @@
             background: var(--card-bg);
             transform: translateY(-1px);
         }
-        .platform-switcher:active {
-            transform: scale(0.92);
-        }
+        .platform-switcher:active { transform: scale(0.92); }
         .platform-switcher .dot {
             width: 8px;
             height: 8px;
@@ -446,12 +413,8 @@
             flex-shrink: 0;
             transition: all 0.3s;
         }
-        .platform-switcher .dot.netlify {
-            background: #00ad9f;
-        }
-        .platform-switcher .dot.github {
-            background: #6e5494;
-        }
+        .platform-switcher .dot.netlify { background: #00ad9f; }
+        .platform-switcher .dot.github { background: #6e5494; }
         .platform-switcher .label {
             font-weight: 500;
             font-size: 12px;
@@ -463,24 +426,14 @@
             display: inline-block;
             transition: transform 0.3s ease;
         }
-        .platform-switcher:hover .arrow {
-            transform: translateX(3px) rotate(180deg);
-        }
+        .platform-switcher:hover .arrow { transform: translateX(3px) rotate(180deg); }
 
         @keyframes pulseDot {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.6);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.6); }
+            100% { transform: scale(1); }
         }
-        .platform-switcher .dot.switching {
-            animation: pulseDot 0.4s ease;
-        }
+        .platform-switcher .dot.switching { animation: pulseDot 0.4s ease; }
 
         .fallback-link {
             font-size: 11px;
@@ -495,6 +448,7 @@
             border-color: var(--text-secondary);
         }
 
+        /* ===== 朋友圈预览（从 CiweiBlog 加载） ===== */
         .recent-posts {
             margin: 6px 0 14px;
             padding: 12px 14px;
@@ -529,9 +483,7 @@
             position: relative;
             cursor: pointer;
         }
-        .recent-posts .rp-item:last-child {
-            border-bottom: none;
-        }
+        .recent-posts .rp-item:last-child { border-bottom: none; }
         .recent-posts .rp-item::before {
             content: '→';
             position: absolute;
@@ -558,9 +510,7 @@
             margin-left: 12px;
             transition: color var(--transition-base);
         }
-        .recent-posts .rp-item:hover .rp-date {
-            color: var(--text-muted);
-        }
+        .recent-posts .rp-item:hover .rp-date { color: var(--text-muted); }
         .recent-posts .rp-empty {
             font-size: 13px;
             color: var(--text-muted);
@@ -575,13 +525,8 @@
             animation: pulseText 1.5s ease-in-out infinite;
         }
         @keyframes pulseText {
-            0%,
-            100% {
-                opacity: 0.6;
-            }
-            50% {
-                opacity: 1;
-            }
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         .modal,
@@ -601,16 +546,10 @@
             backdrop-filter: blur(6px);
         }
         .modal.active,
-        .qr-modal.active {
-            display: flex;
-        }
+        .qr-modal.active { display: flex; }
 
-        .modal {
-            background: rgba(0, 0, 0, 0.85);
-        }
-        .qr-modal {
-            background: rgba(0, 0, 0, 0.75);
-        }
+        .modal { background: rgba(0, 0, 0, 0.85); }
+        .qr-modal { background: rgba(0, 0, 0, 0.75); }
 
         .modal img {
             max-width: 90%;
@@ -665,52 +604,14 @@
             color: var(--text-muted);
         }
 
-        .modal.closing {
-            animation: fadeOut 0.25s ease forwards;
-        }
-        .modal.closing img {
-            animation: scaleOut 0.25s ease forwards;
-        }
-        .qr-modal.closing {
-            animation: fadeOut 0.2s ease forwards;
-        }
+        .modal.closing { animation: fadeOut 0.25s ease forwards; }
+        .modal.closing img { animation: scaleOut 0.25s ease forwards; }
+        .qr-modal.closing { animation: fadeOut 0.2s ease forwards; }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        @keyframes fadeOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-            }
-        }
-        @keyframes scaleIn {
-            from {
-                transform: scale(0.85);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        @keyframes scaleOut {
-            from {
-                transform: scale(1);
-                opacity: 1;
-            }
-            to {
-                transform: scale(0.85);
-                opacity: 0;
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        @keyframes scaleIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes scaleOut { from { transform: scale(1); opacity: 1; } to { transform: scale(0.85); opacity: 0; } }
 
         .footer {
             margin-top: 48px;
@@ -728,28 +629,14 @@
             animation: heartbeat 1.8s ease-in-out infinite;
         }
         @keyframes heartbeat {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            15% {
-                transform: scale(1.2);
-            }
-            30% {
-                transform: scale(1);
-            }
-            45% {
-                transform: scale(1.15);
-            }
-            60% {
-                transform: scale(1);
-            }
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.15); }
+            60% { transform: scale(1); }
         }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-        }
+        .reveal { opacity: 0; transform: translateY(40px); }
 
         .empty-state {
             text-align: center;
@@ -761,98 +648,37 @@
             backdrop-filter: blur(12px);
             transition: all 0.5s ease;
         }
-        .empty-state .empty-icon {
-            font-size: 32px;
-            margin-bottom: 6px;
-        }
-        .empty-state .empty-text {
-            font-size: 14px;
-        }
+        .empty-state .empty-icon { font-size: 32px; margin-bottom: 6px; }
+        .empty-state .empty-text { font-size: 14px; }
 
         @media (max-width: 600px) {
-            .container {
-                padding: 0 16px 40px;
-            }
-            .header {
-                padding: 14px 0 12px;
-            }
-            .header-left .logo {
-                font-size: 19px;
-            }
-            .header-left .tagline {
-                font-size: 12px;
-            }
-            .header-right a {
-                font-size: 12px;
-                padding: 4px 10px;
-            }
-            .theme-toggle {
-                padding: 4px 10px;
-                font-size: 12px;
-            }
-            .theme-toggle .theme-label {
-                font-size: 11px;
-            }
-            .hero {
-                padding: 20px 0 28px;
-            }
-            .hero-avatar {
-                width: 72px;
-                height: 72px;
-            }
-            .hero-signature {
-                font-size: 14px;
-                line-height: 1.7;
-            }
-            .section-title {
-                font-size: 12px;
-                margin-top: 40px;
-                margin-bottom: 14px;
-            }
-            .work-card {
-                padding: 16px 16px 18px;
-            }
-            .work-card .work-name {
-                font-size: 17px;
-            }
-            .work-card .work-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .work-link {
-                justify-content: center;
-            }
-            .platform-switcher {
-                justify-content: center;
-                padding: 6px 12px;
-            }
-            .recent-posts .rp-item {
-                font-size: 13px;
-                flex-wrap: wrap;
-            }
+            .container { padding: 0 16px 40px; }
+            .header { padding: 14px 0 12px; }
+            .header-left .logo { font-size: 19px; }
+            .header-left .tagline { font-size: 12px; }
+            .header-right a { font-size: 12px; padding: 4px 10px; }
+            .theme-toggle { padding: 4px 10px; font-size: 12px; }
+            .theme-toggle .theme-label { font-size: 11px; }
+            .hero { padding: 20px 0 28px; }
+            .hero-avatar { width: 72px; height: 72px; }
+            .hero-signature { font-size: 14px; line-height: 1.7; }
+            .section-title { font-size: 12px; margin-top: 40px; margin-bottom: 14px; }
+            .work-card { padding: 16px 16px 18px; }
+            .work-card .work-name { font-size: 17px; }
+            .work-card .work-actions { flex-direction: column; align-items: stretch; }
+            .work-link { justify-content: center; }
+            .platform-switcher { justify-content: center; padding: 6px 12px; }
+            .recent-posts .rp-item { font-size: 13px; flex-wrap: wrap; }
         }
         @media (max-width: 400px) {
-            .hero-title {
-                font-size: 32px;
-            }
-            .hero-social a {
-                font-size: 12px;
-                padding: 6px 14px;
-            }
-            .work-card .work-desc {
-                font-size: 13px;
-            }
+            .hero-title { font-size: 32px; }
+            .hero-social a { font-size: 12px; padding: 6px 14px; }
+            .work-card .work-desc { font-size: 13px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-            .reveal {
-                opacity: 1 !important;
-                transform: none !important;
-            }
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+            .reveal { opacity: 1 !important; transform: none !important; }
         }
     </style>
 </head>
@@ -891,16 +717,13 @@
             </div>
         </section>
 
-        <!-- ===== 作品区 ===== -->
+        <!-- ===== 作品区（硬编码） ===== -->
         <div class="section-title reveal">🧰 我的作品</div>
         <div class="works-grid" id="worksGrid">
-            <div class="empty-state" style="grid-column:1/-1;">
-                <div class="empty-icon">📭</div>
-                <div class="empty-text">暂无作品</div>
-            </div>
+            <!-- 由 JS 硬编码渲染 -->
         </div>
 
-        <!-- ===== 朋友圈区 ===== -->
+        <!-- ===== 朋友圈区（从 CiweiBlog 加载） ===== -->
         <div class="section-title reveal">🦔 开发者的小朋友圈</div>
         <div class="works-grid" id="friendsGrid">
             <div class="work-card reveal" id="work-friends" style="grid-column:1/-1;">
@@ -953,16 +776,15 @@
 
     <script>
         // ================================================================
-        // 配置
+        // 配置（原版逻辑）
         // ================================================================
-        const MANAGER_REPO = 'xiaociwei01/CiweiManager';
-        const CONFIG_PATH = 'config.json';
+        const BLOG_REPO = 'xiaociwei01/CiweiBlog';
+        const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
+        const DETAIL_PAGE = 'https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html';
         const THEME_KEY = 'ciwei_home_theme';
-        const DETAIL_PAGE = 'Xiangqingye.html';
-        const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
 
-        // 硬编码作品（fallback）
-        const HARDCODED_WORKS = [{
+        // 硬编码作品
+        const WORKS = [{
             id: 'solar',
             name: '3D太阳系',
             tags: 'Three.js · 开普勒轨道 · 哈勃 · 旅行者一号',
@@ -998,9 +820,6 @@
             }
         };
 
-        let configData = null;
-        let configLoaded = false;
-
         const $ = id => document.getElementById(id);
         const worksGrid = $('worksGrid');
 
@@ -1010,44 +829,11 @@
         function buildCdnUrl(path) {
             if (!path) return '';
             if (path.startsWith('http://') || path.startsWith('https://')) return path;
-
-            // 本地图片 → 从 CiweiHome 加载
-            const localImages = ['xiaotaiyang.jpg', 'diyue.jpg', 'FriendQuan.jpg', 'ciweitouxiang.jpg', 'wechat_qr.jpg',
-                'qq_qr.jpg'
-            ];
+            const localImages = ['xiaotaiyang.jpg', 'diyue.jpg', 'FriendQuan.jpg', 'ciweitouxiang.jpg', 'wechat_qr.jpg', 'qq_qr.jpg'];
             if (localImages.includes(path)) {
                 return `https://xiaociwei01.github.io/CiweiHome/${path}`;
             }
-
-            return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${path}`;
-        }
-
-        function formatDateToMinute(dateStr) {
-            if (!dateStr) return '未知日期';
-            try {
-                const d = new Date(dateStr);
-                if (isNaN(d.getTime())) return dateStr;
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const h = String(d.getHours()).padStart(2, '0');
-                const min = String(d.getMinutes()).padStart(2, '0');
-                return `${y}-${m}-${day} ${h}:${min}`;
-            } catch {
-                return dateStr;
-            }
-        }
-
-        function renderMarkdown(text) {
-            if (!text) return '';
-            let html = text
-                .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
-                    const fullUrl = buildCdnUrl(url);
-                    return `<img src="${fullUrl}" alt="图片" loading="lazy" />`;
-                })
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\n/g, '<br />');
-            return html;
+            return `https://cdn.jsdelivr.net/gh/xiaociwei01/CiweiManager@main/${path}`;
         }
 
         function getCurrentLink(key) {
@@ -1149,169 +935,36 @@
         }
 
         // ================================================================
-        // 加载 config.json
+        // 渲染作品（硬编码）
         // ================================================================
-        async function loadConfig() {
-            try {
-                const t = Date.now();
-                const cdnUrl =
-                    `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${t}`;
-                let res = await fetch(cdnUrl, { cache: 'no-store' });
-                if (!res.ok) {
-                    const rawUrl =
-                        `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${t}`;
-                    res = await fetch(rawUrl, { cache: 'no-store' });
-                    if (!res.ok) throw new Error('加载 config.json 失败');
-                }
-                configData = await res.json();
-                configLoaded = true;
-                console.log('✅ config.json 加载成功', configData);
-            } catch (err) {
-                console.warn('⚠️ config.json 加载失败，使用硬编码数据', err);
-                configData = null;
-                configLoaded = false;
-            }
-        }
-
-        function getSiteConfig() {
-            if (configData && configData.site) {
-                return configData.site;
-            }
-            return {
-                title: '刺猬',
-                subtitle: '独立开发者',
-                avatar: DEFAULT_AVATAR,
-                signature: '本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。',
-                wechat: 'As08_0831',
-                qq: '2586279833',
-                wechatQr: 'wechat_qr.jpg',
-                qqQr: 'qq_qr.jpg'
-            };
-        }
-
-        function getWorks() {
-            if (configData && configData.works && configData.works.length > 0) {
-                return configData.works.filter(w => w.enabled !== false);
-            }
-            return HARDCODED_WORKS;
-        }
-
-        function getFriends() {
-            if (configData && configData.friends && configData.friends.length > 0) {
-                return configData.friends;
-            }
-            return null;
-        }
-
-        // ================================================================
-        // 渲染函数
-        // ================================================================
-        function renderSite() {
-            const site = getSiteConfig();
-
-            const titleEl = document.getElementById('heroTitle');
-            if (titleEl) titleEl.textContent = site.title || '刺猬';
-
-            const taglineEl = document.getElementById('headerTagline');
-            const subEl = document.getElementById('heroSub');
-            const subtitle = site.subtitle || '独立开发者';
-            if (taglineEl) taglineEl.textContent = subtitle;
-            if (subEl) subEl.textContent = subtitle;
-
-            const avatarEl = document.getElementById('heroAvatar');
-            if (avatarEl) {
-                const avatarPath = site.avatar || DEFAULT_AVATAR;
-                avatarEl.src = buildCdnUrl(avatarPath);
-                avatarEl.alt = (site.title || '刺猬') + '的头像';
-            }
-
-            const sigEl = document.getElementById('heroSignature');
-            if (sigEl) {
-                if (site.signature) {
-                    sigEl.innerHTML = renderMarkdown(site.signature);
-                } else {
-                    sigEl.textContent = '本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。';
-                }
-            }
-
-            const wechatEl = document.getElementById('socialWechat');
-            const qqEl = document.getElementById('socialQQ');
-
-            if (wechatEl) {
-                const wechat = site.wechat || 'As08_0831';
-                const wechatQr = site.wechatQr || 'wechat_qr.jpg';
-                wechatEl.textContent = '💬 微信';
-                wechatEl.onclick = function(e) {
-                    e.preventDefault();
-                    const qrPath = buildCdnUrl(wechatQr);
-                    openQR('微信', qrPath, wechat);
-                };
-            }
-
-            if (qqEl) {
-                const qq = site.qq || '2586279833';
-                const qqQr = site.qqQr || 'qq_qr.jpg';
-                qqEl.textContent = '🐧 QQ';
-                qqEl.onclick = function(e) {
-                    e.preventDefault();
-                    const qrPath = buildCdnUrl(qqQr);
-                    openQR('QQ', qrPath, qq);
-                };
-            }
-        }
-
         function renderWorks() {
-            const works = getWorks();
-
-            if (!works || works.length === 0) {
-                worksGrid.innerHTML =
-                    `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📭</div><div class="empty-text">暂无作品</div></div>`;
-                return;
-            }
-
             let html = '';
-            works.forEach((work, index) => {
-                const id = work.id || 'work-' + index;
-                const coverUrl = work.cover ? buildCdnUrl(work.cover) : '';
-                const primaryLink = work.primaryLink || work.primary || '';
-                const fallbackLink = work.fallbackLink || work.fallback || '#';
-
-                if (primaryLink || fallbackLink) {
-                    if (!LINK_CONFIG[id]) {
-                        LINK_CONFIG[id] = {
-                            primary: primaryLink || fallbackLink,
-                            fallback: fallbackLink || primaryLink,
-                            selected: 'primary'
-                        };
-                    } else {
-                        LINK_CONFIG[id].primary = primaryLink || LINK_CONFIG[id].primary;
-                        LINK_CONFIG[id].fallback = fallbackLink || LINK_CONFIG[id].fallback;
-                    }
-                }
-
-                const dotClass = (LINK_CONFIG[id] && LINK_CONFIG[id].selected === 'primary') ? 'netlify' : 'github';
-                const labelText = (LINK_CONFIG[id] && LINK_CONFIG[id].selected === 'primary') ? 'Netlify' : 'GitHub Pages';
+            WORKS.forEach((work) => {
+                const cfg = LINK_CONFIG[work.id];
+                const isPrimary = cfg.selected === 'primary';
+                const dotClass = isPrimary ? 'netlify' : 'github';
+                const labelText = isPrimary ? 'Netlify' : 'GitHub Pages';
 
                 html += `
-                        <div class="work-card reveal" id="work-${id}">
-                            ${coverUrl ? `<img class="work-cover" src="${coverUrl}" alt="${work.name || '作品封面'}" loading="lazy" onclick="openImageModal(this.src)" />` : ''}
-                            <div class="work-name">${work.name || '未命名作品'}</div>
-                            ${work.tags ? `<div class="work-tags">${work.tags}</div>` : ''}
-                            ${work.desc ? `<div class="work-desc">${work.desc}</div>` : ''}
-                            <div class="work-actions">
-                                <a class="work-link" id="work-link-${id}" href="${primaryLink || fallbackLink}" target="_blank">🚀 进入</a>
-                                <button class="platform-switcher" data-work-id="${id}" onclick="togglePlatform('${id}')" title="点击切换平台">
-                                    <span class="dot ${dotClass}" id="dot-${id}"></span>
-                                    <span class="label" id="label-${id}">${labelText}</span>
-                                    <span class="arrow">⇄</span>
-                                </button>
-                            </div>
-                            <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
-                                <span>📡 <span id="primary-label-${id}">主: ${labelText}</span></span>
-                                <a href="#" class="fallback-link" onclick="directNavigate('${id}', 'fallback'); return false;">🔁 备用: ${labelText === 'Netlify' ? 'GitHub Pages' : 'Netlify'}</a>
-                            </div>
+                    <div class="work-card reveal" id="work-${work.id}">
+                        <img class="work-cover" src="${work.cover}" alt="${work.name}展示图" loading="lazy" onclick="openImageModal(this.src)" />
+                        <div class="work-name">${work.name}</div>
+                        <div class="work-tags">${work.tags}</div>
+                        <div class="work-desc">${work.desc}</div>
+                        <div class="work-actions">
+                            <a class="work-link" id="work-link-${work.id}" href="${work.primaryLink}" target="_blank">🚀 进入</a>
+                            <button class="platform-switcher" onclick="togglePlatform('${work.id}')" title="点击切换平台">
+                                <span class="dot ${dotClass}" id="dot-${work.id}"></span>
+                                <span class="label" id="label-${work.id}">${labelText}</span>
+                                <span class="arrow">⇄</span>
+                            </button>
                         </div>
-                    `;
+                        <div style="margin-top:6px;font-size:12px;color:var(--text-muted);display:flex;gap:12px;flex-wrap:wrap;">
+                            <span>📡 <span id="primary-label-${work.id}">主: ${labelText}</span></span>
+                            <a href="#" class="fallback-link" onclick="directNavigate('${work.id}', 'fallback'); return false;">🔁 备用: ${labelText === 'Netlify' ? 'GitHub Pages' : 'Netlify'}</a>
+                        </div>
+                    </div>
+                `;
             });
 
             worksGrid.innerHTML = html;
@@ -1327,48 +980,88 @@
             });
         }
 
+        // ================================================================
+        // 加载朋友圈（从 CiweiBlog 读取 - 原版逻辑）
+        // ================================================================
         async function fetchRecentPosts() {
             const container = document.getElementById('recentPosts');
+            try {
+                const res = await fetch(BLOG_API);
+                if (!res.ok) throw new Error('无法读取文章列表');
+                const files = await res.json();
+                const posts = files.filter(f => f.name.endsWith('.md'));
 
-            const friends = getFriends();
-            if (friends && friends.length > 0) {
-                const sorted = [...friends].sort((a, b) => {
-                    if (a.pinned && !b.pinned) return -1;
-                    if (!a.pinned && b.pinned) return 1;
-                    return (b.id || '').localeCompare(a.id || '');
+                if (posts.length === 0) {
+                    container.innerHTML = `
+                        <div class="rp-title">📖 最近更新</div>
+                        <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
+                    `;
+                    return;
+                }
+
+                posts.sort((a, b) => b.name.localeCompare(a.name));
+                const recent = posts.slice(0, 3);
+
+                const tasks = recent.map(async (post) => {
+                    try {
+                        const contentRes = await fetch(post.download_url);
+                        const contentText = await contentRes.text();
+                        const titleMatch = contentText.match(/title:\s*(.+)/);
+                        const dateMatch = contentText.match(/date:\s*(.+)/);
+                        const title = titleMatch ? titleMatch[1].trim() : post.name.replace('.md', '');
+                        const date = dateMatch ? dateMatch[1].trim() : '未知日期';
+                        // 只取日期部分，去掉时间
+                        const dateOnly = date.includes(' ') ? date.split(' ')[0] : date;
+                        return { title, date: dateOnly, filename: post.name };
+                    } catch (e) {
+                        return null;
+                    }
                 });
 
-                const display = sorted.slice(0, 3);
+                const results = await Promise.all(tasks);
+                const validPosts = results.filter(p => p !== null);
+
+                if (validPosts.length === 0) {
+                    container.innerHTML = `
+                        <div class="rp-title">📖 最近更新</div>
+                        <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
+                    `;
+                    return;
+                }
+
                 let html = `<div class="rp-title">📖 最近更新</div>`;
-                for (const post of display) {
-                    const dateStr = formatDateToMinute(post.date);
+                for (const post of validPosts) {
                     html += `
-                            <a href="${DETAIL_PAGE}?postId=${encodeURIComponent(post.id || '')}" class="rp-item">
-                                <span>${post.title || '无标题'}</span>
-                                <span class="rp-date">${dateStr}</span>
-                            </a>
-                        `;
+                        <a href="${DETAIL_PAGE}?file=${encodeURIComponent(post.filename)}" target="_blank" class="rp-item">
+                            <span>${post.title}</span>
+                            <span class="rp-date">${post.date}</span>
+                        </a>
+                    `;
                 }
                 container.innerHTML = html;
-                return;
-            }
 
-            container.innerHTML =
-                `<div class="rp-title">📖 最近更新</div><div class="rp-empty">暂无动态，去写一篇吧 ✍️</div>`;
+                const items = container.querySelectorAll('.rp-item');
+                items.forEach((item, index) => {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(8px)';
+                    item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s, padding-left 0.25s ease, color 0.25s ease`;
+                    requestAnimationFrame(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    });
+                });
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="rp-title">📖 最近更新</div>
+                    <div class="rp-empty">加载失败，请稍后重试</div>
+                `;
+            }
         }
 
         // ================================================================
         // 图片/二维码模态框
         // ================================================================
-        function openImageModal(srcOrEl) {
-            let src;
-            if (typeof srcOrEl === 'string') {
-                src = srcOrEl;
-            } else {
-                const img = srcOrEl.querySelector('img');
-                if (!img) return;
-                src = img.src;
-            }
+        function openImageModal(src) {
             if (!src) return;
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImage');
@@ -1400,26 +1093,20 @@
             }, 250);
         }
 
-        function openQR(title, imgSrc, fallbackText) {
+        function openQR(type) {
             const modal = document.getElementById('qrModal');
             const qrImg = document.getElementById('qrImage');
             const qrLabel = document.getElementById('qrLabel');
 
-            qrLabel.textContent = title + '二维码';
-            qrImg.style.display = 'block';
-
-            const img = new Image();
-            img.onload = function() {
-                qrImg.src = imgSrc;
-            };
-            img.onerror = function() {
-                qrImg.style.display = 'none';
-                qrLabel.textContent = title + ': ' + (fallbackText || '未设置');
-                const hint = document.querySelector('.qr-content .qr-close-hint');
-                if (hint) hint.textContent = '请上传二维码图片';
-            };
-            img.src = imgSrc;
-            qrImg.src = imgSrc;
+            if (type === 'wechat') {
+                qrImg.src = 'wechat_qr.jpg';
+                qrLabel.textContent = '📱 微信二维码';
+            } else if (type === 'qq') {
+                qrImg.src = 'qq_qr.jpg';
+                qrLabel.textContent = '💬 QQ二维码';
+            } else {
+                return;
+            }
 
             modal.classList.remove('closing');
             modal.classList.add('active');
@@ -1441,6 +1128,18 @@
                 closeImageModal();
                 closeQR();
             }
+        });
+
+        // ================================================================
+        // 微信/QQ 点击
+        // ================================================================
+        document.getElementById('socialWechat').addEventListener('click', function(e) {
+            e.preventDefault();
+            openQR('wechat');
+        });
+        document.getElementById('socialQQ').addEventListener('click', function(e) {
+            e.preventDefault();
+            openQR('qq');
         });
 
         // ================================================================
@@ -1480,7 +1179,7 @@
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
         // ================================================================
-        // GSAP
+        // GSAP 滚动入场动画（双向触发）
         // ================================================================
         function initGSAP() {
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
@@ -1644,18 +1343,15 @@
                 );
             });
 
-            console.log('🚀 GSAP 动画已启动');
+            console.log('🚀 GSAP 滚动驱动动画已启动');
         }
 
         // ================================================================
         // 启动
         // ================================================================
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadConfig();
-
-            renderSite();
+        document.addEventListener('DOMContentLoaded', function() {
             renderWorks();
-            await fetchRecentPosts();
+            fetchRecentPosts();
 
             updatePlatformUI('friends');
             const btn = document.getElementById('btn-friends');
@@ -1664,9 +1360,11 @@
             }
 
             setTimeout(initGSAP, 300);
-
-            console.log('🦔 CiweiHome 已启动');
         });
+
+        console.log('🦔 CiweiHome 已启动（视觉新版 + 朋友圈原版逻辑）');
+        console.log('📦 博客仓库:', BLOG_REPO);
+        console.log('📄 详情页:', DETAIL_PAGE);
     </script>
 
 </body>
