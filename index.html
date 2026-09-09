@@ -1,994 +1,889 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>刺猬的家</title>
+
+    <!-- Google Font (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
     <style>
-        /* ===== 全局重置 & 基础 ===== */
+        /* ================================================================
+               CSS 变量：浅色 / 深色模式
+            ================================================================ */
+        :root {
+            /* 浅色模式 (默认) */
+            --bg-body: #f0f2f5;
+            --bg-hero: #e8ecf0;
+            --text-primary: #1a1a2e;
+            --text-secondary: #444;
+            --text-muted: #888;
+            --text-inverse: #fff;
+
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.5);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --card-hover-shadow: 0 16px 48px rgba(0, 0, 0, 0.10);
+
+            --glass-bg: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.4);
+
+            --accent: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.25);
+            --pinned-tag-bg: rgba(0, 0, 0, 0.06);
+            --pinned-tag-text: #888;
+
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            --max-width: 1024px;
+            --font-family: 'Inter', -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* 深色模式 */
+        [data-theme="dark"] {
+            --bg-body: #0a0a0f;
+            --bg-hero: #0d0d16;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --text-inverse: #1a1a2e;
+
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --card-hover-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.06);
+
+            --pinned-tag-bg: rgba(255, 255, 255, 0.06);
+            --pinned-tag-text: rgba(255, 255, 255, 0.4);
+        }
+
+        /* ================================================================
+               全局重置
+            ================================================================ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #1a1a2e;
-            --primary-hover: #2d2d4a;
-            --text: #1a1a2e;
-            --text-light: #555;
-            --text-muted: #888;
-            --text-faint: #aaa;
-            --bg-card: #f8f9fc;
-            --border: #eaeef3;
-            --border-light: #f0f0f0;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.03);
-            --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
-            --radius-sm: 12px;
-            --radius-md: 16px;
-            --radius-lg: 20px;
-            --transition-fast: 0.15s ease;
-            --transition-base: 0.25s ease;
-            --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            --ripple-color: rgba(255, 255, 255, 0.35);
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            font-family: -apple-system, 'PingFang SC', 'Segoe UI', Roboto, sans-serif;
-            background: #ffffff;
-            color: var(--text);
-            padding: 24px 20px 60px;
+            font-family: var(--font-family);
+            background: var(--bg-body);
+            color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            transition: background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1120px;
+        /* ================================================================
+               动态光晕背景
+            ================================================================ */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+        .bg-glow::before,
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.5;
+            transition: all 2s ease;
+        }
+        .bg-glow::before {
+            width: 600px;
+            height: 600px;
+            top: -10%;
+            left: -10%;
+            background: radial-gradient(circle, rgba(88, 166, 255, 0.15) 0%, transparent 70%);
+        }
+        .bg-glow::after {
+            width: 500px;
+            height: 500px;
+            bottom: -10%;
+            right: -10%;
+            background: radial-gradient(circle, rgba(255, 180, 60, 0.10) 0%, transparent 70%);
         }
 
-        /* ===== 入场动画 ===== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        [data-theme="dark"] .bg-glow::before {
+            background: radial-gradient(circle, rgba(88, 166, 255, 0.20) 0%, transparent 70%);
+        }
+        [data-theme="dark"] .bg-glow::after {
+            background: radial-gradient(circle, rgba(255, 180, 60, 0.12) 0%, transparent 70%);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* ================================================================
+               容器
+            ================================================================ */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 24px 60px;
         }
 
-        .animate-in {
-            opacity: 0;
-            animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        .animate-in-delay-1 { animation-delay: 0.05s; }
-        .animate-in-delay-2 { animation-delay: 0.15s; }
-        .animate-in-delay-3 { animation-delay: 0.25s; }
-        .animate-in-delay-4 { animation-delay: 0.35s; }
-        .animate-in-delay-5 { animation-delay: 0.45s; }
-
-        /* ===== 顶部 ===== */
+        /* ================================================================
+               顶部导航
+            ================================================================ */
         .header {
-            padding: 20px 0 12px;
-            border-bottom: 2px solid #f0f0f0;
-            margin-bottom: 28px;
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             justify-content: space-between;
-            align-items: flex-end;
-            transition: border-color var(--transition-base);
+            gap: 12px;
+            padding: 20px 0 16px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 32px;
+            transition: border-color 0.5s ease;
         }
 
-        .header:hover {
-            border-bottom-color: #e0e0e0;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .header-left h1 {
-            font-size: 28px;
+        .header-left .logo {
+            font-size: 24px;
             font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text);
-            transition: letter-spacing var(--transition-slow), transform var(--transition-base);
-            display: inline-block;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            transition: color 0.5s ease;
         }
-
-        .header-left h1:hover {
-            letter-spacing: 3px;
-            transform: translateX(2px);
+        .header-left .logo span {
+            color: var(--accent);
         }
 
         .header-left .tagline {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-muted);
-            margin-top: 4px;
             font-weight: 400;
-            letter-spacing: 0.3px;
+            transition: color 0.5s ease;
         }
 
         .header-right {
-            font-size: 14px;
-            color: var(--text-faint);
-            text-align: right;
-            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .header-right a {
-            color: var(--text);
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 14px;
             font-weight: 500;
-            border-bottom: 1px dotted #ccc;
-            transition: border-color var(--transition-base), color var(--transition-base);
-            padding-bottom: 1px;
+            padding: 6px 12px;
+            border-radius: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all var(--transition-base);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
-
         .header-right a:hover {
-            border-bottom-color: var(--text);
-            color: #000;
-        }
-
-        /* ===== 个人信息卡片 ===== */
-        .profile-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 24px 28px;
-            margin-bottom: 32px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px 40px;
-            align-items: center;
-            border: 1px solid #eeeeee;
-            transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 60%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
-            transform: skewX(-20deg);
-            transition: left 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            pointer-events: none;
-        }
-
-        .profile-card:hover::before {
-            left: 150%;
-        }
-
-        .profile-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: #e0e0e0;
+            background: var(--card-bg);
+            border-color: var(--accent);
+            color: var(--text-primary);
             transform: translateY(-1px);
         }
 
-        .profile-card:active {
-            transform: scale(0.99);
-            transition-duration: 0.08s;
-        }
-
-        .profile-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            overflow: hidden;
-            background: #e0e5ed;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* 主题切换按钮 */
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 6px 14px;
             cursor: pointer;
-            position: relative;
-            transition: transform var(--transition-base), box-shadow var(--transition-base);
-            animation: avatarGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes avatarGlow {
-            0%, 100% {
-                box-shadow: 0 0 0 0 rgba(26, 26, 46, 0.1);
-            }
-            50% {
-                box-shadow: 0 0 0 8px rgba(26, 26, 46, 0.05);
-            }
-        }
-
-        .profile-avatar:hover {
-            transform: scale(1.08);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .profile-avatar:active {
-            transform: scale(0.92);
-            transition-duration: 0.08s;
-        }
-
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform var(--transition-base);
-        }
-
-        .profile-avatar:hover img {
-            transform: scale(1.05);
-        }
-
-        .profile-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px 24px;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .profile-info .item {
-            font-size: 15px;
-            color: #333;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all var(--transition-base);
+            font-family: inherit;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: transform var(--transition-fast);
+            gap: 4px;
+        }
+        .theme-toggle:hover {
+            background: var(--card-bg);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+        .theme-toggle:active {
+            transform: scale(0.93);
         }
 
-        .profile-info .item .label {
-            color: #999;
-            font-weight: 400;
-        }
-
-        .profile-info .item .value {
+        .theme-toggle .theme-label {
+            font-size: 12px;
             font-weight: 500;
-            color: var(--text);
         }
 
-        .profile-info .item .value.highlight {
-            color: var(--text);
-            font-weight: 600;
+        /* ================================================================
+               Hero 区域
+            ================================================================ */
+        .hero {
+            padding: 40px 0 48px;
+            text-align: center;
+            position: relative;
         }
 
-        .profile-info .item .value.clickable {
+        .hero-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            transition: all var(--transition-spring);
             cursor: pointer;
-            border-bottom: 1.5px dashed #ccc;
-            transition: border-color var(--transition-base), color var(--transition-base), transform var(--transition-fast);
-            padding-bottom: 1px;
-            position: relative;
+            background: var(--bg-body);
+        }
+        .hero-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
         }
 
-        .profile-info .item .value.clickable:hover {
-            border-color: var(--text);
-            color: #000;
-            transform: translateY(-1px);
+        .hero-title {
+            font-size: clamp(40px, 8vw, 80px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            margin-top: 16px;
+            color: var(--text-primary);
+            transition: color 0.5s ease;
+        }
+        .hero-title .highlight {
+            background: linear-gradient(135deg, var(--accent), #ffb347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .profile-info .item .value.clickable:active {
-            transform: scale(0.94);
+        .hero-sub {
+            font-size: clamp(16px, 2vw, 22px);
+            color: var(--text-secondary);
+            margin-top: 8px;
+            font-weight: 400;
+            transition: color 0.5s ease;
         }
 
-        .profile-signature {
-            width: 100%;
-            margin-top: 4px;
-            font-size: 16px;
-            color: #555;
-            font-style: normal;
-            border-top: 1px solid #e8e8e8;
-            padding-top: 14px;
-            letter-spacing: 0.5px;
-            white-space: pre-line;
-            transition: letter-spacing var(--transition-slow), color var(--transition-base);
+        .hero-signature {
+            max-width: 640px;
+            margin: 20px auto 0;
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            transition: color 0.5s ease;
+        }
+        .hero-signature img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--radius-md);
+            margin: 8px 0;
+            display: block;
         }
 
-        .profile-signature:hover {
-            letter-spacing: 1px;
-            color: #333;
+        .hero-social {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .hero-social a {
+            padding: 8px 20px;
+            border-radius: 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all var(--transition-base);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .hero-social a:hover {
+            background: var(--card-bg);
+            border-color: var(--accent);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
         }
 
-        /* ===== 作品区标题 ===== */
-        .works-title {
-            font-size: 20px;
+        /* ================================================================
+               区块标题
+            ================================================================ */
+        .section-title {
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text);
-            margin: 8px 0 18px;
-            letter-spacing: 0.5px;
-            position: relative;
-            display: inline-block;
-            transition: transform var(--transition-base), letter-spacing var(--transition-slow);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 48px 0 20px;
+            transition: color 0.5s ease;
+        }
+        .section-title .count {
+            font-weight: 400;
+            opacity: 0.6;
         }
 
-        .works-title::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 2px;
-            transition: width var(--transition-slow);
-        }
-
-        .works-title:hover {
-            letter-spacing: 1px;
-            transform: translateX(2px);
-        }
-
-        .works-title:hover::after {
-            width: 100%;
-        }
-
-        .friends-title {
-            margin-top: 48px;
-        }
-
-        /* ===== 作品卡片网格 ===== */
+        /* ================================================================
+               作品网格
+            ================================================================ */
         .works-grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 28px;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 720px) {
+            .works-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
         }
 
         .work-card {
-            background: #ffffff;
-            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            overflow: hidden;
-            transition: box-shadow var(--transition-base), transform var(--transition-base), border-color var(--transition-base);
-            display: flex;
-            flex-direction: column;
+            padding: 24px 24px 22px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--card-shadow);
+            transition: all var(--transition-spring);
             cursor: default;
-            -webkit-tap-highlight-color: transparent;
             position: relative;
-            will-change: transform, box-shadow;
+            overflow: hidden;
         }
-
         .work-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-4px);
-            border-color: #dde3ea;
+            transform: translateY(-6px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: var(--accent);
         }
-
         .work-card:active {
             transform: scale(0.97);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
             transition-duration: 0.08s;
         }
 
-        /* ===== 展示图 ===== */
-        .work-image {
+        .work-card .work-cover {
             width: 100%;
             aspect-ratio: 16 / 9;
-            background: #f0f2f5;
-            overflow: hidden;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .work-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-            transition: transform var(--transition-slow);
-            will-change: transform;
-        }
-
-        .work-image:hover img {
-            transform: scale(1.05);
-        }
-
-        .work-image:active img {
-            transform: scale(0.95);
-            transition-duration: 0.08s;
-        }
-
-        /* 展示图放大提示 */
-        .work-image::after {
-            content: '🔍';
-            position: absolute;
-            bottom: 10px;
-            right: 14px;
-            font-size: 14px;
-            opacity: 0;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 4px 10px;
-            border-radius: 20px;
-            transition: opacity var(--transition-base), transform var(--transition-base);
-            pointer-events: none;
-            backdrop-filter: blur(4px);
-        }
-
-        .work-image:hover::after {
-            opacity: 1;
-            transform: translateY(-2px);
-        }
-
-        /* ===== 图片放大模态框 ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            background: var(--bg-body);
+            margin-bottom: 14px;
             transition: transform var(--transition-base);
-            will-change: transform;
+            cursor: pointer;
         }
-
-        .modal img:hover {
+        .work-card:hover .work-cover {
             transform: scale(1.02);
         }
 
-        .modal .close-hint {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 14px;
-            letter-spacing: 0.5px;
-            pointer-events: none;
-            animation: fadeIn 0.5s ease 0.3s both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scaleIn {
-            from { transform: scale(0.85); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes scaleOut {
-            from { transform: scale(1); opacity: 1; }
-            to { transform: scale(0.85); opacity: 0; }
-        }
-
-        .modal.closing {
-            animation: fadeOut 0.25s ease forwards;
-        }
-
-        .modal.closing img {
-            animation: scaleOut 0.25s ease forwards;
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-
-        /* ===== 二维码模态框 ===== */
-        .qr-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 20px;
-            animation: fadeIn 0.25s ease;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-        }
-
-        .qr-modal.active {
-            display: flex;
-        }
-
-        .qr-modal .qr-content {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 24px 24px 20px;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            animation: scaleIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            cursor: default;
-            transition: transform var(--transition-base);
-        }
-
-        .qr-modal .qr-content:hover {
-            transform: translateY(-2px);
-        }
-
-        .qr-modal .qr-content .qr-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 12px;
-        }
-
-        .qr-modal .qr-content img {
-            width: 100%;
-            max-width: 280px;
-            aspect-ratio: 1 / 1;
-            object-fit: contain;
-            border-radius: 8px;
-            display: block;
-            margin: 0 auto;
-            transition: transform var(--transition-base);
-        }
-
-        .qr-modal .qr-content img:hover {
-            transform: scale(1.03);
-        }
-
-        .qr-modal .qr-content .qr-close-hint {
-            margin-top: 12px;
-            font-size: 13px;
-            color: var(--text-faint);
-            letter-spacing: 0.3px;
-        }
-
-        .qr-modal.closing {
-            animation: fadeOut 0.2s ease forwards;
-        }
-
-        /* ===== 卡片内容 ===== */
-        .work-body {
-            padding: 18px 22px 22px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .work-body .work-name {
+        .work-card .work-name {
             font-size: 20px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 4px;
-            transition: color var(--transition-base), letter-spacing var(--transition-base);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.5s ease;
         }
 
-        .work-card:hover .work-name {
-            letter-spacing: 0.5px;
-        }
-
-        .work-body .work-tag {
+        .work-card .work-tags {
             font-size: 13px;
             color: var(--text-muted);
-            font-weight: 400;
-            margin-bottom: 10px;
-            letter-spacing: 0.3px;
+            margin-top: 2px;
+            transition: color 0.5s ease;
         }
 
-        .work-body .work-desc {
-            font-size: 15px;
-            color: #444;
-            line-height: 1.6;
-            margin-bottom: 16px;
-            flex: 1;
-            transition: color var(--transition-base);
-        }
-
-        /* ===== 最近博客预览 ===== */
-        .recent-posts {
-            margin: 6px 0 14px;
-            padding: 12px 14px;
-            background: #f8f9fc;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-light);
-            transition: background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
-        }
-
-        .recent-posts:hover {
-            background: #f5f7fa;
-            border-color: #e5e8ec;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .recent-posts .rp-title {
-            font-size: 12px;
-            color: #999;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            margin-bottom: 6px;
-        }
-
-        .recent-posts .rp-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
+        .work-card .work-desc {
             font-size: 14px;
-            color: #333;
-            text-decoration: none;
-            border-bottom: 1px dashed #eee;
-            transition: color var(--transition-base), padding-left var(--transition-base), background var(--transition-base);
-            border-radius: 6px;
-            position: relative;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-top: 8px;
+            transition: color 0.5s ease;
         }
 
-        .recent-posts .rp-item:last-child {
-            border-bottom: none;
-        }
-
-        .recent-posts .rp-item::before {
-            content: '→';
-            position: absolute;
-            left: -2px;
-            opacity: 0;
-            transition: opacity var(--transition-base), transform var(--transition-base);
-            transform: translateX(-6px);
-            color: var(--primary);
-        }
-
-        .recent-posts .rp-item:hover {
-            color: var(--text);
-            padding-left: 16px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 6px;
-        }
-
-        .recent-posts .rp-item:hover::before {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .recent-posts .rp-item .rp-date {
-            font-size: 12px;
-            color: #bbb;
-            flex-shrink: 0;
-            margin-left: 12px;
-            transition: color var(--transition-base);
-        }
-
-        .recent-posts .rp-item:hover .rp-date {
-            color: #999;
-        }
-
-        .recent-posts .rp-empty {
-            font-size: 13px;
-            color: #bbb;
-            text-align: center;
-            padding: 8px 0;
-        }
-
-        .recent-posts .rp-loading {
-            font-size: 13px;
-            color: #ccc;
-            text-align: center;
-            padding: 8px 0;
-            animation: pulseText 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        /* ===== 跳转按钮区域 ===== */
-        .work-actions {
+        .work-card .work-actions {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             gap: 10px;
-            margin-top: 4px;
+            margin-top: 16px;
         }
 
-        /* 按钮基础样式 + 涟漪效果 */
-        .work-link {
+        .work-card .work-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--primary);
-            color: #fff;
-            padding: 10px 22px;
+            padding: 10px 24px;
             border-radius: 40px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
-            text-decoration: none;
-            transition: background var(--transition-base), transform var(--transition-fast), box-shadow var(--transition-base);
             border: none;
             cursor: pointer;
-            touch-action: manipulation;
-            position: relative;
-            overflow: hidden;
-            will-change: transform;
-            -webkit-tap-highlight-color: transparent;
+            text-decoration: none;
+            transition: all var(--transition-base);
+            font-family: inherit;
+            background: var(--accent);
+            color: #fff;
         }
-
-        .work-link:hover {
-            background: var(--primary-hover);
+        .work-card .work-link:hover {
+            background: #4a8edb;
+            box-shadow: 0 4px 20px var(--accent-glow);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(26, 26, 46, 0.25);
         }
-
-        .work-link:active {
+        .work-card .work-link:active {
             transform: scale(0.93);
-            box-shadow: 0 2px 8px rgba(26, 26, 46, 0.2);
-            transition-duration: 0.06s;
         }
 
-        .work-link.loading {
-            background: #555;
-            cursor: wait;
-            pointer-events: none;
-        }
-
-        /* 涟漪 */
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background: var(--ripple-color);
-            transform: scale(0);
-            animation: rippleAnim 0.6s ease-out forwards;
-            pointer-events: none;
-            width: 100px;
-            height: 100px;
-            margin-left: -50px;
-            margin-top: -50px;
-        }
-
-        @keyframes rippleAnim {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-
-        /* ===== 平台切换器 ===== */
-        .platform-switcher {
+        .work-card .platform-switcher {
             display: flex;
             align-items: center;
             gap: 6px;
             font-size: 12px;
-            color: #999;
-            background: #f5f6f8;
-            padding: 4px 10px 4px 14px;
+            color: var(--text-muted);
+            background: var(--glass-bg);
+            padding: 4px 12px 4px 14px;
             border-radius: 20px;
-            border: 1px solid #eee;
+            border: 1px solid var(--card-border);
             cursor: pointer;
             transition: all var(--transition-base);
-            touch-action: manipulation;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             user-select: none;
-            position: relative;
+            font-family: inherit;
         }
-
-        .platform-switcher:hover {
-            background: #eef0f3;
-            border-color: #ddd;
+        .work-card .platform-switcher:hover {
+            border-color: var(--accent);
+            background: var(--card-bg);
             transform: translateY(-1px);
         }
-
-        .platform-switcher:active {
+        .work-card .platform-switcher:active {
             transform: scale(0.92);
-            transition-duration: 0.06s;
         }
-
-        .platform-switcher .dot {
+        .work-card .platform-switcher .dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
-            transition: all var(--transition-base);
+            transition: all 0.3s;
         }
-
-        .platform-switcher .dot.netlify {
+        .work-card .platform-switcher .dot.netlify {
             background: #00ad9f;
-            box-shadow: 0 0 8px rgba(0, 173, 159, 0.4);
         }
-
-        .platform-switcher .dot.github {
+        .work-card .platform-switcher .dot.github {
             background: #6e5494;
-            box-shadow: 0 0 8px rgba(110, 84, 148, 0.4);
         }
-
-        .platform-switcher .dot.fallback {
-            background: #f0ad4e;
-            box-shadow: 0 0 8px rgba(240, 173, 78, 0.4);
-        }
-
-        .platform-switcher .label {
+        .work-card .platform-switcher .label {
             font-weight: 500;
             font-size: 12px;
-            color: #555;
-            transition: color var(--transition-base);
+            color: var(--text-secondary);
         }
 
-        .platform-switcher .arrow {
-            font-size: 10px;
-            color: #bbb;
-            transition: transform var(--transition-base);
-            display: inline-block;
-        }
-
-        .platform-switcher:hover .arrow {
-            transform: translateX(3px) rotate(180deg);
-        }
-
-        /* 切换时的小动画 */
-        @keyframes pulseDot {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.6); }
-            100% { transform: scale(1); }
-        }
-
-        .platform-switcher .dot.switching {
-            animation: pulseDot 0.4s ease;
-        }
-
-        /* ===== 备用链接 ===== */
-        .fallback-link {
+        .work-card .fallback-link {
             font-size: 11px;
-            color: #bbb;
+            color: var(--text-muted);
             text-decoration: none;
-            border-bottom: 1px dotted #ddd;
-            transition: color var(--transition-base), border-color var(--transition-base);
+            border-bottom: 1px dotted var(--text-muted);
+            transition: all var(--transition-base);
             cursor: pointer;
-            padding-bottom: 1px;
+        }
+        .work-card .fallback-link:hover {
+            color: var(--text-secondary);
+            border-color: var(--text-secondary);
         }
 
-        .fallback-link:hover {
-            color: #888;
-            border-bottom-color: #888;
+        /* ================================================================
+               朋友圈板块
+            ================================================================ */
+        .friends-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
         }
 
-        .fallback-link:active {
-            transform: scale(0.95);
+        @media (max-width: 720px) {
+            .friends-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
         }
 
-        /* ===== 页脚 ===== */
+        .friend-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 20px 22px 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--card-shadow);
+            transition: all var(--transition-spring);
+            cursor: pointer;
+        }
+        .friend-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: var(--accent);
+        }
+        .friend-card:active {
+            transform: scale(0.97);
+            transition-duration: 0.08s;
+        }
+
+        .friend-card .friend-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .friend-card .friend-header .friend-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-body);
+            border: 1px solid var(--card-border);
+            flex-shrink: 0;
+        }
+        .friend-card .friend-header .friend-meta {
+            flex: 1;
+            min-width: 0;
+        }
+        .friend-card .friend-header .friend-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.5s ease;
+        }
+        .friend-card .friend-header .friend-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: color 0.5s ease;
+        }
+
+        .friend-card .friend-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            transition: color 0.5s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .friend-card .friend-title .pinned-tag {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--pinned-tag-text);
+            background: var(--pinned-tag-bg);
+            padding: 1px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.3px;
+            transition: all 0.5s ease;
+        }
+
+        .friend-card .friend-content {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.5s ease;
+        }
+        .friend-card .friend-content img {
+            max-width: 100%;
+            border-radius: var(--radius-sm);
+            margin: 4px 0;
+        }
+
+        .friend-card .friend-media {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 10px;
+        }
+        .friend-card .friend-media.one {
+            grid-template-columns: 1fr;
+        }
+        .friend-card .friend-media.two {
+            grid-template-columns: 1fr 1fr;
+        }
+        .friend-card .friend-media img,
+        .friend-card .friend-media video {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            background: var(--bg-body);
+            cursor: pointer;
+            transition: transform var(--transition-base);
+        }
+        .friend-card .friend-media img:hover,
+        .friend-card .friend-media video:hover {
+            transform: scale(1.02);
+        }
+
+        .friend-card .friend-more {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            transition: color 0.5s ease;
+        }
+
+        /* ================================================================
+               空状态
+            ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-muted);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.5s ease;
+        }
+        .empty-state .empty-icon {
+            font-size: 32px;
+            margin-bottom: 6px;
+        }
+        .empty-state .empty-text {
+            font-size: 14px;
+        }
+
+        /* ================================================================
+               页脚
+            ================================================================ */
         .footer {
             margin-top: 48px;
             padding-top: 20px;
-            border-top: 1px solid #eee;
+            border-top: 1px solid var(--card-border);
             font-size: 13px;
-            color: #bbb;
+            color: var(--text-muted);
             text-align: center;
+            transition: all 0.5s ease;
             letter-spacing: 0.3px;
-            transition: letter-spacing var(--transition-slow), color var(--transition-base);
         }
-
-        .footer:hover {
-            letter-spacing: 1px;
-            color: #999;
-        }
-
         .footer .heart {
-            color: #d14a4a;
+            color: #ef4444;
             display: inline-block;
-            animation: heartbeat 1.5s ease-in-out infinite;
+            animation: heartbeat 1.8s ease-in-out infinite;
         }
-
         @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            15% { transform: scale(1.2); }
-            30% { transform: scale(1); }
-            45% { transform: scale(1.15); }
-            60% { transform: scale(1); }
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            15% {
+                transform: scale(1.2);
+            }
+            30% {
+                transform: scale(1);
+            }
+            45% {
+                transform: scale(1.15);
+            }
+            60% {
+                transform: scale(1);
+            }
         }
 
-        /* ===== 响应式 ===== */
-        @media (min-width: 720px) {
-            body {
-                padding: 32px 40px 60px;
+        /* ================================================================
+               图片查看模态框
+            ================================================================ */
+        .img-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 20px;
+        }
+        .img-modal.active {
+            display: flex;
+        }
+        .img-modal img {
+            max-width: 90%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            animation: modalZoom 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes modalZoom {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
             }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .img-modal .close-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
 
+        /* ================================================================
+               响应式调整
+            ================================================================ */
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 16px 40px;
+            }
             .header {
-                padding: 12px 0 16px;
+                padding: 14px 0 12px;
             }
-
-            .header-left h1 {
-                font-size: 34px;
+            .header-left .logo {
+                font-size: 19px;
             }
-
-            .profile-card {
-                padding: 28px 34px;
-                gap: 20px 48px;
+            .header-left .tagline {
+                font-size: 12px;
             }
-
-            .profile-avatar {
-                width: 84px;
-                height: 84px;
+            .header-right a {
+                font-size: 12px;
+                padding: 4px 10px;
             }
-
-            .profile-info .item {
-                font-size: 16px;
+            .theme-toggle {
+                padding: 4px 10px;
+                font-size: 12px;
             }
-
-            .profile-signature {
-                font-size: 18px;
+            .theme-toggle .theme-label {
+                font-size: 11px;
             }
-
-            .works-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
+            .hero {
+                padding: 20px 0 28px;
             }
-
-            .work-body .work-name {
-                font-size: 22px;
+            .hero-avatar {
+                width: 72px;
+                height: 72px;
             }
-
-            .work-actions {
-                gap: 12px;
+            .hero-signature {
+                font-size: 14px;
+                line-height: 1.7;
             }
-        }
-
-        @media (min-width: 1024px) {
-            .works-grid {
-                gap: 36px;
+            .section-title {
+                font-size: 12px;
+                margin: 32px 0 14px;
             }
-
-            .work-body {
-                padding: 22px 28px 26px;
+            .work-card {
+                padding: 16px 16px 18px;
             }
-
-            .work-body .work-desc {
-                font-size: 16px;
+            .work-card .work-name {
+                font-size: 17px;
             }
-        }
-
-        @media (max-width: 480px) {
-            .work-actions {
+            .work-card .work-actions {
                 flex-direction: column;
                 align-items: stretch;
             }
-
-            .work-link {
+            .work-card .work-link {
                 justify-content: center;
             }
-
-            .platform-switcher {
+            .work-card .platform-switcher {
                 justify-content: center;
                 padding: 6px 12px;
             }
-
-            .recent-posts .rp-item {
-                font-size: 13px;
-                flex-wrap: wrap;
+            .friend-card {
+                padding: 14px 16px 16px;
+            }
+            .friend-card .friend-title {
+                font-size: 15px;
+            }
+            .friend-card .friend-media {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .friend-card .friend-media.one {
+                grid-template-columns: 1fr;
+            }
+            .friend-card .friend-media.two {
+                grid-template-columns: 1fr 1fr;
+            }
+            .friends-grid {
+                gap: 14px;
+            }
+            .works-grid {
+                gap: 14px;
             }
         }
 
-        /* ===== 减少动画偏好 ===== */
+        @media (max-width: 400px) {
+            .hero-title {
+                font-size: 32px;
+            }
+            .hero-social a {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+            .work-card .work-desc {
+                font-size: 13px;
+            }
+            .friend-card .friend-content {
+                font-size: 13px;
+            }
+        }
+
+        /* ================================================================
+               GSAP 初始隐藏 (滚动入场)
+            ================================================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92) translateY(20px);
+        }
+
+        /* ================================================================
+               减少动画偏好
+            ================================================================ */
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -997,501 +892,631 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
+            .reveal,
+            .reveal-scale {
+                opacity: 1 !important;
+                transform: none !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+    <!-- ===== 动态光晕背景 ===== -->
+    <div class="bg-glow"></div>
 
-    <!-- ====== 顶部 ====== -->
-    <header class="header animate-in animate-in-delay-1">
-        <div class="header-left">
-            <h1>🦔 刺猬的家</h1>
-            <div class="tagline">独立开发者</div>
-        </div>
-        <div class="header-right">
-            <a href="https://github.com/xiaociwei01" target="_blank">GitHub</a>
-            &nbsp;·&nbsp;
-            <span>微信 As08_0831</span>
-            &nbsp;·&nbsp;
-            <span>QQ 2586279833</span>
-        </div>
-    </header>
+    <!-- ================================================================ -->
+    <!-- 容器 -->
+    <!-- ================================================================ -->
+    <div class="container">
 
-    <!-- ====== 个人信息 ====== -->
-    <section class="profile-card animate-in animate-in-delay-2">
-        <div class="profile-avatar" onclick="openAvatarModal()">
-            <img src="ciweitouxiang.jpg" alt="小刺猬头像">
-        </div>
-        <div class="profile-info">
-            <span class="item"><span class="label">年龄</span><span class="value">18</span></span>
-            <span class="item"><span class="label">性别</span><span class="value">男</span></span>
-            <span class="item"><span class="label">地点</span><span class="value">中国 · 陕西</span></span>
-            <span class="item">
-                <span class="label">微信</span>
-                <span class="value highlight clickable" onclick="openQR('wechat')">As08_0831</span>
-            </span>
-            <span class="item">
-                <span class="label">QQ</span>
-                <span class="value highlight clickable" onclick="openQR('qq')">2586279833</span>
-            </span>
-        </div>
-        <div class="profile-signature">
-            本站点使用HTML+CSS+JavaScript语言开发 评论系统由Cusdis实现 已适配手机+平板+电脑设备 <br>
-            本站点为纯前端项目 项目源码开源托管在GitHub 为图方便 已做页面根据当前网速自动跳转合适的链接 也可以手动切换 <br>
-            我会时不时在“开发者的小朋友圈”板块更新自己的 “发疯”日常 欢迎随时看我“发疯” 本板块加载速度可能有点慢 请耐心等待
-        </div>
-    </section>
-
-    <!-- ====== 作品区 ====== -->
-    <h2 class="works-title animate-in animate-in-delay-2">🧰 我的作品</h2>
-
-    <div class="works-grid">
-
-        <!-- ===== 作品 1：太阳系 ===== -->
-        <div class="work-card animate-in animate-in-delay-3" id="work-solar">
-            <div class="work-image" onclick="openImageModal(this)">
-                <img src="xiaotaiyang.jpg" alt="3D太阳系展示图" loading="lazy">
+        <!-- ===== 顶部导航 ===== -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">🦔 <span>刺猬</span>的家</div>
+                <span class="tagline" id="headerTagline">独立开发者</span>
             </div>
-            <div class="work-body">
-                <div class="work-name">3D太阳系</div>
-                <div class="work-tag">Three.js · 开普勒轨道 · 哈勃 · 旅行者一号</div>
-                <div class="work-desc">
-                    真实光照、椭圆轨道、行星轴倾斜、土星环、破坏工具箱、
-                    哈勃望远镜模式、旅行者一号深空飞行。
-                </div>
+            <div class="header-right">
+                <a href="https://github.com/xiaociwei01" target="_blank" id="headerGithub">GitHub</a>
+                <button class="theme-toggle" id="themeToggle" title="切换主题">
+                    <span id="themeIcon">🌙</span>
+                    <span class="theme-label" id="themeLabel">深色</span>
+                </button>
+            </div>
+        </header>
 
-                <div class="work-actions">
-                    <button class="work-link" id="btn-solar" onclick="smartNavigate('solar')">
-                        🚀 进入太阳系
-                    </button>
-                    <div class="platform-switcher" id="switcher-solar" onclick="togglePlatform('solar')" title="点击切换平台">
-                        <span class="dot netlify" id="dot-solar"></span>
-                        <span class="label" id="label-solar">Netlify</span>
-                        <span class="arrow">⇄</span>
-                    </div>
-                </div>
+        <!-- ===== Hero 区域 ===== -->
+        <section class="hero">
+            <img class="hero-avatar reveal" id="heroAvatar" src="" alt="头像" loading="lazy" />
+            <h1 class="hero-title reveal">
+                <span class="highlight" id="heroTitle">刺猬</span>
+            </h1>
+            <p class="hero-sub reveal" id="heroSub">独立开发者</p>
+            <div class="hero-signature reveal" id="heroSignature">
+                本站点使用 HTML+CSS+JavaScript 语言开发...
+            </div>
+            <div class="hero-social reveal">
+                <a href="#" id="socialWechat">💬 微信</a>
+                <a href="#" id="socialQQ">🐧 QQ</a>
+            </div>
+        </section>
 
-                <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <span>📡 <span id="primary-label-solar">主: Netlify</span></span>
-                    <a href="#" id="fallback-link-solar" class="fallback-link" onclick="directNavigate('solar', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
-                </div>
+        <!-- ===== 作品区 ===== -->
+        <div class="section-title reveal">
+            📦 作品 <span class="count" id="worksCount">(0)</span>
+        </div>
+        <div class="works-grid" id="worksGrid">
+            <!-- 由 JS 动态渲染 -->
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <div class="empty-text">暂无作品</div>
             </div>
         </div>
 
-        <!-- ===== 作品 2：地月系 ===== -->
-        <div class="work-card animate-in animate-in-delay-4" id="work-lunar">
-            <div class="work-image" onclick="openImageModal(this)">
-                <img src="diyue.jpg" alt="3D地月系展示图" loading="lazy">
+        <!-- ===== 朋友圈区 ===== -->
+        <div class="section-title reveal" style="margin-top:56px;">
+            📝 朋友圈 <span class="count" id="friendsCount">(0)</span>
+        </div>
+        <div class="friends-grid" id="friendsGrid">
+            <!-- 由 JS 动态渲染 -->
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <div class="empty-text">暂无动态</div>
             </div>
-            <div class="work-body">
-                <div class="work-name">3D地月系</div>
-                <div class="work-tag">开普勒轨道 · 月相 · ISS · 天宫空间站</div>
-                <div class="work-desc">
-                    地球开普勒公转、节气跳转、日食/月食实时检测、
-                    月相模拟、ISS 与天宫双空间站、地轴倾斜。
-                </div>
+        </div>
 
-                <div class="work-actions">
-                    <button class="work-link" id="btn-lunar" onclick="smartNavigate('lunar')">
-                        🚀 进入地月系
-                    </button>
-                    <div class="platform-switcher" id="switcher-lunar" onclick="togglePlatform('lunar')" title="点击切换平台">
-                        <span class="dot netlify" id="dot-lunar"></span>
-                        <span class="label" id="label-lunar">Netlify</span>
-                        <span class="arrow">⇄</span>
-                    </div>
-                </div>
-
-                <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <span>📡 <span id="primary-label-lunar">主: Netlify</span></span>
-                    <a href="#" id="fallback-link-lunar" class="fallback-link" onclick="directNavigate('lunar', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
-                </div>
-            </div>
+        <!-- ===== 页脚 ===== -->
+        <div class="footer reveal">
+            <span class="heart">✦</span> 小刺猬 · 2026 <span class="heart">✦</span>
         </div>
 
     </div>
 
-    <!-- ====== 开发者的小朋友圈 ====== -->
-    <h2 class="works-title friends-title animate-in animate-in-delay-4">🦔 开发者的小朋友圈</h2>
-
-    <div class="works-grid">
-        <div class="work-card animate-in animate-in-delay-5" id="work-friends">
-            <div class="work-image" onclick="openImageModal(this)">
-                <img src="FriendQuan.jpg" alt="朋友圈封面图" loading="lazy">
-            </div>
-            <div class="work-body">
-                <div class="work-name">📝 开发者的小朋友圈</div>
-                <div class="work-tag">偶尔写写，记录一些瞬间</div>
-
-                <div class="recent-posts" id="recentPosts">
-                    <div class="rp-title">📖 最近更新</div>
-                    <div class="rp-loading">加载中...</div>
-                </div>
-
-                <div class="work-actions">
-                    <button class="work-link" id="btn-friends" onclick="smartNavigate('friends')">
-                        📝 进入朋友圈
-                    </button>
-                    <div class="platform-switcher" id="switcher-friends" onclick="togglePlatform('friends')" title="点击切换平台">
-                        <span class="dot netlify" id="dot-friends"></span>
-                        <span class="label" id="label-friends">Netlify</span>
-                        <span class="arrow">⇄</span>
-                    </div>
-                </div>
-
-                <div style="margin-top: 6px; font-size: 12px; color: #ccc; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <span>📡 <span id="primary-label-friends">主: Netlify</span></span>
-                    <a href="#" id="fallback-link-friends" class="fallback-link" onclick="directNavigate('friends', 'fallback'); return false;">🔁 备用: GitHub Pages</a>
-                </div>
-            </div>
-        </div>
+    <!-- ===== 图片查看模态框 ===== -->
+    <div class="img-modal" id="imgModal" onclick="closeImgModal()">
+        <img id="modalImg" src="" alt="查看大图" />
+        <div class="close-hint">点击任意处关闭</div>
     </div>
 
-    <!-- ====== 页脚 ====== -->
-    <div class="footer animate-in animate-in-delay-5">
-        <span class="heart">✦</span> 小刺猬 · 2026 <span class="heart">✦</span>
-    </div>
+    <script>
+        // ================================================================
+        // 配置
+        // ================================================================
+        const MANAGER_REPO = 'xiaociwei01/CiweiManager';
+        const CONFIG_PATH = 'config.json';
+        const THEME_KEY = 'ciwei_home_theme';
 
-</div>
+        // 默认头像 (CiweiHome 仓库里的)
+        const DEFAULT_AVATAR = 'ciweitouxiang.jpg';
 
-<!-- ====== 图片放大模态框 ====== -->
-<div class="modal" id="imageModal" onclick="closeImageModal()">
-    <img id="modalImage" src="" alt="大图">
-    <div class="close-hint">点击任意处关闭</div>
-</div>
+        // ================================================================
+        // DOM 引用
+        // ================================================================
+        const $ = id => document.getElementById(id);
 
-<!-- ====== 二维码模态框 ====== -->
-<div class="qr-modal" id="qrModal" onclick="closeQR()">
-    <div class="qr-content" onclick="event.stopPropagation()">
-        <div class="qr-label" id="qrLabel">微信二维码</div>
-        <img id="qrImage" src="" alt="二维码">
-        <div class="qr-close-hint">点击任意处关闭</div>
-    </div>
-</div>
-
-<script>
-    // ================================================================
-    // 链接配置
-    // ================================================================
-    const LINK_CONFIG = {
-        solar: {
-            name: '太阳系',
-            primary: 'https://xiaotaiyang.netlify.app',
-            fallback: 'https://xiaociwei01.github.io/xiaotaiyang/',
-            selected: 'primary'
-        },
-        lunar: {
-            name: '地月系',
-            primary: 'https://diyue.netlify.app',
-            fallback: 'https://xiaociwei01.github.io/diyue/',
-            selected: 'primary'
-        },
-        friends: {
-            name: '朋友圈',
-            // ⚠️ 请替换成你 CiweiHome 在 Netlify 上的实际地址
-            primary: 'https://ciweihome.netlify.app/FriendQuan.html',
-            fallback: 'https://xiaociwei01.github.io/CiweiHome/FriendQuan.html',
-            selected: 'primary'
+        // ================================================================
+        // 工具函数
+        // ================================================================
+        function buildCdnUrl(path, sha = 'main') {
+            if (!path) return '';
+            if (path.startsWith('http://') || path.startsWith('https://')) return path;
+            // 如果是默认头像，从 CiweiHome 仓库加载
+            if (path === DEFAULT_AVATAR) {
+                return `https://xiaociwei01.github.io/CiweiHome/${DEFAULT_AVATAR}`;
+            }
+            return `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@${sha}/${path}`;
         }
-    };
 
-    // ================================================================
-    // 博客加载（最近3篇）
-    // ================================================================
-    const BLOG_REPO = 'xiaociwei01/CiweiBlog';
-    const BLOG_API = `https://api.github.com/repos/${BLOG_REPO}/contents/posts`;
+        function formatDate(dateStr) {
+            if (!dateStr) return '未知日期';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                return d.toLocaleString('zh-CN', { hour12: false });
+            } catch {
+                return dateStr;
+            }
+        }
 
-    async function fetchRecentPosts() {
-        const container = document.getElementById('recentPosts');
-        try {
-            const res = await fetch(BLOG_API);
-            if (!res.ok) throw new Error('无法读取文章列表');
-            const files = await res.json();
-            const posts = files.filter(f => f.name.endsWith('.md'));
+        function renderMarkdown(text) {
+            if (!text) return '';
+            // 简单的 Markdown 渲染：图片、加粗、换行
+            let html = text
+                .replace(/!\[.*?\]\((.*?)\)/g, (match, url) => {
+                    const fullUrl = url.startsWith('http') ? url : buildCdnUrl(url);
+                    return `<img src="${fullUrl}" alt="图片" loading="lazy" />`;
+                })
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br />');
+            return html;
+        }
 
-            if (posts.length === 0) {
+        // ================================================================
+        // 主题切换
+        // ================================================================
+        function getPreferredTheme() {
+            const saved = localStorage.getItem(THEME_KEY);
+            if (saved === 'dark' || saved === 'light') return saved;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem(THEME_KEY, theme);
+            const icon = $('themeIcon');
+            const label = $('themeLabel');
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                label.textContent = '浅色';
+            } else {
+                icon.textContent = '🌙';
+                label.textContent = '深色';
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        // 初始化主题
+        applyTheme(getPreferredTheme());
+
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem(THEME_KEY)) {
+                applyTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+
+        $('themeToggle').addEventListener('click', toggleTheme);
+
+        // ================================================================
+        // 加载配置数据
+        // ================================================================
+        let configData = null;
+        let linkConfig = {};
+
+        async function loadConfig() {
+            try {
+                // 优先从 jsDelivr 加载
+                const cdnUrl =
+                    `https://cdn.jsdelivr.net/gh/${MANAGER_REPO}@main/${CONFIG_PATH}?t=${Date.now()}`;
+                let res = await fetch(cdnUrl, { cache: 'no-store' });
+                if (!res.ok) {
+                    // 回退 raw
+                    const rawUrl =
+                    `https://raw.githubusercontent.com/${MANAGER_REPO}/main/${CONFIG_PATH}?t=${Date.now()}`;
+                    res = await fetch(rawUrl, { cache: 'no-store' });
+                    if (!res.ok) throw new Error('加载配置失败');
+                }
+                configData = await res.json();
+                console.log('✅ 配置加载成功', configData);
+                renderAll();
+                // 启动 GSAP 入场动画
+                initGSAP();
+            } catch (err) {
+                console.warn('加载配置失败，使用默认数据', err);
+                // 使用默认数据（让页面不至于空白）
+                configData = {
+                    site: {
+                        title: '刺猬',
+                        subtitle: '独立开发者',
+                        avatar: DEFAULT_AVATAR,
+                        signature: '本站点使用 HTML+CSS+JavaScript 语言开发，评论系统由 Cusdis 实现。',
+                        wechat: 'As08_0831',
+                        qq: '2586279833'
+                    },
+                    works: [],
+                    friends: []
+                };
+                renderAll();
+                initGSAP();
+            }
+        }
+
+        // ================================================================
+        // 渲染函数
+        // ================================================================
+        function renderAll() {
+            if (!configData) return;
+            renderSite();
+            renderWorks();
+            renderFriends();
+            updateCounts();
+            // 初始化平台切换器状态
+            initPlatformSwitchers();
+        }
+
+        // ----- 网站信息 -----
+        function renderSite() {
+            const site = configData.site || {};
+
+            // 标题
+            $('heroTitle').textContent = site.title || '刺猬';
+            $('headerTagline').textContent = site.subtitle || '独立开发者';
+            $('heroSub').textContent = site.subtitle || '独立开发者';
+
+            // 头像
+            const avatarPath = site.avatar || DEFAULT_AVATAR;
+            $('heroAvatar').src = buildCdnUrl(avatarPath);
+            $('heroAvatar').alt = site.title + '的头像';
+
+            // 签名 (支持 Markdown)
+            if (site.signature) {
+                $('heroSignature').innerHTML = renderMarkdown(site.signature);
+            } else {
+                $('heroSignature').textContent = '本站点使用 HTML+CSS+JavaScript 语言开发。';
+            }
+
+            // 社交
+            const wechat = site.wechat || 'As08_0831';
+            const qq = site.qq || '2586279833';
+            $('socialWechat').textContent = '💬 微信 ' + wechat;
+            $('socialWechat').href = '#';
+            $('socialWechat').onclick = (e) => {
+                e.preventDefault();
+                alert('微信: ' + wechat);
+            };
+            $('socialQQ').textContent = '🐧 QQ ' + qq;
+            $('socialQQ').href = '#';
+            $('socialQQ').onclick = (e) => {
+                e.preventDefault();
+                alert('QQ: ' + qq);
+            };
+
+            // GitHub 链接保持不变
+        }
+
+        // ----- 作品 -----
+        function renderWorks() {
+            const container = $('worksGrid');
+            const works = (configData.works || []).filter(w => w.enabled !== false);
+
+            if (works.length === 0) {
                 container.innerHTML = `
-                    <div class="rp-title">📖 最近更新</div>
-                    <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
-                `;
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">暂无作品</div>
+                        </div>
+                    `;
                 return;
             }
 
-            posts.sort((a, b) => b.name.localeCompare(a.name));
-            const recent = posts.slice(0, 3);
+            let html = '';
+            works.forEach((work, index) => {
+                const coverUrl = work.cover ? buildCdnUrl(work.cover) : '';
+                const primaryLink = work.primaryLink || '';
+                const fallbackLink = work.fallbackLink || '#';
+                const workId = work.id || 'work-' + index;
 
-            // 并发获取最近3篇文章的标题和日期
-            const tasks = recent.map(async (post) => {
-                try {
-                    const contentRes = await fetch(post.download_url);
-                    const contentText = await contentRes.text();
-                    const titleMatch = contentText.match(/title:\s*(.+)/);
-                    const dateMatch = contentText.match(/date:\s*(.+)/);
-                    const title = titleMatch ? titleMatch[1].trim() : post.name.replace('.md', '');
-                    const date = dateMatch ? dateMatch[1].trim() : '未知日期';
-                    return { title, date, filename: post.name };
-                } catch (e) {
-                    return null;
+                // 存储链接配置供 JS 使用
+                linkConfig[workId] = {
+                    primary: primaryLink,
+                    fallback: fallbackLink,
+                    selected: 'primary'
+                };
+
+                html += `
+                        <div class="work-card reveal" data-work-id="${workId}">
+                            ${coverUrl ? `<img class="work-cover" src="${coverUrl}" alt="${work.name || '作品封面'}" loading="lazy" onclick="openImgModal(this.src)" />` : ''}
+                            <div class="work-name">${work.name || '未命名作品'}</div>
+                            ${work.tags ? `<div class="work-tags">${work.tags}</div>` : ''}
+                            ${work.desc ? `<div class="work-desc">${work.desc}</div>` : ''}
+                            <div class="work-actions">
+                                <a class="work-link" id="work-link-${workId}" href="${primaryLink || fallbackLink}" target="_blank">
+                                    🚀 进入
+                                </a>
+                                ${primaryLink || fallbackLink !== '#' ? `
+                                    <button class="platform-switcher" data-work-id="${workId}" onclick="togglePlatform('${workId}')" title="点击切换平台">
+                                        <span class="dot netlify" id="dot-${workId}"></span>
+                                        <span class="label" id="label-${workId}">${primaryLink ? 'Netlify' : 'GitHub Pages'}</span>
+                                        <span style="font-size:10px;color:var(--text-muted);">⇄</span>
+                                    </button>
+                                ` : ''}
+                            </div>
+                            ${primaryLink && fallbackLink && fallbackLink !== '#' ? `
+                                <div style="margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);">
+                                    <span>📡 <span id="primary-label-${workId}">主: ${primaryLink ? 'Netlify' : 'GitHub Pages'}</span></span>
+                                    <a href="#" class="fallback-link" onclick="directNavigate('${workId}', 'fallback'); return false;">🔁 备用: ${primaryLink ? 'GitHub Pages' : 'Netlify'}</a>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ----- 朋友圈 -----
+        function renderFriends() {
+            const container = $('friendsGrid');
+            const friends = configData.friends || [];
+
+            if (friends.length === 0) {
+                container.innerHTML = `
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <div class="empty-icon">📭</div>
+                            <div class="empty-text">暂无动态</div>
+                        </div>
+                    `;
+                return;
+            }
+
+            // 排序：置顶优先
+            const sorted = [...friends].sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return (b.id || '').localeCompare(a.id || '');
+            });
+
+            // 只显示最近 6 条（首页展示）
+            const display = sorted.slice(0, 6);
+            const hasMore = sorted.length > 6;
+
+            let html = '';
+            display.forEach((friend) => {
+                const pinnedTag = friend.pinned ? '<span class="pinned-tag">🔝 置顶</span>' : '';
+                const contentHtml = renderMarkdown(friend.content || '');
+
+                // 媒体
+                const allMedia = [...(friend.images || []), ...(friend.videos || [])];
+                let mediaHtml = '';
+                if (allMedia.length > 0) {
+                    const count = allMedia.length;
+                    let gridClass = 'one';
+                    if (count === 2) gridClass = 'two';
+                    else if (count >= 3) gridClass = '';
+
+                    const items = allMedia.slice(0, 6).map(url => {
+                        const fullUrl = buildCdnUrl(url);
+                        const isVideo = url.match(/\.(mp4|mov|webm)$/i);
+                        if (isVideo) {
+                            return `<video src="${fullUrl}" muted playsinline loading="lazy"></video>`;
+                        }
+                        return `<img src="${fullUrl}" alt="媒体" loading="lazy" onclick="openImgModal(this.src)" />`;
+                    }).join('');
+
+                    mediaHtml = `<div class="friend-media ${gridClass}">${items}</div>`;
+                    if (count > 6) {
+                        mediaHtml +=
+                            `<div style="font-size:12px;color:var(--text-muted);margin-top:2px;">+${count - 6} 更多</div>`;
+                    }
+                }
+
+                html += `
+                        <div class="friend-card reveal" onclick="window.open('https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(friend.id || '')}', '_blank')">
+                            <div class="friend-header">
+                                <img class="friend-avatar" src="${$('heroAvatar').src || DEFAULT_AVATAR}" alt="头像" />
+                                <div class="friend-meta">
+                                    <div class="friend-name">小刺猬</div>
+                                    <div class="friend-date">${formatDate(friend.date)}</div>
+                                </div>
+                            </div>
+                            <div class="friend-title">
+                                ${friend.title || '无标题'} ${pinnedTag}
+                            </div>
+                            <div class="friend-content">${contentHtml}</div>
+                            ${mediaHtml}
+                        </div>
+                    `;
+            });
+
+            if (hasMore) {
+                html += `
+                        <div class="empty-state" style="grid-column:1/-1;padding:20px;cursor:pointer;" onclick="window.open('FriendQuan.html', '_blank')">
+                            <div style="font-size:14px;color:var(--text-secondary);">📖 查看全部 ${sorted.length} 条动态 →</div>
+                        </div>
+                    `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ----- 计数 -----
+        function updateCounts() {
+            const works = (configData.works || []).filter(w => w.enabled !== false);
+            const friends = configData.friends || [];
+            $('worksCount').textContent = '(' + works.length + ')';
+            $('friendsCount').textContent = '(' + friends.length + ')';
+        }
+
+        // ================================================================
+        // 平台切换器逻辑
+        // ================================================================
+        function getCurrentLink(workId) {
+            const cfg = linkConfig[workId];
+            if (!cfg) return '#';
+            return cfg.selected === 'primary' ? cfg.primary : cfg.fallback;
+        }
+
+        function getCurrentPlatform(workId) {
+            const cfg = linkConfig[workId];
+            if (!cfg) return 'Netlify';
+            return cfg.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
+        }
+
+        function updatePlatformUI(workId) {
+            const cfg = linkConfig[workId];
+            if (!cfg) return;
+
+            const isPrimary = cfg.selected === 'primary';
+            const dot = document.getElementById('dot-' + workId);
+            const label = document.getElementById('label-' + workId);
+            const primaryLabel = document.getElementById('primary-label-' + workId);
+            const link = document.getElementById('work-link-' + workId);
+
+            if (dot) {
+                dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
+            }
+            if (label) {
+                label.textContent = isPrimary ? (cfg.primary ? 'Netlify' : 'GitHub Pages') : 'GitHub Pages';
+            }
+            if (primaryLabel) {
+                primaryLabel.textContent = '主: ' + (isPrimary ? (cfg.primary ? 'Netlify' : 'GitHub Pages') : 'GitHub Pages');
+            }
+            if (link) {
+                const url = isPrimary ? cfg.primary : cfg.fallback;
+                link.href = url || '#';
+                // 更新备用链接的 href
+                const fallbackLinks = document.querySelectorAll(`.fallback-link[onclick*="${workId}"]`);
+                fallbackLinks.forEach(el => {
+                    const target = isPrimary ? cfg.fallback : cfg.primary;
+                    el.href = target || '#';
+                    el.textContent = '🔁 备用: ' + (isPrimary ? 'GitHub Pages' : 'Netlify');
+                    el.onclick = function(e) {
+                        e.preventDefault();
+                        directNavigate(workId, 'fallback');
+                    };
+                });
+            }
+
+            // 更新平台切换器的 onclick 里的提示
+            const switcher = document.querySelector(`.platform-switcher[data-work-id="${workId}"]`);
+            if (switcher) {
+                switcher.title = '当前: ' + getCurrentPlatform(workId);
+            }
+        }
+
+        function togglePlatform(workId) {
+            const cfg = linkConfig[workId];
+            if (!cfg) return;
+            if (!cfg.primary || !cfg.fallback || cfg.fallback === '#') {
+                // 如果没有备用链接，不切换
+                return;
+            }
+            cfg.selected = cfg.selected === 'primary' ? 'fallback' : 'primary';
+            updatePlatformUI(workId);
+        }
+
+        function directNavigate(workId, target) {
+            const cfg = linkConfig[workId];
+            if (!cfg) return;
+            const url = target === 'fallback' ? cfg.fallback : cfg.primary;
+            if (url && url !== '#') {
+                window.open(url, '_blank');
+            }
+        }
+
+        function initPlatformSwitchers() {
+            const workCards = document.querySelectorAll('.work-card');
+            workCards.forEach(card => {
+                const workId = card.dataset.workId;
+                if (workId && linkConfig[workId]) {
+                    updatePlatformUI(workId);
                 }
             });
+        }
 
-            const results = await Promise.all(tasks);
-            const validPosts = results.filter(p => p !== null);
+        // ================================================================
+        // 图片查看模态框
+        // ================================================================
+        function openImgModal(src) {
+            if (!src) return;
+            const modal = document.getElementById('imgModal');
+            const img = document.getElementById('modalImg');
+            img.src = src;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
-            if (validPosts.length === 0) {
-                container.innerHTML = `
-                    <div class="rp-title">📖 最近更新</div>
-                    <div class="rp-empty">还没有文章，写一篇吧 ✍️</div>
-                `;
+        function closeImgModal() {
+            const modal = document.getElementById('imgModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeImgModal();
+        });
+
+        // ================================================================
+        // GSAP 滚动入场动画
+        // ================================================================
+        function initGSAP() {
+            // 检查 GSAP 是否加载完成
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                // 如果还没加载，等待一下再试
+                setTimeout(initGSAP, 500);
                 return;
             }
 
-            let html = `<div class="rp-title">📖 最近更新</div>`;
-            for (const post of validPosts) {
-                html += `
-                    <a href="https://xiaociwei01.github.io/CiweiBlog/Xiangqingye.html?file=${encodeURIComponent(post.filename)}" target="_blank" class="rp-item">
-                        <span>${post.title}</span>
-                        <span class="rp-date">${post.date}</span>
-                    </a>
-                `;
-            }
-            container.innerHTML = html;
+            gsap.registerPlugin(ScrollTrigger);
 
-            // 给文章项添加渐入动画
-            const items = container.querySelectorAll('.rp-item');
-            items.forEach((item, index) => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(8px)';
-                item.style.transition = `opacity 0.3s ease ${index * 0.1}s, transform 0.3s ease ${index * 0.1}s, padding-left 0.25s ease, color 0.25s ease`;
-                requestAnimationFrame(() => {
-                    item.style.opacity = '1';
-                    item.style.transform = 'translateY(0)';
-                });
+            // 所有 .reveal 元素
+            const reveals = document.querySelectorAll('.reveal');
+
+            reveals.forEach((el, i) => {
+                // 如果是空的占位状态，跳过
+                if (el.querySelector('.empty-state')) return;
+
+                gsap.fromTo(el, {
+                        opacity: 0,
+                        y: 40,
+                        scale: 0.96,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.9,
+                        ease: 'power4.out',
+                        delay: i * 0.06,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 88%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
             });
-        } catch (err) {
-            container.innerHTML = `
-                <div class="rp-title">📖 最近更新</div>
-                <div class="rp-empty">加载失败，请稍后重试</div>
-            `;
-        }
-    }
 
-    // ================================================================
-    // 涟漪效果
-    // ================================================================
-    function createRipple(e, element) {
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        const rect = element.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height) * 2;
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-        element.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-    }
+            // 作品卡片和朋友圈卡片单独处理 (延迟稍长)
+            document.querySelectorAll('.work-card.reveal, .friend-card.reveal').forEach((el, i) => {
+                gsap.fromTo(el, {
+                        opacity: 0,
+                        y: 50,
+                        scale: 0.94,
+                    }, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.8,
+                        ease: 'power4.out',
+                        delay: i * 0.05 + 0.1,
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 90%',
+                            toggleActions: 'play none none none',
+                        },
+                    }
+                );
+            });
 
-    // ================================================================
-    // 核心函数
-    // ================================================================
-    function getCurrentLink(key) {
-        const config = LINK_CONFIG[key];
-        return config.selected === 'primary' ? config.primary : config.fallback;
-    }
-
-    function getCurrentPlatform(key) {
-        const config = LINK_CONFIG[key];
-        return config.selected === 'primary' ? 'Netlify' : 'GitHub Pages';
-    }
-
-    function updatePlatformUI(key) {
-        const config = LINK_CONFIG[key];
-        const isPrimary = config.selected === 'primary';
-        const dot = document.getElementById('dot-' + key);
-        const label = document.getElementById('label-' + key);
-        const primaryLabel = document.getElementById('primary-label-' + key);
-
-        if (dot) {
-            dot.className = 'dot ' + (isPrimary ? 'netlify' : 'github');
-        }
-        if (label) {
-            label.textContent = isPrimary ? 'Netlify' : 'GitHub Pages';
-        }
-        if (primaryLabel) {
-            primaryLabel.textContent = isPrimary ? '主: Netlify' : '主: GitHub Pages';
-        }
-
-        const fallbackLink = document.getElementById('fallback-link-' + key);
-        if (fallbackLink) {
-            const fbLabel = isPrimary ? 'GitHub Pages' : 'Netlify';
-            fallbackLink.textContent = '🔁 备用: ' + fbLabel;
-            const target = isPrimary ? config.fallback : config.primary;
-            fallbackLink.href = target;
-            fallbackLink.onclick = function(e) {
-                e.preventDefault();
-                directNavigate(key, 'fallback');
-            };
-        }
-    }
-
-    function togglePlatform(key) {
-        const config = LINK_CONFIG[key];
-        config.selected = config.selected === 'primary' ? 'fallback' : 'primary';
-
-        // 切换时的小动画
-        const dot = document.getElementById('dot-' + key);
-        if (dot) {
-            dot.classList.add('switching');
-            setTimeout(() => dot.classList.remove('switching'), 400);
-        }
-
-        updatePlatformUI(key);
-        const btn = document.getElementById('btn-' + key);
-        if (btn) {
-            btn.title = '当前目标: ' + getCurrentPlatform(key);
-        }
-    }
-
-    function smartNavigate(key) {
-        const config = LINK_CONFIG[key];
-        const btn = document.getElementById('btn-' + key);
-        const originalText = btn.innerHTML;
-
-        btn.classList.add('loading');
-        btn.innerHTML = '⏳ 检测中...';
-
-        const primaryUrl = config.primary;
-        const fallbackUrl = config.fallback;
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-        fetch(primaryUrl, {
-            method: 'HEAD',
-            mode: 'no-cors',
-            signal: controller.signal
-        })
-        .then(() => {
-            clearTimeout(timeoutId);
-            btn.classList.remove('loading');
-            btn.innerHTML = originalText;
-            window.open(primaryUrl, '_blank');
-        })
-        .catch(() => {
-            clearTimeout(timeoutId);
-            config.selected = 'fallback';
-            updatePlatformUI(key);
-            btn.classList.remove('loading');
-            btn.innerHTML = originalText;
-            window.open(fallbackUrl, '_blank');
-        });
-    }
-
-    function directNavigate(key, target) {
-        const config = LINK_CONFIG[key];
-        const url = target === 'fallback' ? config.fallback : config.primary;
-        window.open(url, '_blank');
-    }
-
-    // ================================================================
-    // 图片放大 & 二维码（带关闭动画）
-    // ================================================================
-    function openImageModal(el) {
-        const img = el.querySelector('img');
-        if (!img) return;
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        modalImg.src = img.src;
-        modalImg.alt = img.alt || '展示图';
-        modal.classList.remove('closing');
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function openAvatarModal() {
-        const avatarImg = document.querySelector('.profile-avatar img');
-        if (!avatarImg) return;
-        const modal = document.getElementById('imageModal');
-        const modalImg = document.getElementById('modalImage');
-        modalImg.src = avatarImg.src;
-        modalImg.alt = avatarImg.alt || '头像';
-        modal.classList.remove('closing');
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeImageModal() {
-        const modal = document.getElementById('imageModal');
-        modal.classList.add('closing');
-        setTimeout(() => {
-            modal.classList.remove('active');
-            modal.classList.remove('closing');
-            document.body.style.overflow = '';
-        }, 250);
-    }
-
-    function openQR(type) {
-        const modal = document.getElementById('qrModal');
-        const qrImg = document.getElementById('qrImage');
-        const qrLabel = document.getElementById('qrLabel');
-
-        if (type === 'wechat') {
-            qrImg.src = 'wechat_qr.jpg';
-            qrLabel.textContent = '📱 微信二维码';
-        } else if (type === 'qq') {
-            qrImg.src = 'qq_qr.jpg';
-            qrLabel.textContent = '💬 QQ二维码';
-        } else {
-            return;
-        }
-
-        modal.classList.remove('closing');
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeQR() {
-        const modal = document.getElementById('qrModal');
-        modal.classList.add('closing');
-        setTimeout(() => {
-            modal.classList.remove('active');
-            modal.classList.remove('closing');
-            document.body.style.overflow = '';
-        }, 200);
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeImageModal();
-            closeQR();
-        }
-    });
-
-    // ================================================================
-    // 按钮涟漪效果绑定
-    // ================================================================
-    document.querySelectorAll('.work-link').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            createRipple(e, this);
-        });
-    });
-
-    // ================================================================
-    // 初始化
-    // ================================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        Object.keys(LINK_CONFIG).forEach(key => {
-            updatePlatformUI(key);
-            const btn = document.getElementById('btn-' + key);
-            if (btn) {
-                btn.title = '当前目标: ' + getCurrentPlatform(key);
+            // 头像特殊处理 (更柔和)
+            const avatar = document.querySelector('.hero-avatar');
+            if (avatar) {
+                gsap.from(avatar, {
+                    opacity: 0,
+                    scale: 0.8,
+                    duration: 1.0,
+                    ease: 'power4.out',
+                    delay: 0.2,
+                });
             }
+
+            console.log('🚀 GSAP 动画已启动');
+        }
+
+        // ================================================================
+        // 启动
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
         });
-        fetchRecentPosts();
-    });
-</script>
+
+        console.log('🦔 CiweiHome 已启动');
+        console.log('📦 配置仓库:', MANAGER_REPO);
+    </script>
 
 </body>
 </html>
