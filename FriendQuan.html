@@ -28,6 +28,7 @@
             --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.08);
             --radius-lg: 20px;
             --radius-md: 14px;
+            --radius-sm: 10px;
             --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
             --accent: #58a6ff;
@@ -321,25 +322,26 @@
             grid-template-columns: 1fr 1fr;
         }
 
-        /* ===== ✅ 修复：图片比例不对，局部放大 → 改为 contain ===== */
+        /* ===== 图片：完整显示，比例正确 ===== */
         .feed-item .feed-media img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: var(--radius-sm);
-    background: var(--bg-body);
-    cursor: pointer;
-    transition: transform var(--transition-base);
-}
-.feed-item .feed-media video {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: contain;
-    border-radius: var(--radius-sm);
-    background: #000;
-    cursor: pointer;
-    transition: transform var(--transition-base);
-}
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            background: var(--bg-body);
+            cursor: pointer;
+            transition: transform var(--transition-base);
+        }
+        /* ===== 视频：完整显示，比例正确 ===== */
+        .feed-item .feed-media video {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: var(--radius-sm);
+            background: #000;
+            cursor: pointer;
+            transition: transform var(--transition-base);
+        }
 
         .feed-item .feed-media img:hover,
         .feed-item .feed-media video:hover {
@@ -647,6 +649,7 @@
         // 加载数据
         // ================================================================
         let loadedPosts = [];
+        let gsapInitialized = false;
 
         async function loadPosts() {
             feedList.innerHTML =
@@ -868,6 +871,12 @@
             });
 
             feedList.innerHTML = html;
+
+            // ================================================================
+            // 🆕 关键修复：渲染完成后再初始化 GSAP
+            // 确保 .feed-item.reveal 元素已经存在于 DOM 中
+            // ================================================================
+            setTimeout(initGSAP, 50);
         }
 
         // ================================================================
@@ -896,14 +905,25 @@
         // GSAP 滚动入场动画
         // ================================================================
         function initGSAP() {
+            // ===== 防重复初始化 =====
+            if (gsapInitialized) return;
+
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-                setTimeout(initGSAP, 500);
+                // GSAP 还没加载完，稍后重试
+                setTimeout(initGSAP, 300);
                 return;
             }
 
+            gsapInitialized = true;
             gsap.registerPlugin(ScrollTrigger);
 
             const reveals = document.querySelectorAll('.feed-item.reveal');
+
+            // 如果没有元素，不初始化（避免空跑）
+            if (reveals.length === 0) {
+                gsapInitialized = false;
+                return;
+            }
 
             reveals.forEach((el, i) => {
                 gsap.fromTo(el, {
@@ -947,9 +967,7 @@
         // ================================================================
         loadPosts();
 
-        setTimeout(initGSAP, 500);
-
-        console.log('🦔 FriendQuan 已启动（修复版：置顶标签兼容 + 图片 contain）');
+        console.log('🦔 FriendQuan 已启动（图片 contain + GSAP 时机修复）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>
