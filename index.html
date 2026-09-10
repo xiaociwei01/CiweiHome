@@ -1584,15 +1584,37 @@
         // ================================================================
         // 图片/二维码模态框
         // ================================================================
-        function openImageModal(src) {
-            if (!src) return;
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImage');
-            modalImg.src = src;
-            modal.classList.remove('closing');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+        function openImageModal(srcOrEl) {
+    let src = '';
+    
+    // 情况1：传的是字符串（直接是图片地址）
+    if (typeof srcOrEl === 'string') {
+        src = srcOrEl;
+    }
+    // 情况2：传的是 img 元素
+    else if (srcOrEl && srcOrEl.tagName === 'IMG') {
+        src = srcOrEl.src;
+    }
+    // 情况3：传的是容器 div，里面找 img
+    else if (srcOrEl && srcOrEl.querySelector) {
+        const img = srcOrEl.querySelector('img');
+        if (!img) return;
+        src = img.src;
+    }
+    // 其他情况直接返回
+    else {
+        return;
+    }
+    
+    if (!src) return;
+    
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    modalImg.src = src;
+    modal.classList.remove('closing');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
         function openAvatarModal() {
             const avatarImg = document.getElementById('heroAvatar');

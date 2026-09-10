@@ -322,16 +322,24 @@
         }
 
         /* ===== ✅ 修复：图片比例不对，局部放大 → 改为 contain ===== */
-        .feed-item .feed-media img,
-        .feed-item .feed-media video {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: contain;  /* 原来是 cover，改成 contain 保证完整显示 */
-            border-radius: var(--radius-sm);
-            background: var(--bg-body);
-            cursor: pointer;
-            transition: transform var(--transition-base);
-        }
+        .feed-item .feed-media img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    background: var(--bg-body);
+    cursor: pointer;
+    transition: transform var(--transition-base);
+}
+.feed-item .feed-media video {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: #000;
+    cursor: pointer;
+    transition: transform var(--transition-base);
+}
 
         .feed-item .feed-media img:hover,
         .feed-item .feed-media video:hover {
