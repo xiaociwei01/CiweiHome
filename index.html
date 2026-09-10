@@ -7,6 +7,11 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>CiweiHome</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#58a6ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CiweiHome">
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -2008,6 +2013,20 @@
 <!-- 🦔 刺猬宠物 -->
 <link rel="stylesheet" href="https://xiaociwei01.github.io/CiweiHome/ciweipet.css">
 <script src="https://xiaociwei01.github.io/CiweiHome/ciweipet.js" defer></script>
+<!-- 📱 PWA Service Worker -->
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js')
+            .then(function (reg) {
+                console.log('✅ SW 已注册:', reg.scope);
+            })
+            .catch(function (err) {
+                console.warn('SW 注册失败:', err);
+            });
+    });
+}
+</script>
 
 </body>
 </html>

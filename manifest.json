@@ -1,0 +1,16 @@
+{
+  "name": "CiweiHome · 刺猬之家",
+  "short_name": "CiweiHome",
+  "description": "LouFoong 的个人站点",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0f",
+  "theme_color": "#58a6ff",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "ciweitouxiang.jpg", "sizes": "192x192", "type": "image/jpeg", "purpose": "any" },
+    { "src": "ciweitouxiang.jpg", "sizes": "512x512", "type": "image/jpeg", "purpose": "any" }
+  ]
+}
