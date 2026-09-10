@@ -170,10 +170,6 @@
             '🔊 <span>音效</span>' +
             '<span class="cp-sub-check" id="cp-sound-check">开启</span>' +
         '</div>' +
-        '<div class="cp-sub-item" data-menu="fps">' +
-            '📊 <span>帧率</span>' +
-            '<span class="cp-sub-check" id="cp-fps-check">--</span>' +
-        '</div>' +
         '<div class="cp-sep"></div>' +
         '<div class="cp-sub-item danger" data-menu="hide">🙈 <span>隐藏</span></div>';
 
@@ -213,7 +209,6 @@
     var dlgBody  = dialogue.querySelector('#cp-dlg-body');
     var dlgClose = dialogue.querySelector('#cp-dlg-close');
     var soundChk = submenu.querySelector('#cp-sound-check');
-    var fpsChk   = submenu.querySelector('#cp-fps-check');
     var scaleChk = submenu.querySelector('#cp-scale-check');
 
     // ============================================================
@@ -270,7 +265,6 @@
             if (measuredFPS >= 90) cls = 'high';
             else if (measuredFPS < 45) cls = 'low';
             document.body.dataset.fps = cls;
-            if (fpsChk) fpsChk.textContent = measuredFPS + 'fps';
             fpsFrames = 0; fpsStart = now;
         }
     }
@@ -1179,7 +1173,6 @@
         submenu.classList.add('show');
 
         soundChk.textContent = S.soundOn ? '开启' : '关闭';
-        fpsChk.textContent = measuredFPS + 'fps';
         updateScaleDisplay();
 
         var sr = submenu.getBoundingClientRect();
@@ -1392,7 +1385,7 @@
             lsSet(KEYS.last, String(S.last));
         });
 
-        console.log('🦔 小ci · 内联版 v3 已启动 · ' + measuredFPS + 'fps · ' + getScalePercent() + '%');
+        console.log('🦔 小ci · 内联版 v3 已启动 · ' + getScalePercent() + '%');
     }
 
     mount();

@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 防止浏览器缓存 HTML -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -143,7 +142,7 @@
             transition: color 0.5s ease;
         }
         .header-left .logo .logo-brand { color: var(--accent); }
-.header-left .logo .logo-suffix { color: var(--text-primary); }
+        .header-left .logo .logo-suffix { color: var(--text-primary); }
         .header-left .tagline {
             font-size: 14px;
             color: var(--text-muted);
@@ -389,6 +388,70 @@
             pointer-events: none;
         }
 
+        /* ================================================================
+           🆕 占位卡（更多作品敬请期待）
+        ================================================================ */
+        .work-card.work-card-placeholder {
+            cursor: default;
+            border-style: dashed;
+            border-width: 2px;
+            border-color: var(--card-border);
+            background: transparent;
+            backdrop-filter: blur(6px);
+        }
+        .work-card.work-card-placeholder:hover {
+            transform: none;
+            box-shadow: var(--card-shadow);
+            border-color: var(--card-border);
+        }
+        .work-card.work-card-placeholder:active {
+            transform: none;
+        }
+        .work-card.work-card-placeholder .work-cover-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: var(--radius-sm);
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            border: 2px dashed var(--card-border);
+            color: var(--text-muted);
+            transition: all var(--transition-base);
+        }
+        .work-card.work-card-placeholder:hover .work-cover-placeholder {
+            background: var(--card-bg);
+            border-color: var(--accent);
+        }
+        .work-card.work-card-placeholder .work-cover-placeholder .ph-icon {
+            font-size: 32px;
+            opacity: 0.5;
+            transition: all var(--transition-base);
+        }
+        .work-card.work-card-placeholder:hover .work-cover-placeholder .ph-icon {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+        .work-card.work-card-placeholder .work-cover-placeholder .ph-text {
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+        .work-card.work-card-placeholder .work-name {
+            color: var(--text-muted);
+        }
+        .work-card.work-card-placeholder .work-tags {
+            font-style: italic;
+            opacity: 0.7;
+        }
+        .work-card.work-card-placeholder .work-desc {
+            color: var(--text-muted);
+            opacity: 0.8;
+        }
+
         .platform-switcher {
             display: flex;
             align-items: center;
@@ -454,12 +517,10 @@
             border-color: var(--text-secondary);
         }
 
-        /* ===== 平台控制：隐藏被禁用的平台元素 ===== */
         .platform-hidden {
             display: none !important;
         }
 
-        /* ===== 朋友圈预览（从 CiweiBlog 加载） ===== */
         .recent-posts {
             margin: 6px 0 14px;
             padding: 12px 14px;
@@ -662,9 +723,6 @@
         .empty-state .empty-icon { font-size: 32px; margin-bottom: 6px; }
         .empty-state .empty-text { font-size: 14px; }
 
-        /* ================================================================
-           关于本站 模态框（高级感版本）
-        ================================================================ */
         .about-modal {
             display: none;
             position: fixed;
@@ -726,7 +784,7 @@
             margin-bottom: 18px;
             flex-shrink: 0;
             padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--card-border);
         }
         .about-modal-title {
             font-size: 18px;
@@ -782,7 +840,7 @@
             background: var(--bg-body);
             padding: 6px 14px;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--card-border);
             transition: all 0.2s;
         }
         .about-tag:hover {
@@ -805,7 +863,7 @@
             padding: 6px 14px;
             border-radius: 8px;
             background: var(--bg-body);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--card-border);
             transition: all 0.25s;
         }
         .about-link:hover {
@@ -816,7 +874,7 @@
         }
 
         .about-footer {
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--card-border);
             padding-top: 14px;
             margin-top: 6px;
         }
@@ -826,7 +884,6 @@
             line-height: 1.6;
         }
 
-        /* 源码仓库区域分组 */
         .about-repo-group {
             display: flex;
             flex-direction: column;
@@ -875,6 +932,8 @@
             .platform-switcher { justify-content: center; padding: 6px 12px; }
             .recent-posts .rp-item { font-size: 13px; flex-wrap: wrap; }
             .about-modal-content { max-height: 85vh; padding: 20px 18px 18px; }
+            .work-card.work-card-placeholder .work-cover-placeholder .ph-icon { font-size: 26px; }
+            .work-card.work-card-placeholder .work-cover-placeholder .ph-text { font-size: 12px; letter-spacing: 1.5px; }
         }
         @media (max-width: 400px) {
             .hero-title { font-size: 32px; }
@@ -926,7 +985,7 @@
             </div>
         </section>
 
-        <!-- ===== 作品区（硬编码） ===== -->
+        <!-- ===== 作品区（硬编码 + 占位） ===== -->
         <div class="section-title reveal">🧰 我的作品</div>
         <div class="works-grid" id="worksGrid">
             <!-- 由 JS 硬编码渲染 -->
@@ -998,13 +1057,11 @@
         </div>
         <div class="about-modal-body">
 
-            <!-- 站点信息 -->
             <div class="about-section">
                 <p style="font-size:16px;font-weight:600;color:var(--text-primary);">刺猬之家 · CiweiHome</p>
                 <p style="font-size:14px;color:var(--text-secondary);">独立开发者 · LouFoong</p>
             </div>
 
-            <!-- 技术栈（竖向） -->
             <div class="about-section">
                 <div class="about-section-label">🛠️ 技术栈</div>
                 <div class="about-tag-list">
@@ -1015,7 +1072,6 @@
                 </div>
             </div>
 
-            <!-- 托管平台（竖向） -->
             <div class="about-section">
                 <div class="about-section-label">📦 托管平台</div>
                 <div class="about-tag-list">
@@ -1024,7 +1080,6 @@
                 </div>
             </div>
 
-            <!-- 源码仓库（竖向） -->
             <div class="about-section">
                 <div class="about-section-label">📂 源码GitHub仓库</div>
                 <div class="about-link-list">
@@ -1039,7 +1094,6 @@
                 </p>
             </div>
 
-            <!-- 底部 -->
             <div class="about-footer">
                 <p>💡 本站为纯前端项目 所有数据通过 GitHub API 读写 代码开源于 GitHub</p>
             </div>
@@ -1064,7 +1118,7 @@
         let platformConfig = { netlify: true, github: true };
 
         // ================================================================
-        // 硬编码作品
+        // 硬编码作品（含 2 个占位）
         // ================================================================
         const WORKS = [{
             id: 'solar',
@@ -1077,11 +1131,23 @@
         }, {
             id: 'lunar',
             name: '3D地月系',
-            tags: '开普勒轨道 · 月相 · ISS · 天宫空间站',
+            tags: 'Three.js · 开普勒轨道 · 月相 · ISS · 天宫空间站',
             desc: '地球开普勒公转 · 节气跳转 · 日食/月食实时检测 · 月相模拟 · ISS 与天宫双空间站 · 地轴倾斜',
             cover: 'diyue.jpg',
             primaryLink: 'https://diyue.netlify.app',
             fallbackLink: 'https://xiaociwei01.github.io/diyue/'
+        },
+        // 🆕 占位卡 1
+        {
+            id: 'placeholder-1',
+            placeholder: true,
+            desc: '这里会放我未来的新作品，敬请期待～'
+        },
+        // 🆕 占位卡 2
+        {
+            id: 'placeholder-2',
+            placeholder: true,
+            desc: '下一个惊喜正在路上，很快和你见面！'
         }];
 
         const LINK_CONFIG = {
@@ -1118,9 +1184,6 @@
             return `https://cdn.jsdelivr.net/gh/xiaociwei01/CiweiManager@main/${path}`;
         }
 
-        // ================================================================
-        // 获取当前可用的平台链接（受平台开关控制）
-        // ================================================================
         function getAvailablePlatform(key) {
             const config = LINK_CONFIG[key];
             const primaryAvailable = platformConfig.netlify;
@@ -1147,6 +1210,7 @@
 
         function updatePlatformUI(key) {
             const config = LINK_CONFIG[key];
+            if (!config) return;
             const isPrimary = config.selected === 'primary';
             const dot = document.getElementById('dot-' + key);
             const label = document.getElementById('label-' + key);
@@ -1205,6 +1269,7 @@
 
         function togglePlatform(key) {
             const config = LINK_CONFIG[key];
+            if (!config) return;
             const primaryAvailable = platformConfig.netlify;
             const fallbackAvailable = platformConfig.github;
 
@@ -1240,9 +1305,6 @@
             }
         }
 
-        // ================================================================
-        // 处理导航点击（受平台开关控制）
-        // ================================================================
         function handleNavigate(key) {
             const available = getAvailablePlatform(key);
             if (available) {
@@ -1252,11 +1314,9 @@
             }
         }
 
-        // ================================================================
-        // 直接跳转（受平台开关控制）
-        // ================================================================
         function directNavigate(key, target) {
             const config = LINK_CONFIG[key];
+            if (!config) return;
             const primaryAvailable = platformConfig.netlify;
             const fallbackAvailable = platformConfig.github;
 
@@ -1277,9 +1337,6 @@
             window.open(url, '_blank');
         }
 
-        // ================================================================
-        // 加载平台配置（从 CiweiBlog/platform.json）
-        // ================================================================
         async function loadPlatformConfig() {
             try {
                 const t = Date.now();
@@ -1302,9 +1359,6 @@
             }
         }
 
-        // ================================================================
-        // 应用平台配置（显示/隐藏对应的平台元素 + 最近更新区域）
-        // ================================================================
         function applyPlatformConfig() {
             const workKeys = ['solar', 'lunar', 'friends'];
 
@@ -1390,9 +1444,6 @@
                 }
             });
 
-            // ================================================================
-            // 🆕 控制「最近更新」区域的显示（两个平台都关则隐藏）
-            // ================================================================
             const recentPosts = document.getElementById('recentPosts');
             const anyAvailable = platformConfig.netlify || platformConfig.github;
             if (recentPosts) {
@@ -1405,7 +1456,6 @@
                 }
             }
 
-            // 更新朋友圈的进入按钮
             const friendsBtn = document.getElementById('btn-friends');
             if (friendsBtn) {
                 const available = getAvailablePlatform('friends');
@@ -1418,9 +1468,6 @@
             }
         }
 
-        // ================================================================
-        // Toast（用于显示禁用提示）
-        // ================================================================
         function showToast(msg, type = 'success') {
             let toast = document.getElementById('customToast');
             if (!toast) {
@@ -1431,7 +1478,7 @@
                     transform: translateX(-50%) translateY(80px);
                     background: var(--card-bg, rgba(255,255,255,0.85));
                     backdrop-filter: blur(20px);
-                    border: 1px solid var(--border-color, rgba(0,0,0,0.06));
+                    border: 1px solid var(--card-border, rgba(0,0,0,0.06));
                     color: var(--text-primary, #1a1a2e);
                     padding: 12px 24px;
                     border-radius: 40px;
@@ -1452,7 +1499,7 @@
             }
             toast.textContent = msg;
             toast.className = type === 'error' ? 'toast-error' : '';
-            toast.style.borderColor = type === 'error' ? '#ef4444' : 'var(--border-color, rgba(0,0,0,0.06))';
+            toast.style.borderColor = type === 'error' ? '#ef4444' : 'var(--card-border, rgba(0,0,0,0.06))';
             toast.style.color = type === 'error' ? '#ef4444' : 'var(--text-primary, #1a1a2e)';
             requestAnimationFrame(() => {
                 toast.style.opacity = '1';
@@ -1466,11 +1513,28 @@
         }
 
         // ================================================================
-        // 渲染作品（硬编码）
+        // 渲染作品（硬编码 + 占位卡）
         // ================================================================
         function renderWorks() {
             let html = '';
             WORKS.forEach((work) => {
+                // 🆕 占位卡分支
+                if (work.placeholder) {
+                    html += `
+                        <div class="work-card work-card-placeholder reveal" id="work-${work.id}">
+                            <div class="work-cover-placeholder">
+                                <span class="ph-icon">📦</span>
+                                <span class="ph-text">占位专用空图</span>
+                            </div>
+                            <div class="work-name">更多作品敬请期待</div>
+                            <div class="work-tags">Coming Soon</div>
+                            <div class="work-desc">${work.desc || '这里会放我未来的新作品，敬请期待～'}</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 原有正常作品渲染
                 const cfg = LINK_CONFIG[work.id];
                 const isPrimary = cfg.selected === 'primary';
                 const dotClass = isPrimary ? 'netlify' : 'github';
@@ -1500,13 +1564,16 @@
 
             worksGrid.innerHTML = html;
 
+            // 只对有平台切换的正常作品调用 updatePlatformUI
             WORKS.forEach((work) => {
-                updatePlatformUI(work.id);
+                if (!work.placeholder) {
+                    updatePlatformUI(work.id);
+                }
             });
         }
 
         // ================================================================
-        // 加载朋友圈（从 CiweiBlog 读取 - 原版逻辑）
+        // 加载朋友圈（从 CiweiBlog 读取）
         // ================================================================
         async function fetchRecentPosts() {
             const container = document.getElementById('recentPosts');
@@ -1586,36 +1653,27 @@
         // 图片/二维码模态框
         // ================================================================
         function openImageModal(srcOrEl) {
-    let src = '';
-    
-    // 情况1：传的是字符串（直接是图片地址）
-    if (typeof srcOrEl === 'string') {
-        src = srcOrEl;
-    }
-    // 情况2：传的是 img 元素
-    else if (srcOrEl && srcOrEl.tagName === 'IMG') {
-        src = srcOrEl.src;
-    }
-    // 情况3：传的是容器 div，里面找 img
-    else if (srcOrEl && srcOrEl.querySelector) {
-        const img = srcOrEl.querySelector('img');
-        if (!img) return;
-        src = img.src;
-    }
-    // 其他情况直接返回
-    else {
-        return;
-    }
-    
-    if (!src) return;
-    
-    const modal = document.getElementById('imageModal');
-    const modalImg = document.getElementById('modalImage');
-    modalImg.src = src;
-    modal.classList.remove('closing');
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
+            let src = '';
+            if (typeof srcOrEl === 'string') {
+                src = srcOrEl;
+            } else if (srcOrEl && srcOrEl.tagName === 'IMG') {
+                src = srcOrEl.src;
+            } else if (srcOrEl && srcOrEl.querySelector) {
+                const img = srcOrEl.querySelector('img');
+                if (!img) return;
+                src = img.src;
+            } else {
+                return;
+            }
+            if (!src) return;
+
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = src;
+            modal.classList.remove('closing');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
 
         function openAvatarModal() {
             const avatarImg = document.getElementById('heroAvatar');
@@ -1744,7 +1802,6 @@
             }
         }
 
-        // ESC 键关闭弹窗
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('aboutModal');
@@ -1755,7 +1812,7 @@
         });
 
         // ================================================================
-        // GSAP 滚动入场动画（双向触发）
+        // GSAP 滚动入场动画
         // ================================================================
         function initGSAP() {
             if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
@@ -1943,7 +2000,7 @@
             setTimeout(initGSAP, 300);
         });
 
-        console.log('🦔 CiweiHome 已启动（平台开关 + 最近更新联动）');
+        console.log('🦔 CiweiHome 已启动（平台开关 + 最近更新联动 + 占位卡）');
         console.log('📦 博客仓库:', BLOG_REPO);
         console.log('📄 详情页:', DETAIL_PAGE);
     </script>

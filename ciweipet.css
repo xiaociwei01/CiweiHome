@@ -1,6 +1,6 @@
 /* ============================================================
-   🦔 Ciwei Pet · 内联桌面宠物样式 v3
-   新增：深浅色适配 · 光晕弱化 · 横排菜单 · 二级折叠 · 对话框
+   🦔 Ciwei Pet · 内联桌面宠物样式 v3.1
+   修复：光晕完全透明 · 转圈时阴影不跟转
 ================================================================ */
 
 #ciwei-pet, #ciwei-pet *,
@@ -10,9 +10,6 @@
 #ciwei-pet-particles, #ciwei-pet-particles *,
 #ciwei-pet-restore { box-sizing: border-box; }
 
-/* ============================================================
-   主题变量 · 浅色（默认）
-================================================================ */
 :root {
     --cp-panel-bg: rgba(255, 255, 255, .96);
     --cp-panel-text: #1a1a2e;
@@ -29,14 +26,12 @@
     --cp-toolbar-btn: rgba(26, 26, 46, .72);
     --cp-toolbar-btn-hover-bg: rgba(0, 0, 0, .08);
     --cp-toolbar-btn-hover-color: #1a1a2e;
-    --cp-glow-opacity: .12;
     --cp-shadow-opacity: .28;
     --cp-zzz-color: #58a6ff;
 
     --cp-accent: 88, 166, 255;
     --cp-size: 120px;
     --cp-breath: 2.8s;
-    --cp-glow: 3.2s;
     --cp-tilt: .5s;
     --cp-bubble-t: .26s;
     --cp-toolbar-t: .24s;
@@ -44,7 +39,6 @@
     --cp-zzz: 2.6s;
 }
 
-/* 手动深色 */
 :root[data-theme="dark"] {
     --cp-panel-bg: rgba(28, 28, 42, .97);
     --cp-panel-text: rgba(255, 255, 255, .85);
@@ -61,12 +55,10 @@
     --cp-toolbar-btn: rgba(255, 255, 255, .75);
     --cp-toolbar-btn-hover-bg: rgba(255, 255, 255, .16);
     --cp-toolbar-btn-hover-color: #fff;
-    --cp-glow-opacity: .22;
     --cp-shadow-opacity: .35;
     --cp-zzz-color: #78a0ff;
 }
 
-/* 系统深色 + 无手动指定 → 跟随系统 */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
         --cp-panel-bg: rgba(28, 28, 42, .97);
@@ -84,7 +76,6 @@
         --cp-toolbar-btn: rgba(255, 255, 255, .75);
         --cp-toolbar-btn-hover-bg: rgba(255, 255, 255, .16);
         --cp-toolbar-btn-hover-color: #fff;
-        --cp-glow-opacity: .22;
         --cp-shadow-opacity: .35;
         --cp-zzz-color: #78a0ff;
     }
@@ -93,10 +84,10 @@
 @media (max-width: 600px) { :root { --cp-size: 88px; } }
 
 body[data-fps="high"] {
-    --cp-breath: 2.5s; --cp-glow: 3s; --cp-tilt: .42s;
+    --cp-breath: 2.5s; --cp-tilt: .42s;
 }
 body[data-fps="low"] {
-    --cp-breath: 3.4s; --cp-glow: 3.8s; --cp-tilt: .6s; --cp-particle: 1.35s;
+    --cp-breath: 3.4s; --cp-tilt: .6s; --cp-particle: 1.35s;
 }
 
 /* ============================================================
@@ -144,23 +135,9 @@ body[data-fps="low"] {
     75%      { transform: translateY(-3px) rotate(.8deg); }
 }
 
-/* ⭐ 光晕（保护罩）：现在非常淡，几乎透明 */
+/* ⭐ 光晕彻底关掉（透明） */
 #ciwei-pet .cp-body::before {
-    content: '';
-    position: absolute; inset: -14px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(var(--cp-accent), var(--cp-glow-opacity)) 0%, transparent 70%);
-    animation: cp-pulseGlow var(--cp-glow) ease-in-out infinite;
-    pointer-events: none; z-index: 0;
-    transition: background .8s ease, opacity .8s ease;
-}
-@keyframes cp-pulseGlow {
-    0%, 100% { transform: scale(1); opacity: .5; }
-    50%      { transform: scale(1.08); opacity: .15; }
-}
-body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .3; }
-#ciwei-pet.sleeping .cp-body::before {
-    background: radial-gradient(circle, rgba(120, 160, 255, var(--cp-glow-opacity)) 0%, transparent 70%);
+    display: none;
 }
 
 /* 阴影（保留） */
@@ -221,14 +198,17 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .3;
     60%  { transform: scale(.9, 1.13); }
     100% { transform: scale(1, 1); }
 }
-#ciwei-pet.spin .cp-body {
-    animation: cp-spin .85s cubic-bezier(.34,1.56,.64,1) !important;
+
+/* ⭐ 转圈动画改到 .cp-tilt（只转图片，阴影/💤不转） */
+#ciwei-pet.spin .cp-tilt {
+    animation: cp-spin .85s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes cp-spin {
     0%   { transform: rotate(0deg) scale(1); }
     50%  { transform: rotate(180deg) scale(1.1); }
     100% { transform: rotate(360deg) scale(1); }
 }
+
 #ciwei-pet.sleeping .cp-body {
     animation: cp-sleepBreath 4.5s ease-in-out infinite;
 }
@@ -256,7 +236,7 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .3;
 }
 
 /* ============================================================
-   气泡（深浅色适配 + 横排优先）
+   气泡
 ================================================================ */
 #ciwei-pet .cp-bubble {
     position: absolute;
@@ -321,7 +301,7 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 }
 
 /* ============================================================
-   工具栏（悬停出现）
+   工具栏
 ================================================================ */
 #ciwei-pet .cp-toolbar {
     position: absolute;
@@ -372,7 +352,7 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 #ciwei-pet .cp-toolbar-btn:active { transform: scale(.85); }
 
 /* ============================================================
-   粒子层
+   粒子
 ================================================================ */
 #ciwei-pet-particles {
     position: fixed;
@@ -397,7 +377,7 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 }
 
 /* ============================================================
-   一级菜单：横排图标条
+   一级菜单
 ================================================================ */
 #ciwei-pet-menu {
     position: fixed;
@@ -439,9 +419,6 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 }
 #ciwei-pet-menu .cp-mi:active {
     transform: translateY(0) scale(.92);
-}
-#ciwei-pet-menu .cp-mi.danger:hover {
-    background: rgba(239, 68, 68, .16);
 }
 #ciwei-pet-menu .cp-mi::after {
     content: attr(data-label);
@@ -521,7 +498,7 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 }
 
 /* ============================================================
-   对话面板（深浅色适配）
+   对话面板
 ================================================================ */
 #ciwei-pet-dialogue {
     position: fixed;
@@ -668,9 +645,6 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
     to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ============================================================
-   移动端
-================================================================ */
 @media (max-width: 600px) {
     #ciwei-pet .cp-bubble { font-size: 12px; padding: 6px 11px; max-width: 220px; }
     #ciwei-pet .cp-toolbar-btn { width: 25px; height: 25px; font-size: 12px; }
