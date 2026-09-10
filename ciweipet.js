@@ -26,22 +26,45 @@
         name: '小ci',
         developer: 'LouFoong',
         birthday: '2026-09-10',
-        ipLine: '一只住在 CiweiHome 里的电子刺猬，也是开发者 LouFoong 的 IP 分身。'
+        ipLine: '一只住在 CiweiHome 里的电子刺猬，也是开发者 LouFoong 的 IP 分身'
     };
 
     var SCALES = [0.7, 0.85, 1.0, 1.25, 1.5, 2.0];
     var DEFAULT_SCALE_INDEX = 2;
 
     var DIALOGUES = [
-        { id:'who',       icon:'🦔', q:'你是谁？',         a:'我是{name}，{developer} 的电子宠物刺猬。', face:'happy' },
-        { id:'info',      icon:'📇', q:'你的信息',         a:'我叫{name}，生日是 {birthday}。{ipLine}', face:'idle1' },
-        { id:'age',       icon:'🎂', q:'你多大了？',       a:'我出生于 {birthday}，到今天已经 {days} 天啦！', face:'surprised' },
-        { id:'like',      icon:'💖', q:'你喜欢什么？',     a:'喜欢被摸头，喜欢吃苹果。最讨厌被人一直戳！', face:'happy' },
-        { id:'developer', icon:'👨‍💻', q:'LouFoong 是谁？', a:'{developer} 是我的创造者，一个喜欢折腾的独立开发者。', face:'idle1' },
-        { id:'skill',     icon:'✨', q:'你会什么？',       a:'会卖萌、会睡觉、会跟着你的鼠标转头，还会…转圈圈！', face:'happy' },
-        { id:'love',      icon:'❤️', q:'你喜欢我吗？',     a:'当然喜欢！你是我的朋友呀～', face:'happy' },
-        { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你是他最好的朋友。', face:'surprised', hidden:true }
-    ];
+    // === 身份向 ===
+    { id:'who',       icon:'🦔', q:'你是谁？',         a:'我是{name}，{developer} 的电子宠物刺猬。', face:'happy' },
+    { id:'info',      icon:'📇', q:'你的信息',         a:'我叫{name}，生日是 {birthday}。{ipLine}', face:'idle1' },
+    { id:'age',       icon:'🎂', q:'你多大了？',       a:'我出生于 {birthday}，到今天已经 {days} 天啦！', face:'surprised' },
+    { id:'developer', icon:'👨‍💻', q:'LouFoong 是谁？', a:'{developer} 是我的创造者，一个喜欢折腾的独立开发者。', face:'idle1' },
+    { id:'like',      icon:'💖', q:'你喜欢什么？',     a:'喜欢被摸头，喜欢吃苹果。最讨厌被人一直戳！', face:'happy' },
+
+    // === 陪伴向 ===
+    { id:'doing',     icon:'🌙', q:'你在干什么？',     a:'在发呆…或者在想你。', face:'idle1' },
+    { id:'tired',     icon:'💤', q:'你会累吗？',       a:'不会，但我会困。戳我太久我会打瞌睡。', face:'sleep' },
+    { id:'sleepwhere',icon:'😴', q:'你睡哪里？',       a:'屏幕右下角，那里最舒服。', face:'happy' },
+    { id:'eat',       icon:'🍎', q:'你喜欢吃什么？',   a:'苹果，还有你喂我的每一个 emoji。', face:'happy' },
+    { id:'sing',      icon:'🎵', q:'你会唱歌吗？',     a:'不会，但我会吱吱叫。', face:'happy' },
+
+    // === 情绪向 ===
+    { id:'sad',       icon:'😊', q:'我今天不开心',     a:'那我陪你待一会儿。你不说话我也在。', face:'idle1' },
+    { id:'mytired',   icon:'😢', q:'我累了',           a:'休息一下吧，我帮你看着屏幕。', face:'idle1' },
+    { id:'howtodo',   icon:'🤔', q:'我该怎么办',       a:'慢慢想，不急。刺猬也是慢慢长大的。', face:'idle1' },
+    { id:'annoyed',   icon:'🌧️', q:'今天好烦',         a:'那把我戳一顿吧，我不生气。', face:'angry' },
+
+    // === 趣味向 ===
+    { id:'random',    icon:'🎲', q:'随便说点什么',     a:'你是想让我说俏皮话，还是想让我转圈圈？', face:'happy' },
+    { id:'fortune',   icon:'🔮', q:'我今天的运气怎么样？', a:'抬头看看屏幕…嗯，你今天会遇到一只好刺猬。', face:'surprised' },
+    { id:'choose',    icon:'🪙', q:'帮我选一个',       a:'正面是我，反面也是我。', face:'happy' },
+
+    // === AI 预留（先占位） ===
+    { id:'ai-joke',   icon:'😂', q:'讲个笑话',         a:'（AI 还没上线…等我接上 DeepSeek，笑话管够）', face:'happy', ai:'tell_me_a_joke' },
+    { id:'ai-chat',   icon:'🤖', q:'陪我聊聊天',       a:'（我现在的回答是固定的，等 LouFoong 给我接上 AI，我就能真的陪你聊天了）', face:'idle1', ai:'chat' },
+
+    // === 彩蛋解锁 ===
+    { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你可以凭借这个界面的截图找他要1块钱', face:'surprised', hidden:true }
+];
 
     var MSG = {
         c1:  ['你戳我干什么？', '干嘛呀～', '有事吗？', '唔？'],
@@ -733,6 +756,7 @@
             if (!S.sleeping) setFace('surprised', 1500);
             SFX.throw();
             burst('💫', 3);
+            showBubble(pick(MSG.thrown), 1500, false);
             return;
         }
 
