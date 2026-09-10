@@ -1,10 +1,17 @@
-/* CiweiHome Service Worker v1 */
-var CACHE_NAME = 'ciweihome-v1';
+/* ============================================================
+   CiweiHome Service Worker · v2
+   缓存：图标 + 主页资源 + 刺猬资源
+   策略：HTML → 网络优先（保证内容最新）
+        静态资源 → 缓存优先（快）
+================================================================ */
+var CACHE_NAME = 'ciweihome-v2';
 var STATIC_ASSETS = [
     './',
     './index.html',
     './FriendQuan.html',
     './manifest.json',
+    './icon-192.png',
+    './icon-512.png',
     './ciweipet.css',
     './ciweipet.js',
     './ciweitouxiang.jpg',
@@ -38,10 +45,10 @@ self.addEventListener('fetch', function (e) {
     if (e.request.method !== 'GET') return;
     var url = new URL(e.request.url);
 
-    // 外部请求（GitHub API、CDN 等）→ 不缓存，直接走网络
+    // 外部请求（GitHub API、CDN、字体等）→ 不缓存，直接走网络
     if (url.origin !== location.origin) return;
 
-    // HTML 页面 → Network First（保证内容最新）
+    // HTML 页面 → Network First
     var accept = e.request.headers.get('accept') || '';
     var isHTML = accept.indexOf('text/html') !== -1;
 
@@ -62,7 +69,7 @@ self.addEventListener('fetch', function (e) {
         return;
     }
 
-    // 静态资源（图片、CSS、JS）→ Cache First（快）
+    // 静态资源 → Cache First
     e.respondWith(
         caches.match(e.request).then(function (cached) {
             var network = fetch(e.request).then(function (res) {
