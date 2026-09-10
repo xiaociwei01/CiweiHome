@@ -1,21 +1,108 @@
-/* ================================================================
-   🦔 Ciwei Pet · 内联桌面宠物样式 v2
-   新增：缩放支持 + 菜单滚动 + 触屏友好
+/* ============================================================
+   🦔 Ciwei Pet · 内联桌面宠物样式 v3
+   新增：深浅色适配 · 光晕弱化 · 横排菜单 · 二级折叠 · 对话框
 ================================================================ */
 
-#ciwei-pet,
-#ciwei-pet * { box-sizing: border-box; }
+#ciwei-pet, #ciwei-pet *,
+#ciwei-pet-menu, #ciwei-pet-menu *,
+#ciwei-pet-submenu, #ciwei-pet-submenu *,
+#ciwei-pet-dialogue, #ciwei-pet-dialogue *,
+#ciwei-pet-particles, #ciwei-pet-particles *,
+#ciwei-pet-restore { box-sizing: border-box; }
 
-#ciwei-pet {
+/* ============================================================
+   主题变量 · 浅色（默认）
+================================================================ */
+:root {
+    --cp-panel-bg: rgba(255, 255, 255, .96);
+    --cp-panel-text: #1a1a2e;
+    --cp-panel-text-muted: rgba(26, 26, 46, .55);
+    --cp-panel-border: rgba(0, 0, 0, .08);
+    --cp-panel-shadow: 0 8px 24px rgba(0, 0, 0, .1);
+    --cp-panel-hover: rgba(0, 0, 0, .05);
+    --cp-panel-active: rgba(88, 166, 255, .12);
+    --cp-panel-active-text: #2563eb;
+    --cp-bubble-bg: rgba(255, 255, 255, .97);
+    --cp-bubble-text: #1a1a2e;
+    --cp-bubble-shadow: 0 6px 20px rgba(0, 0, 0, .12);
+    --cp-toolbar-bg: rgba(255, 255, 255, .9);
+    --cp-toolbar-btn: rgba(26, 26, 46, .72);
+    --cp-toolbar-btn-hover-bg: rgba(0, 0, 0, .08);
+    --cp-toolbar-btn-hover-color: #1a1a2e;
+    --cp-glow-opacity: .12;
+    --cp-shadow-opacity: .28;
+    --cp-zzz-color: #58a6ff;
+
     --cp-accent: 88, 166, 255;
     --cp-size: 120px;
     --cp-breath: 2.8s;
     --cp-glow: 3.2s;
     --cp-tilt: .5s;
-    --cp-bubble: .26s;
-    --cp-toolbar: .24s;
+    --cp-bubble-t: .26s;
+    --cp-toolbar-t: .24s;
     --cp-particle: 1.15s;
     --cp-zzz: 2.6s;
+}
+
+/* 手动深色 */
+:root[data-theme="dark"] {
+    --cp-panel-bg: rgba(28, 28, 42, .97);
+    --cp-panel-text: rgba(255, 255, 255, .85);
+    --cp-panel-text-muted: rgba(255, 255, 255, .5);
+    --cp-panel-border: rgba(255, 255, 255, .1);
+    --cp-panel-shadow: 0 12px 36px rgba(0, 0, 0, .45);
+    --cp-panel-hover: rgba(255, 255, 255, .1);
+    --cp-panel-active: rgba(88, 166, 255, .15);
+    --cp-panel-active-text: #60a5fa;
+    --cp-bubble-bg: rgba(30, 30, 45, .95);
+    --cp-bubble-text: #fff;
+    --cp-bubble-shadow: 0 6px 20px rgba(0, 0, 0, .28);
+    --cp-toolbar-bg: rgba(30, 30, 45, .9);
+    --cp-toolbar-btn: rgba(255, 255, 255, .75);
+    --cp-toolbar-btn-hover-bg: rgba(255, 255, 255, .16);
+    --cp-toolbar-btn-hover-color: #fff;
+    --cp-glow-opacity: .22;
+    --cp-shadow-opacity: .35;
+    --cp-zzz-color: #78a0ff;
+}
+
+/* 系统深色 + 无手动指定 → 跟随系统 */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --cp-panel-bg: rgba(28, 28, 42, .97);
+        --cp-panel-text: rgba(255, 255, 255, .85);
+        --cp-panel-text-muted: rgba(255, 255, 255, .5);
+        --cp-panel-border: rgba(255, 255, 255, .1);
+        --cp-panel-shadow: 0 12px 36px rgba(0, 0, 0, .45);
+        --cp-panel-hover: rgba(255, 255, 255, .1);
+        --cp-panel-active: rgba(88, 166, 255, .15);
+        --cp-panel-active-text: #60a5fa;
+        --cp-bubble-bg: rgba(30, 30, 45, .95);
+        --cp-bubble-text: #fff;
+        --cp-bubble-shadow: 0 6px 20px rgba(0, 0, 0, .28);
+        --cp-toolbar-bg: rgba(30, 30, 45, .9);
+        --cp-toolbar-btn: rgba(255, 255, 255, .75);
+        --cp-toolbar-btn-hover-bg: rgba(255, 255, 255, .16);
+        --cp-toolbar-btn-hover-color: #fff;
+        --cp-glow-opacity: .22;
+        --cp-shadow-opacity: .35;
+        --cp-zzz-color: #78a0ff;
+    }
+}
+
+@media (max-width: 600px) { :root { --cp-size: 88px; } }
+
+body[data-fps="high"] {
+    --cp-breath: 2.5s; --cp-glow: 3s; --cp-tilt: .42s;
+}
+body[data-fps="low"] {
+    --cp-breath: 3.4s; --cp-glow: 3.8s; --cp-tilt: .6s; --cp-particle: 1.35s;
+}
+
+/* ============================================================
+   宠物容器
+================================================================ */
+#ciwei-pet {
     position: fixed;
     left: 0; top: 0;
     width: var(--cp-size);
@@ -30,34 +117,19 @@
                 width .35s cubic-bezier(.34,1.56,.64,1),
                 height .35s cubic-bezier(.34,1.56,.64,1);
     font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
-    user-select: none; -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
 }
 #ciwei-pet.ready { opacity: 1; }
 #ciwei-pet.dragging { cursor: grabbing; }
 #ciwei-pet.animating {
     transition: transform .55s cubic-bezier(.34,1.56,.64,1),
-                opacity .45s,
-                width .35s, height .35s;
+                opacity .45s, width .35s, height .35s;
 }
+#ciwei-pet.scaling { transition: none; }
 #ciwei-pet.hidden { display: none; }
 
-/* 缩放时禁用宽高过渡，避免抖动 */
-#ciwei-pet.scaling { transition: none; }
-
-@media (max-width: 600px) {
-    #ciwei-pet { --cp-size: 88px; }
-}
-
-/* 高/低帧率自适应 */
-body[data-fps="high"] #ciwei-pet {
-    --cp-breath: 2.5s; --cp-glow: 3s; --cp-tilt: .42s;
-}
-body[data-fps="low"] #ciwei-pet {
-    --cp-breath: 3.4s; --cp-glow: 3.8s; --cp-tilt: .6s; --cp-particle: 1.35s;
-}
-
-/* ================ 身体 ================ */
+/* ============================================================
+   身体
+================================================================ */
 #ciwei-pet .cp-body {
     position: relative; width: 100%; height: 100%;
     transition: transform .15s ease-out;
@@ -72,31 +144,32 @@ body[data-fps="low"] #ciwei-pet {
     75%      { transform: translateY(-3px) rotate(.8deg); }
 }
 
+/* ⭐ 光晕（保护罩）：现在非常淡，几乎透明 */
 #ciwei-pet .cp-body::before {
     content: '';
     position: absolute; inset: -14px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(var(--cp-accent), .24) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(var(--cp-accent), var(--cp-glow-opacity)) 0%, transparent 70%);
     animation: cp-pulseGlow var(--cp-glow) ease-in-out infinite;
     pointer-events: none; z-index: 0;
-    transition: background .8s ease;
+    transition: background .8s ease, opacity .8s ease;
 }
 @keyframes cp-pulseGlow {
-    0%, 100% { transform: scale(1); opacity: .55; }
-    50%      { transform: scale(1.1); opacity: .2; }
+    0%, 100% { transform: scale(1); opacity: .5; }
+    50%      { transform: scale(1.08); opacity: .15; }
 }
-body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35; }
+body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .3; }
 #ciwei-pet.sleeping .cp-body::before {
-    background: radial-gradient(circle, rgba(120,160,255,.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(120, 160, 255, var(--cp-glow-opacity)) 0%, transparent 70%);
 }
 
-/* 软阴影 */
+/* 阴影（保留） */
 #ciwei-pet .cp-shadow {
     position: absolute;
     bottom: -6px; left: 50%;
     transform: translateX(-50%);
     width: 66%; height: 9px;
-    background: radial-gradient(ellipse, rgba(0,0,0,.32) 0%, transparent 72%);
+    background: radial-gradient(ellipse, rgba(0, 0, 0, var(--cp-shadow-opacity)) 0%, transparent 72%);
     border-radius: 50%;
     pointer-events: none; z-index: -1;
     transition: all .28s cubic-bezier(.22,1,.36,1);
@@ -106,9 +179,8 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
     transform: translateX(-50%) scale(1.4);
     bottom: -14px;
 }
-#ciwei-pet.sleeping .cp-shadow { width: 76%; opacity: .5; }
+#ciwei-pet.sleeping .cp-shadow { width: 76%; }
 
-/* 3D 倾斜层 */
 #ciwei-pet .cp-tilt {
     position: relative; width: 100%; height: 100%;
     transform-style: preserve-3d;
@@ -116,33 +188,30 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
     z-index: 1;
 }
 
-/* 环境光 */
 #ciwei-pet .cp-light {
     position: absolute; inset: -18px;
     border-radius: 50%;
     pointer-events: none; z-index: 2;
     background: radial-gradient(circle at var(--cp-light-x, 50%) var(--cp-light-y, 50%),
-        rgba(255,255,255,.36) 0%, transparent 55%);
+        rgba(255, 255, 255, .32) 0%, transparent 55%);
     mix-blend-mode: overlay;
-    opacity: .7;
+    opacity: .6;
     transition: opacity .3s;
 }
-#ciwei-pet.sleeping .cp-light { opacity: .25; }
+#ciwei-pet.sleeping .cp-light { opacity: .2; }
 
-/* 图片 */
 #ciwei-pet .cp-img {
     width: 100%; height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 5px 14px rgba(0,0,0,.22));
+    filter: drop-shadow(0 5px 14px rgba(0, 0, 0, .2));
     pointer-events: none;
     transition: filter .22s ease-out;
     -webkit-user-drag: none;
 }
 #ciwei-pet.sleeping .cp-img {
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,.14)) saturate(.85) brightness(.96);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .14)) saturate(.85) brightness(.96);
 }
 
-/* 挤压 */
 #ciwei-pet.squash .cp-img {
     animation: cp-squash .42s cubic-bezier(.34,1.56,.64,1);
 }
@@ -152,8 +221,6 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
     60%  { transform: scale(.9, 1.13); }
     100% { transform: scale(1, 1); }
 }
-
-/* 旋转 */
 #ciwei-pet.spin .cp-body {
     animation: cp-spin .85s cubic-bezier(.34,1.56,.64,1) !important;
 }
@@ -162,8 +229,6 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
     50%  { transform: rotate(180deg) scale(1.1); }
     100% { transform: rotate(360deg) scale(1); }
 }
-
-/* 睡觉摇摆 */
 #ciwei-pet.sleeping .cp-body {
     animation: cp-sleepBreath 4.5s ease-in-out infinite;
 }
@@ -172,13 +237,13 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
     50%      { transform: scale(1.03) translateY(-2px) rotate(1.5deg); }
 }
 
-/* 💤 */
 #ciwei-pet .cp-zzz {
     position: absolute;
     top: -6px; right: -14px;
     font-size: 17px;
     opacity: 0;
     pointer-events: none; z-index: 2;
+    color: var(--cp-zzz-color);
 }
 #ciwei-pet.sleeping .cp-zzz {
     animation: cp-zzzFloat var(--cp-zzz) ease-out infinite;
@@ -190,40 +255,50 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
     100% { opacity: 0; transform: translate(-26px, -54px) scale(1.25); }
 }
 
-/* ================ 气泡 ================ */
+/* ============================================================
+   气泡（深浅色适配 + 横排优先）
+================================================================ */
 #ciwei-pet .cp-bubble {
     position: absolute;
     left: 50%; bottom: calc(100% + 10px);
     transform: translateX(-50%) translateY(6px) scale(.9);
-    background: rgba(30, 30, 45, .94);
-    color: #fff;
+    background: var(--cp-bubble-bg);
+    color: var(--cp-bubble-text);
     padding: 8px 14px;
     border-radius: 14px 14px 4px 14px;
-    font-size: 13px; font-weight: 500; line-height: 1.4;
-    box-shadow: 0 6px 20px rgba(0,0,0,.28);
-    max-width: 200px; min-height: 30px;
+    font-size: 13px; font-weight: 500; line-height: 1.5;
+    box-shadow: var(--cp-bubble-shadow);
+    width: max-content;
+    max-width: 280px;
+    min-width: 60px;
+    white-space: nowrap;
+    word-break: normal;
+    text-align: left;
     opacity: 0;
-    transition: all var(--cp-bubble) cubic-bezier(.22,1,.36,1);
+    transition: all var(--cp-bubble-t) cubic-bezier(.22,1,.36,1);
     pointer-events: none;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,.1);
-    white-space: nowrap;
+    border: 1px solid var(--cp-panel-border);
     z-index: 10;
 }
 #ciwei-pet .cp-bubble.show {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
 }
+#ciwei-pet .cp-bubble.long {
+    white-space: normal;
+    word-break: break-word;
+}
 #ciwei-pet .cp-bubble::after {
     content: '';
     position: absolute;
     bottom: -5px; right: 18px;
     width: 10px; height: 10px;
-    background: rgba(30, 30, 45, .94);
+    background: var(--cp-bubble-bg);
     transform: rotate(45deg);
-    border-right: 1px solid rgba(255,255,255,.1);
-    border-bottom: 1px solid rgba(255,255,255,.1);
+    border-right: 1px solid var(--cp-panel-border);
+    border-bottom: 1px solid var(--cp-panel-border);
     border-radius: 0 0 2px 0;
 }
 #ciwei-pet.bubble-below .cp-bubble {
@@ -237,29 +312,30 @@ body[data-fps="low"] #ciwei-pet .cp-body::before { animation: none; opacity: .35
 #ciwei-pet.bubble-below .cp-bubble::after {
     bottom: auto; top: -5px; right: 18px;
     border: none;
-    border-left: 1px solid rgba(255,255,255,.1);
-    border-top: 1px solid rgba(255,255,255,.1);
+    border-left: 1px solid var(--cp-panel-border);
+    border-top: 1px solid var(--cp-panel-border);
     border-radius: 2px 0 0 0;
 }
 body[data-fps="low"] #ciwei-pet .cp-bubble {
     backdrop-filter: none; -webkit-backdrop-filter: none;
-    background: rgba(30, 30, 45, .98);
 }
 
-/* ================ 工具栏 ================ */
+/* ============================================================
+   工具栏（悬停出现）
+================================================================ */
 #ciwei-pet .cp-toolbar {
     position: absolute;
     left: 50%; top: calc(100% + 6px);
     transform: translateX(-50%) translateY(-6px);
     display: flex; gap: 2px;
-    background: rgba(30, 30, 45, .88);
+    background: var(--cp-toolbar-bg);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     padding: 3px; border-radius: 18px;
-    border: 1px solid rgba(255,255,255,.1);
-    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    border: 1px solid var(--cp-panel-border);
+    box-shadow: var(--cp-bubble-shadow);
     opacity: 0;
-    transition: all var(--cp-toolbar) cubic-bezier(.22,1,.36,1);
+    transition: all var(--cp-toolbar-t) cubic-bezier(.22,1,.36,1);
     pointer-events: none;
     z-index: 5;
 }
@@ -277,28 +353,27 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 #ciwei-pet.toolbar-above:hover .cp-toolbar {
     transform: translateX(-50%) translateY(0);
 }
-body[data-fps="low"] #ciwei-pet .cp-toolbar {
-    backdrop-filter: none; -webkit-backdrop-filter: none;
-    background: rgba(30, 30, 45, .98);
-}
 
 #ciwei-pet .cp-toolbar-btn {
     width: 28px; height: 28px;
     border-radius: 50%; border: none;
     background: transparent;
-    color: rgba(255,255,255,.75);
+    color: var(--cp-toolbar-btn);
     cursor: pointer; font-size: 13px;
     display: flex; align-items: center; justify-content: center;
     transition: all .18s;
     -webkit-tap-highlight-color: transparent;
 }
 #ciwei-pet .cp-toolbar-btn:hover {
-    background: rgba(255,255,255,.16);
-    color: #fff; transform: scale(1.18);
+    background: var(--cp-toolbar-btn-hover-bg);
+    color: var(--cp-toolbar-btn-hover-color);
+    transform: scale(1.18);
 }
 #ciwei-pet .cp-toolbar-btn:active { transform: scale(.85); }
 
-/* ================ 粒子层 ================ */
+/* ============================================================
+   粒子层
+================================================================ */
 #ciwei-pet-particles {
     position: fixed;
     top: 0; left: 0;
@@ -321,43 +396,99 @@ body[data-fps="low"] #ciwei-pet .cp-toolbar {
                      scale(1.15) rotate(var(--rot)); }
 }
 
-/* ================ 右键/长按菜单 ================ */
+/* ============================================================
+   一级菜单：横排图标条
+================================================================ */
 #ciwei-pet-menu {
     position: fixed;
-    background: rgba(28, 28, 42, .96);
+    background: var(--cp-panel-bg);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 12px;
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 14px;
     padding: 5px;
-    box-shadow: 0 12px 36px rgba(0,0,0,.4);
+    box-shadow: var(--cp-panel-shadow);
     z-index: 9002;
     display: none;
-    min-width: 160px;
-    max-height: 72vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
     font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
     animation: cp-menuIn .18s cubic-bezier(.22,1,.36,1);
     transform-origin: top left;
 }
-#ciwei-pet-menu.show { display: block; }
-#ciwei-pet-menu::-webkit-scrollbar { width: 3px; }
-#ciwei-pet-menu::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,.2);
-    border-radius: 4px;
-}
-#ciwei-pet-menu::-webkit-scrollbar-track { background: transparent; }
-
+#ciwei-pet-menu.show { display: flex; gap: 2px; }
 @keyframes cp-menuIn {
     from { opacity: 0; transform: scale(.9) translateY(-6px); }
     to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 #ciwei-pet-menu .cp-mi {
+    position: relative;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    color: var(--cp-panel-text);
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#ciwei-pet-menu .cp-mi:hover {
+    background: var(--cp-panel-hover);
+    transform: translateY(-2px);
+}
+#ciwei-pet-menu .cp-mi:active {
+    transform: translateY(0) scale(.92);
+}
+#ciwei-pet-menu .cp-mi.danger:hover {
+    background: rgba(239, 68, 68, .16);
+}
+#ciwei-pet-menu .cp-mi::after {
+    content: attr(data-label);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    font-size: 11px;
+    color: #fff;
+    background: rgba(15, 15, 22, .96);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .18s;
+    z-index: 1;
+}
+#ciwei-pet-menu .cp-mi:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   二级菜单
+================================================================ */
+#ciwei-pet-submenu {
+    position: fixed;
+    background: var(--cp-panel-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 12px;
+    padding: 5px;
+    box-shadow: var(--cp-panel-shadow);
+    z-index: 9003;
+    display: none;
+    min-width: 170px;
+    font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
+    animation: cp-menuIn .18s cubic-bezier(.22,1,.36,1);
+    transform-origin: top left;
+}
+#ciwei-pet-submenu.show { display: block; }
+#ciwei-pet-submenu .cp-sub-item {
     padding: 8px 12px;
     font-size: 13px;
-    color: rgba(255,255,255,.82);
+    color: var(--cp-panel-text);
     border-radius: 8px;
     cursor: pointer;
     display: flex; align-items: center; gap: 8px;
@@ -365,46 +496,162 @@ body[data-fps="low"] #ciwei-pet .cp-toolbar {
     user-select: none;
     white-space: nowrap;
 }
-#ciwei-pet-menu .cp-mi:hover {
-    background: rgba(255,255,255,.1);
-    color: #fff;
+#ciwei-pet-submenu .cp-sub-item:hover {
+    background: var(--cp-panel-hover);
 }
-#ciwei-pet-menu .cp-mi:active {
-    background: rgba(255,255,255,.14);
-    transform: scale(.97);
+#ciwei-pet-submenu .cp-sub-item:active {
+    background: var(--cp-panel-active);
+    transform: scale(.98);
 }
-#ciwei-pet-menu .cp-mi.danger:hover {
-    background: rgba(239,68,68,.18);
+#ciwei-pet-submenu .cp-sub-item.danger:hover {
+    background: rgba(239, 68, 68, .16);
     color: #f87171;
 }
-#ciwei-pet-menu .cp-mi .cp-mi-check {
+#ciwei-pet-submenu .cp-sub-item .cp-sub-check {
     margin-left: auto;
     font-size: 11px;
-    color: rgba(255,255,255,.5);
+    color: var(--cp-panel-text-muted);
     font-variant-numeric: tabular-nums;
 }
-#ciwei-pet-menu .cp-mi.active .cp-mi-check { color: #58a6ff; }
-#ciwei-pet-menu .cp-mi.highlight .cp-mi-check {
-    color: #fbbf24;
-    font-weight: 600;
-}
-#ciwei-pet-menu .cp-sep {
+#ciwei-pet-submenu .cp-sub-item.active .cp-sub-check { color: #58a6ff; }
+#ciwei-pet-submenu .cp-sep {
     height: 1px;
-    background: rgba(255,255,255,.08);
+    background: var(--cp-panel-border);
     margin: 4px 8px;
 }
 
-/* ================ 恢复按钮 ================ */
+/* ============================================================
+   对话面板（深浅色适配）
+================================================================ */
+#ciwei-pet-dialogue {
+    position: fixed;
+    background: var(--cp-panel-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: var(--cp-panel-shadow);
+    z-index: 9002;
+    display: none;
+    min-width: 220px;
+    max-width: 280px;
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
+    animation: cp-menuIn .2s cubic-bezier(.22,1,.36,1);
+    transform-origin: top left;
+}
+#ciwei-pet-dialogue.show { display: block; }
+#ciwei-pet-dialogue::-webkit-scrollbar { width: 3px; }
+#ciwei-pet-dialogue::-webkit-scrollbar-thumb {
+    background: var(--cp-panel-text-muted);
+    border-radius: 4px;
+}
+#ciwei-pet-dialogue .cp-dlg-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px 8px;
+    border-bottom: 1px solid var(--cp-panel-border);
+    margin-bottom: 4px;
+    position: sticky;
+    top: 0;
+    background: var(--cp-panel-bg);
+    border-radius: 14px 14px 0 0;
+    z-index: 1;
+}
+#ciwei-pet-dialogue .cp-dlg-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cp-panel-text-muted);
+    letter-spacing: .5px;
+}
+#ciwei-pet-dialogue .cp-dlg-close {
+    background: none;
+    border: none;
+    color: var(--cp-panel-text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all .15s;
+    line-height: 1;
+}
+#ciwei-pet-dialogue .cp-dlg-close:hover {
+    background: var(--cp-panel-hover);
+    color: var(--cp-panel-text);
+}
+#ciwei-pet-dialogue .cp-dlg-item {
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--cp-panel-text);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .14s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.3;
+    position: relative;
+}
+#ciwei-pet-dialogue .cp-dlg-item:hover {
+    background: var(--cp-panel-hover);
+}
+#ciwei-pet-dialogue .cp-dlg-item:active {
+    background: var(--cp-panel-active);
+    transform: scale(.98);
+}
+#ciwei-pet-dialogue .cp-dlg-item .cp-dlg-icon {
+    font-size: 13px;
+    flex-shrink: 0;
+    opacity: .6;
+}
+#ciwei-pet-dialogue .cp-dlg-item.asked {
+    color: var(--cp-panel-text-muted);
+}
+#ciwei-pet-dialogue .cp-dlg-item.asked::after {
+    content: '✓';
+    position: absolute;
+    right: 10px;
+    font-size: 11px;
+    color: #58a6ff;
+}
+#ciwei-pet-dialogue .cp-dlg-item.secret {
+    color: #d97706;
+}
+#ciwei-pet-dialogue .cp-dlg-item.secret:hover {
+    background: rgba(251, 191, 36, .14);
+}
+#ciwei-pet-dialogue .cp-dlg-item.replying {
+    background: var(--cp-panel-active);
+    color: var(--cp-panel-active-text);
+}
+#ciwei-pet-dialogue .cp-dlg-item.replying::after {
+    content: '…';
+    position: absolute;
+    right: 10px;
+    font-size: 13px;
+    color: #58a6ff;
+}
+
+/* ============================================================
+   恢复按钮
+================================================================ */
 #ciwei-pet-restore {
     position: fixed;
     bottom: 16px; right: 16px;
     width: 44px; height: 44px;
     border-radius: 50%;
-    background: rgba(30, 30, 45, .9);
+    background: var(--cp-panel-bg);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,.12);
-    box-shadow: 0 6px 20px rgba(0,0,0,.3);
+    border: 1px solid var(--cp-panel-border);
+    box-shadow: var(--cp-panel-shadow);
+    color: var(--cp-panel-text);
     display: none;
     align-items: center; justify-content: center;
     font-size: 20px;
@@ -421,16 +668,20 @@ body[data-fps="low"] #ciwei-pet .cp-toolbar {
     to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ================ 移动端 ================ */
+/* ============================================================
+   移动端
+================================================================ */
 @media (max-width: 600px) {
-    #ciwei-pet .cp-bubble { font-size: 12px; padding: 6px 11px; max-width: 170px; }
+    #ciwei-pet .cp-bubble { font-size: 12px; padding: 6px 11px; max-width: 220px; }
     #ciwei-pet .cp-toolbar-btn { width: 25px; height: 25px; font-size: 12px; }
     #ciwei-pet-restore { width: 40px; height: 40px; font-size: 18px; }
-    #ciwei-pet-menu { min-width: 150px; }
-    #ciwei-pet-menu .cp-mi { padding: 9px 12px; font-size: 13.5px; }
+    #ciwei-pet-menu .cp-mi { width: 34px; height: 34px; font-size: 15px; }
+    #ciwei-pet-submenu { min-width: 150px; }
+    #ciwei-pet-submenu .cp-sub-item { padding: 9px 12px; font-size: 13.5px; }
+    #ciwei-pet-dialogue { min-width: 200px; max-width: 240px; }
+    #ciwei-pet-dialogue .cp-dlg-item { padding: 10px 12px; font-size: 13.5px; }
 }
 
-/* 无障碍 */
 @media (prefers-reduced-motion: reduce) {
     #ciwei-pet, #ciwei-pet *,
     #ciwei-pet-particles, #ciwei-pet-particles * {
