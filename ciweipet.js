@@ -1255,7 +1255,78 @@ dlgHeader.addEventListener('pointercancel', function (e) {
     dlgDrag.dragging = false;
     dlgHeader.classList.remove('dragging');
 });
+// ============================================================
+// AI Key 面板拖动
+// ============================================================
+var aiHeader = aiSettings.querySelector('.cp-ai-header');
+var aiDrag = {
+    dragging: false,
+    startX: 0, startY: 0,
+    startLeft: 0, startTop: 0,
+    moved: false
+};
 
+function saveAISettingsPos() {
+    var r = aiSettings.getBoundingClientRect();
+    lsSet('ciwei_pet_ai_pos', JSON.stringify({
+        x: Math.round(r.left),
+        y: Math.round(r.top)
+    }));
+}
+
+aiHeader.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('button')) return;
+
+    aiDrag.dragging = true;
+    aiDrag.moved = false;
+    aiDrag.startX = e.clientX;
+    aiDrag.startY = e.clientY;
+
+    var r = aiSettings.getBoundingClientRect();
+    aiDrag.startLeft = r.left;
+    aiDrag.startTop = r.top;
+
+    aiHeader.classList.add('dragging');
+    try { aiHeader.setPointerCapture(e.pointerId); } catch (err) {}
+    e.preventDefault();
+});
+
+aiHeader.addEventListener('pointermove', function (e) {
+    if (!aiDrag.dragging) return;
+    e.preventDefault();
+
+    var dx = e.clientX - aiDrag.startX;
+    var dy = e.clientY - aiDrag.startY;
+
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) aiDrag.moved = true;
+    if (!aiDrag.moved) return;
+
+    var newLeft = aiDrag.startLeft + dx;
+    var newTop  = aiDrag.startTop + dy;
+
+    var w = aiSettings.offsetWidth;
+    var h = aiSettings.offsetHeight;
+    newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - w));
+    newTop  = Math.max(0, Math.min(newTop, window.innerHeight - h));
+
+    aiSettings.style.left = newLeft + 'px';
+    aiSettings.style.top  = newTop + 'px';
+});
+
+function endAIDrag(e) {
+    if (!aiDrag.dragging) return;
+    aiDrag.dragging = false;
+    aiHeader.classList.remove('dragging');
+    try { aiHeader.releasePointerCapture(e.pointerId); } catch (err) {}
+    if (aiDrag.moved) saveAISettingsPos();
+}
+
+aiHeader.addEventListener('pointerup', endAIDrag);
+aiHeader.addEventListener('pointercancel', function (e) {
+    if (!aiDrag.dragging) return;
+    aiDrag.dragging = false;
+    aiHeader.classList.remove('dragging');
+});
     // ============================================================
     // AI 配置（从 CiweiBlog/ai-config.json 读）
     // ============================================================
@@ -1496,11 +1567,17 @@ fetchAIConfig().then(function (cfg) {
 setTimeout(queryBalance, 300);
 
         var s = getSize();
-        var px = S.x + s + 8;
-        var py = S.y;
-        aiSettings.style.left = px + 'px';
-        aiSettings.style.top  = py + 'px';
-        aiSettings.classList.add('show');
+var px, py;
+if (typeof aiSettings._savedX === 'number' && typeof aiSettings._savedY === 'number') {
+    px = aiSettings._savedX;
+    py = aiSettings._savedY;
+} else {
+    px = S.x + s + 8;
+    py = S.y;
+}
+aiSettings.style.left = px + 'px';
+aiSettings.style.top  = py + 'px';
+aiSettings.classList.add('show');
 
         var ar = aiSettings.getBoundingClientRect();
         if (px + ar.width > window.innerWidth - 8) {
@@ -1839,6 +1916,17 @@ if (savedDlgPos) {
         if (p && typeof p.x === 'number' && typeof p.y === 'number') {
             dialogue._savedX = p.x;
             dialogue._savedY = p.y;
+        }
+    } catch (e) {}
+}
+// 恢复 AI Key 面板位置
+var savedAIPos = lsGet('ciwei_pet_ai_pos');
+if (savedAIPos) {
+    try {
+        var ap = JSON.parse(savedAIPos);
+        if (ap && typeof ap.x === 'number' && typeof ap.y === 'number') {
+            aiSettings._savedX = ap.x;
+            aiSettings._savedY = ap.y;
         }
     } catch (e) {}
 }

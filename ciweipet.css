@@ -644,6 +644,13 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
     position: sticky; top: 0;
     background: var(--cp-panel-bg);
     border-radius: 14px 14px 0 0; z-index: 1;
+    cursor: move;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+#ciwei-pet-ai-settings .cp-ai-header.dragging {
+    cursor: grabbing;
 }
 #ciwei-pet-ai-settings .cp-ai-title {
     font-size: 14px; font-weight: 600;
