@@ -1,7 +1,6 @@
 /* ============================================================
-   🦔 Ciwei Pet · 内联桌面宠物脚本 v5
-   新增：AI 参数从 CiweiBlog/ai-config.json 读取
-   API Key 存本机 localStorage
+   🦔 Ciwei Pet · 内联桌面宠物脚本 v6
+   含：AI 对话 + 输入框 + 参数从 ai-config.json 读
 ================================================================ */
 (function () {
     'use strict';
@@ -9,9 +8,6 @@
     if (window.__ciweiPetLoaded) return;
     window.__ciweiPetLoaded = true;
 
-    // ============================================================
-    // 配置
-    // ============================================================
     var IMG_BASE = 'https://xiaociwei01.github.io/CiweiPet/';
     var IMAGES = {
         idle1:     IMG_BASE + 'idle-1.png',
@@ -33,9 +29,8 @@
     var SCALES = [0.7, 0.85, 1.0, 1.25, 1.5, 2.0];
     var DEFAULT_SCALE_INDEX = 2;
 
-    // AI 配置来源
     var AI_CONFIG_URL = 'https://raw.githubusercontent.com/xiaociwei01/CiweiBlog/main/ai-config.json';
-    var AI_CONFIG_TTL = 5 * 60 * 1000;   // 5 分钟缓存
+    var AI_CONFIG_TTL = 5 * 60 * 1000;
     var DEFAULT_AI_CONFIG = {
         model: 'deepseek-v4-flash',
         temperature: 0.7,
@@ -46,36 +41,25 @@
     };
 
     var DIALOGUES = [
-        // === 身份向 ===
         { id:'who',       icon:'🦔', q:'你是谁？',         a:'我是{name}，{developer} 的电子宠物刺猬。', face:'happy' },
         { id:'info',      icon:'📇', q:'你的信息',         a:'我叫{name}，生日是 {birthday}。{ipLine}', face:'idle1' },
         { id:'age',       icon:'🎂', q:'你多大了？',       a:'我出生于 {birthday}，到今天已经 {days} 天啦！', face:'surprised' },
         { id:'developer', icon:'👨‍💻', q:'LouFoong 是谁？', a:'{developer} 是我的创造者，一个喜欢折腾的独立开发者。', face:'idle1' },
         { id:'like',      icon:'💖', q:'你喜欢什么？',     a:'喜欢被摸头，喜欢吃苹果。最讨厌被人一直戳！', face:'happy' },
-
-        // === 陪伴向 ===
         { id:'doing',     icon:'🌙', q:'你在干什么？',     a:'在发呆…或者在想你。', face:'idle1' },
         { id:'tired',     icon:'💤', q:'你会累吗？',       a:'不会，但我会困。戳我太久我会打瞌睡。', face:'sleep' },
         { id:'sleepwhere',icon:'😴', q:'你睡哪里？',       a:'屏幕右下角，那里最舒服。', face:'happy' },
         { id:'eat',       icon:'🍎', q:'你喜欢吃什么？',   a:'苹果，还有你喂我的每一个 emoji。', face:'happy' },
         { id:'sing',      icon:'🎵', q:'你会唱歌吗？',     a:'不会，但我会吱吱叫。', face:'happy' },
-
-        // === 情绪向 ===
         { id:'sad',       icon:'😊', q:'我今天不开心',     a:'那我陪你待一会儿。你不说话我也在。', face:'idle1' },
         { id:'mytired',   icon:'😢', q:'我累了',           a:'休息一下吧，我帮你看着屏幕。', face:'idle1' },
         { id:'howtodo',   icon:'🤔', q:'我该怎么办',       a:'慢慢想，不急。刺猬也是慢慢长大的。', face:'idle1' },
         { id:'annoyed',   icon:'🌧️', q:'今天好烦',         a:'那把我戳一顿吧，我不生气。', face:'angry' },
-
-        // === 趣味向 ===
         { id:'random',    icon:'🎲', q:'随便说点什么',     a:'你是想让我说俏皮话，还是想让我转圈圈？', face:'happy' },
         { id:'fortune',   icon:'🔮', q:'我今天的运气怎么样？', a:'抬头看看屏幕…嗯，你今天会遇到一只好刺猬。', face:'surprised' },
         { id:'choose',    icon:'🪙', q:'帮我选一个',       a:'正面是我，反面也是我。', face:'happy' },
-
-        // === AI 对话 ===
         { id:'ai-joke',   icon:'😂', q:'讲个笑话',         a:'（正在呼叫 AI…）', face:'happy', ai:'joke' },
         { id:'ai-chat',   icon:'🤖', q:'陪我聊聊天',       a:'（正在呼叫 AI…）', face:'idle1', ai:'chat' },
-
-        // === 彩蛋解锁 ===
         { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你是他最好的朋友。', face:'surprised', hidden:true }
     ];
 
@@ -133,9 +117,6 @@
         '回复控制在 50 字以内，不要用 markdown 格式。' +
         '不要堆砌 emoji，最多一个。';
 
-    // ============================================================
-    // 工具
-    // ============================================================
     var rand = function (a, b) { return a + Math.random() * (b - a); };
     var pick = function (arr) { return arr[Math.floor(Math.random() * arr.length)]; };
     var clamp = function (v, a, b) { return Math.max(a, Math.min(v, b)); };
@@ -162,9 +143,6 @@
             .replace(/{days}/g, daysSince(meeting));
     }
 
-    // ============================================================
-    // 动态创建 DOM
-    // ============================================================
     var host = document.createElement('div');
     host.id = 'ciwei-pet';
     host.innerHTML =
@@ -222,21 +200,21 @@
         '<div class="cp-sep"></div>' +
         '<div class="cp-sub-item danger" data-menu="hide">🙈 <span>隐藏</span></div>';
 
+    // ⭐ 对话面板（含输入区）
     var dialogue = document.createElement('div');
     dialogue.id = 'ciwei-pet-dialogue';
     dialogue.innerHTML =
-    '<div class="cp-dlg-header">' +
-        '<span class="cp-dlg-title">💬 和小ci聊天</span>' +
-        '<button class="cp-dlg-settings-btn" id="cp-dlg-settings-btn" title="AI Key">🔑</button>' +
-        '<button class="cp-dlg-close" id="cp-dlg-close">✕</button>' +
-    '</div>' +
-    '<div id="cp-dlg-body"></div>' +
-    '<div class="cp-dlg-input-area">' +
-        '<input type="text" class="cp-dlg-input" id="cp-dlg-input" placeholder="打字问我…" autocomplete="off">' +
-        '<button class="cp-dlg-send" id="cp-dlg-send">发送</button>' +
-    '</div>';
+        '<div class="cp-dlg-header">' +
+            '<span class="cp-dlg-title">💬 和小ci聊天</span>' +
+            '<button class="cp-dlg-settings-btn" id="cp-dlg-settings-btn" title="AI Key">🔑</button>' +
+            '<button class="cp-dlg-close" id="cp-dlg-close">✕</button>' +
+        '</div>' +
+        '<div id="cp-dlg-body"></div>' +
+        '<div class="cp-dlg-input-area">' +
+            '<input type="text" class="cp-dlg-input" id="cp-dlg-input" placeholder="打字问我…" autocomplete="off">' +
+            '<button class="cp-dlg-send" id="cp-dlg-send">发送</button>' +
+        '</div>';
 
-    // AI Key 面板（简化版：只输入 Key + 显示当前参数）
     var aiSettings = document.createElement('div');
     aiSettings.id = 'ciwei-pet-ai-settings';
     aiSettings.innerHTML =
@@ -245,7 +223,6 @@
             '<button class="cp-ai-close" id="cp-ai-close">✕</button>' +
         '</div>' +
         '<div class="cp-ai-body">' +
-
             '<div class="cp-ai-field">' +
                 '<label class="cp-ai-label">API Key（只存本机）</label>' +
                 '<div class="cp-ai-key-row">' +
@@ -254,7 +231,6 @@
                 '</div>' +
                 '<div class="cp-ai-hint">从 platform.deepseek.com 获取，只存你本机浏览器</div>' +
             '</div>' +
-
             '<div class="cp-ai-field">' +
                 '<label class="cp-ai-label">当前 AI 参数</label>' +
                 '<div class="cp-ai-params" id="cp-ai-params">加载中…</div>' +
@@ -262,15 +238,12 @@
                     '<a href="https://xiaociwei01.github.io/CiweiBlog/ai.html" target="_blank" style="color:#58a6ff;margin-left:4px;">去修改</a>' +
                 '</div>' +
             '</div>' +
-
             '<div class="cp-ai-actions">' +
                 '<button class="cp-ai-btn" id="cp-ai-test">🔍 测试</button>' +
                 '<button class="cp-ai-btn primary" id="cp-ai-save">💾 保存</button>' +
                 '<button class="cp-ai-btn danger" id="cp-ai-clear">🗑️ 清除</button>' +
             '</div>' +
-
             '<div class="cp-ai-status" id="cp-ai-status"></div>' +
-
         '</div>';
 
     var restoreBtn = document.createElement('div');
@@ -289,9 +262,6 @@
         init();
     }
 
-    // ============================================================
-    // DOM 引用
-    // ============================================================
     var img      = host.querySelector('.cp-img');
     var bodyEl   = host.querySelector('.cp-body');
     var tiltEl   = host.querySelector('.cp-tilt');
@@ -316,27 +286,17 @@
     var aiCloseBtn   = aiSettings.querySelector('#cp-ai-close');
     var dlgSettingsBtn = dialogue.querySelector('#cp-dlg-settings-btn');
 
-    // ============================================================
-    // 状态
-    // ============================================================
     var S = {
         x: 0, y: 0,
-        sleeping: false,
-        hidden: false,
-        clicks: 0,
+        sleeping: false, hidden: false, clicks: 0,
         last: Date.now(),
         face: 'idle1',
-        dragging: false,
-        moved: false,
-        longPressed: false,
-        sClientX: 0, sClientY: 0,
-        sPosX: 0, sPosY: 0,
+        dragging: false, moved: false, longPressed: false,
+        sClientX: 0, sClientY: 0, sPosX: 0, sPosY: 0,
         vx: 0, vy: 0,
         lastMoveX: 0, lastMoveY: 0, lastMoveTime: 0,
-        sliding: false,
-        thrown: false,
-        soundOn: true,
-        mood: 60,
+        sliding: false, thrown: false,
+        soundOn: true, mood: 60,
         scaleIndex: DEFAULT_SCALE_INDEX,
         bubbleTimer: null, typeTimer: null, resetTimer: null,
         struggleTimer: null, idleActionTimer: null, zzzTimer: null,
@@ -349,12 +309,9 @@
         aiThinking: false
     };
     var lastLongPressTime = 0;
-
-    // AI 配置缓存
     var aiConfigCache = null;
     var aiConfigCacheTime = 0;
 
-    // 帧率
     var measuredFPS = 60, fpsFrames = 0;
     var fpsStart = performance.now();
     var fpsHistory = [];
@@ -383,7 +340,6 @@
         return .5;
     }
 
-    // 尺寸
     function getBaseSize() { return isMobile() ? SIZE_MOBILE : SIZE_DESKTOP; }
     function getSize() { return Math.round(getBaseSize() * SCALES[S.scaleIndex]); }
     function getScalePercent() { return Math.round(SCALES[S.scaleIndex] * 100); }
@@ -421,7 +377,6 @@
         burst('📏', 3); showBubble('📏 恢复 100%', 1400, false);
     }
 
-    // 位置
     function setPos(x, y, animate) {
         S.x = x; S.y = y;
         if (animate) {
@@ -447,7 +402,6 @@
         else                                    host.classList.remove('toolbar-above');
     }
 
-    // 持久化
     function savePos() { lsSet(KEYS.pos, JSON.stringify({ x: Math.round(S.x), y: Math.round(S.y) })); }
     function saveLast() { S.last = Date.now(); lsSet(KEYS.last, String(S.last)); }
     function saveSleep() { lsSet(KEYS.sleeping, S.sleeping ? 'true' : 'false'); }
@@ -455,7 +409,6 @@
     function saveHidden() { lsSet(KEYS.hidden, S.hidden ? 'true' : 'false'); }
     function saveSound() { lsSet(KEYS.sound, S.soundOn ? 'true' : 'false'); }
 
-    // 图片 / 心情
     function setImage(name) {
         if (!IMAGES[name]) return;
         S.face = name;
@@ -469,7 +422,6 @@
         document.documentElement.style.setProperty('--cp-accent', r + ',' + g + ',' + b);
     }
 
-    // 音效
     var audioCtx = null;
     function initAudio() {
         if (audioCtx) return;
@@ -502,16 +454,13 @@
         throw:  function () { tone({ freq: 1000, dur: .25, gain: .04, slideTo: 200 }); }
     };
 
-    // 气泡
     function showBubble(text, duration, typewriter) {
         duration = duration || 2600;
         typewriter = typewriter !== false;
         clearTimeout(S.bubbleTimer);
         clearInterval(S.typeTimer);
-
         var needWrap = text.length > 14;
         bubble.classList.toggle('long', needWrap);
-
         bubble.classList.add('show');
         if (!typewriter) { bubble.textContent = text; }
         else {
@@ -535,7 +484,6 @@
         bubble.textContent = text;
     }
 
-    // 粒子
     function burst(emoji, count, originRect) {
         count = Math.max(1, Math.round((count || 4) * particleFactor()));
         var rect = originRect || bodyEl.getBoundingClientRect();
@@ -548,8 +496,7 @@
                 p.textContent = emoji;
                 var angle = rand(0, Math.PI * 2);
                 var dist = rand(38, 78);
-                p.style.left = cx + 'px';
-                p.style.top = cy + 'px';
+                p.style.left = cx + 'px'; p.style.top = cy + 'px';
                 p.style.setProperty('--dx', (Math.cos(angle) * dist).toFixed(0) + 'px');
                 p.style.setProperty('--dy', (Math.sin(angle) * dist - 26).toFixed(0) + 'px');
                 p.style.setProperty('--rot', rand(-50, 50).toFixed(0) + 'deg');
@@ -561,7 +508,6 @@
         }
     }
 
-    // 状态机
     var faceRevertTimer = null;
     function setFace(name, revertMs) {
         setImage(name);
@@ -574,7 +520,6 @@
         }
     }
 
-    // 待机
     setInterval(function () {
         if (S.sleeping || S.hidden) return;
         if (S.face === 'idle1' || S.face === 'idle2') {
@@ -602,8 +547,7 @@
             if (S.sleeping || S.hidden || S.dragging || S.sliding ||
                 S.dialogueOpen || S.aiThinking ||
                 Date.now() - S.last < 15000) {
-                scheduleIdleAction();
-                return;
+                scheduleIdleAction(); return;
             }
             var roll = Math.random();
             if (roll < .18)      setFace('surprised', 900);
@@ -615,7 +559,6 @@
         }, rand(22000, 48000));
     }
 
-    // 睡觉
     function startZzz() {
         clearInterval(S.zzzTimer);
         S.zzzTimer = setInterval(function () {
@@ -625,7 +568,7 @@
             z.className = 'cp-particle';
             z.textContent = '💤';
             z.style.left = (r.right - 8) + 'px';
-            z.style.top = (r.top - 4) + 'px';
+            z.style.top  = (r.top - 4) + 'px';
             z.style.setProperty('--dx', rand(10, 28).toFixed(0) + 'px');
             z.style.setProperty('--dy', '-58px');
             z.style.setProperty('--rot', '0deg');
@@ -645,8 +588,7 @@
         host.classList.remove('idle-float');
         setImage('sleep');
         showBubble(pick(MSG.sleep), 2200, false);
-        startZzz();
-        SFX.sleep();
+        startZzz(); SFX.sleep();
     }
     function wakeUp() {
         if (!S.sleeping) return;
@@ -657,14 +599,12 @@
         stopZzz();
         setImage('surprised');
         showBubble(pick(MSG.wake), 1800, false);
-        burst('✨', 3);
-        SFX.wake();
+        burst('✨', 3); SFX.wake();
         setTimeout(function () {
             if (!S.sleeping && S.face === 'surprised') setImage('idle1');
         }, 1200);
     }
 
-    // 点击
     function handleClick() {
         saveLast(); initAudio();
         if (S.sleeping) { wakeUp(); return; }
@@ -687,8 +627,7 @@
         if (n === 25 && lsGet(KEYS.secret) !== 'true') {
             msg = '🎉 你解锁了隐藏彩蛋！';
             burst('🎊', 12);
-            S.mood = 100;
-            updateMoodColor();
+            S.mood = 100; updateMoodColor();
             lsSet(KEYS.secret, 'true');
             setTimeout(function () {
                 showBubble('💬 菜单里多了一个秘密选项…', 3200, false);
@@ -707,12 +646,10 @@
         clearTimeout(S.resetTimer);
         S.resetTimer = setTimeout(function () {
             if (!S.sleeping) setImage('idle1');
-            S.clicks = 0;
-            saveClicks();
+            S.clicks = 0; saveClicks();
         }, 4000);
     }
 
-    // 拖拽
     function startStruggle() {
         clearInterval(S.struggleTimer);
         var toggle = false;
@@ -736,10 +673,7 @@
         if (e.button && e.button !== 0) return;
 
         initAudio();
-        S.dragging = true;
-        S.moved = false;
-        S.longPressed = false;
-        S.thrown = false;
+        S.dragging = true; S.moved = false; S.longPressed = false; S.thrown = false;
         host.classList.add('dragging');
         host.classList.remove('idle-float', 'animating');
 
@@ -801,7 +735,6 @@
         host.classList.remove('dragging');
         host.classList.add('idle-float');
         stopStruggle();
-
         if (!S.moved) { handleClick(); return; }
         savePos(); saveLast();
 
@@ -812,17 +745,13 @@
         var dT = S.y;
         var dB = window.innerHeight - s - S.y;
         var minD = Math.min(dL, dR, dT, dB);
-
         var speed = Math.hypot(S.vx, S.vy);
 
         if (speed > THROW_SPEED_THRESHOLD) {
-            S.thrown = true;
-            S.sliding = true;
-            S.vx *= 1.25;
-            S.vy *= 1.25;
+            S.thrown = true; S.sliding = true;
+            S.vx *= 1.25; S.vy *= 1.25;
             if (!S.sleeping) setFace('surprised', 1500);
-            SFX.throw();
-            burst('💫', 3);
+            SFX.throw(); burst('💫', 3);
             showBubble(pick(MSG.thrown), 1500, false);
             return;
         }
@@ -868,7 +797,6 @@
         walkTo(e.clientX - getSize() / 2, e.clientY - getSize() / 2);
     });
 
-    // 主循环
     var lastFrame = performance.now();
     function mainLoop(now) {
         tickFPS(now);
@@ -879,16 +807,13 @@
         if (S.sliding && !S.dragging) {
             var friction = S.thrown ? Math.pow(.32, dt) : Math.pow(.06, dt);
             var bounceRate = S.thrown ? .72 : .55;
-            S.vx *= friction;
-            S.vy *= friction;
-
+            S.vx *= friction; S.vy *= friction;
             var stopThreshold = S.thrown ? .6 : .3;
             if (Math.abs(S.vx) < stopThreshold && Math.abs(S.vy) < stopThreshold) {
                 S.sliding = false;
                 var c0 = clampPos(S.x, S.y);
                 setPos(c0.x, c0.y, false);
                 savePos();
-
                 if (S.thrown) {
                     S.thrown = false;
                     if (!S.sleeping) setFace('happy', 1400);
@@ -907,13 +832,10 @@
                 if (nx > window.innerWidth - s) { nx = window.innerWidth - s; S.vx = -S.vx * bounceRate; hit = true; }
                 if (ny > window.innerHeight - s) { ny = window.innerHeight - s; S.vy = -S.vy * bounceRate; hit = true; }
                 setPos(nx, ny, false);
-
                 if (hit) {
                     host.classList.add('squash');
                     setTimeout(function () { host.classList.remove('squash'); }, 300);
-                    if (S.thrown && navigator.vibrate) {
-                        try { navigator.vibrate(15); } catch (err) {}
-                    }
+                    if (S.thrown && navigator.vibrate) { try { navigator.vibrate(15); } catch (err) {} }
                     var rect = bodyEl.getBoundingClientRect();
                     var side = nx <= 0 ? 'left' :
                                nx >= window.innerWidth - s ? 'right' :
@@ -939,7 +861,6 @@
         requestAnimationFrame(mainLoop);
     }
 
-    // 视线跟随
     document.addEventListener('mousemove', function (e) {
         S.mouseX = e.clientX; S.mouseY = e.clientY; S.mouseActive = true;
         if (isMobile() || S.dragging || S.hidden || S.sleeping) return;
@@ -965,7 +886,6 @@
         if (!S.dragging) tiltEl.style.transform = '';
     });
 
-    // 智能避让
     document.addEventListener('mousemove', function (e) {
         if (isMobile() || S.dragging || S.sleeping || S.hidden || S.dialogueOpen) return;
         if (performance.now() < S.avoidCooldown) return;
@@ -996,15 +916,13 @@
         }
     });
 
-    // 动作
     function doPet() {
         saveLast(); initAudio();
         S.mood = clamp(S.mood + 8, 0, 100); updateMoodColor();
         if (S.sleeping) { wakeUp(); return; }
         setFace('happy', 1600);
         showBubble(pick(MSG.pet), 1800, false);
-        burst('❤️', 5);
-        SFX.pet();
+        burst('❤️', 5); SFX.pet();
     }
     function doFood() {
         saveLast(); initAudio();
@@ -1012,8 +930,7 @@
         if (S.sleeping) wakeUp();
         setFace('happy', 1800);
         showBubble(pick(MSG.food), 1800, false);
-        burst('🍎', 4);
-        SFX.food();
+        burst('🍎', 4); SFX.food();
     }
     function doSleepToggle() {
         saveLast(); initAudio();
@@ -1025,8 +942,7 @@
         host.classList.add('spin');
         setFace('happy', 1500);
         showBubble(pick(MSG.spin), 1600, false);
-        burst('💫', 5);
-        SFX.spin();
+        burst('💫', 5); SFX.spin();
         setTimeout(function () { host.classList.remove('spin'); }, 880);
     }
     function roam(maxX, maxY) {
@@ -1061,12 +977,8 @@
             setPos(nx, ny, false);
             var b = Math.sin(t * Math.PI * 8) * 2.5;
             bodyEl.style.transform = 'translateY(' + b + 'px)';
-            if (t < 1) {
-                requestAnimationFrame(step);
-            } else {
-                bodyEl.style.transform = '';
-                savePos();
-            }
+            if (t < 1) requestAnimationFrame(step);
+            else { bodyEl.style.transform = ''; savePos(); }
         }
         requestAnimationFrame(step);
     }
@@ -1086,7 +998,6 @@
         host.classList.add('hidden');
         restoreBtn.classList.add('show');
     }
-    
         function doShow() {
         S.hidden = false; saveHidden();
         host.classList.remove('hidden');
@@ -1153,19 +1064,19 @@
         }
         if (parseFloat(dialogue.style.top) < 8) dialogue.style.top = '8px';
 
-            clearTimeout(S.avoidTimer);
-    S.avoidTimer = null;
-    S.avoidCooldown = performance.now() + 60000;
+        clearTimeout(S.avoidTimer);
+        S.avoidTimer = null;
+        S.avoidCooldown = performance.now() + 60000;
 
-    // 桌面端自动聚焦输入框
-    if (!isMobile() && dlgInput) {
-        setTimeout(function () {
-            try { dlgInput.focus(); } catch (e) {}
-        }, 300);
+        // 桌面端自动聚焦
+        if (!isMobile() && dlgInput) {
+            setTimeout(function () {
+                try { dlgInput.focus(); } catch (e) {}
+            }, 300);
+        }
     }
-}
 
-function hideDialogue() {
+    function hideDialogue() {
         dialogue.classList.remove('show');
         S.dialogueOpen = false;
         S.avoidCooldown = performance.now() + 2000;
@@ -1225,34 +1136,34 @@ function hideDialogue() {
         hideDialogue();
     });
 
-// ⭐ 用户自由输入
-function sendUserInput() {
-    var text = dlgInput.value.trim();
-    if (!text) return;
-    if (S.aiThinking) {
-        showBubble('我还在想上一个问题呢…', 1500, false);
-        return;
+    // ⭐ 用户自由输入
+    function sendUserInput() {
+        var text = dlgInput.value.trim();
+        if (!text) return;
+        if (S.aiThinking) {
+            showBubble('我还在想上一个问题呢…', 1500, false);
+            return;
+        }
+        dlgInput.value = '';
+        askAI(text);
     }
-    dlgInput.value = '';
-    askAI(text);
-}
 
-dlgSend.addEventListener('click', function (e) {
-    e.stopPropagation();
-    sendUserInput();
-});
-
-dlgInput.addEventListener('keydown', function (e) {
-    e.stopPropagation();
-    if (e.key === 'Enter') {
-        e.preventDefault();
+    dlgSend.addEventListener('click', function (e) {
+        e.stopPropagation();
         sendUserInput();
-    }
-});
+    });
 
-dlgInput.addEventListener('click', function (e) {
-    e.stopPropagation();
-});
+    dlgInput.addEventListener('keydown', function (e) {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendUserInput();
+        }
+    });
+
+    dlgInput.addEventListener('click', function (e) {
+        e.stopPropagation();
+    });
 
     // ============================================================
     // AI 配置（从 CiweiBlog/ai-config.json 读）
@@ -1268,7 +1179,6 @@ dlgInput.addEventListener('click', function (e) {
                 return r.json();
             })
             .then(function (cfg) {
-                // 补齐默认值
                 var merged = {};
                 for (var k in DEFAULT_AI_CONFIG) merged[k] = DEFAULT_AI_CONFIG[k];
                 for (var k2 in cfg) merged[k2] = cfg[k2];
@@ -1306,8 +1216,13 @@ dlgInput.addEventListener('click', function (e) {
             '<div class="cp-ai-param-row"><span>温度</span><strong>' + cfg.temperature + '</strong></div>' +
             '<div class="cp-ai-param-row"><span>最大输出</span><strong>' + cfg.maxTokens + ' tokens</strong></div>' +
             '<div class="cp-ai-param-row"><span>上下文</span><strong>' + cfg.contextLines + ' 轮</strong></div>' +
-            '<div class="cp-ai-param-row"><span>推理强度</span><strong>' + (cfg.reasoningEffort === 'max' ? '最大' : cfg.reasoningEffort === 'low' ? '低' : '高') + '</strong></div>' +
-            '<div class="cp-ai-param-row"><span>流式输出</span><strong>' + (cfg.stream !== false ? '开启' : '关闭') + '</strong></div>';
+            '<div class="cp-ai-param-row"><span>推理强度</span><strong>' +
+                (cfg.reasoningEffort === 'max' ? '最大' :
+                 cfg.reasoningEffort === 'low' ? '低' : '高') +
+            '</strong></div>' +
+            '<div class="cp-ai-param-row"><span>流式输出</span><strong>' +
+                (cfg.stream !== false ? '开启' : '关闭') +
+            '</strong></div>';
         aiParamsEl.innerHTML = html;
     }
 
@@ -1481,7 +1396,6 @@ dlgInput.addEventListener('click', function (e) {
         aiStatus.textContent = '';
         aiStatus.className = 'cp-ai-status';
 
-        // 显示当前参数
         aiParamsEl.innerHTML = '<span style="color:var(--cp-panel-text-muted);">加载中…</span>';
         fetchAIConfig().then(function (cfg) {
             renderAIParams(cfg);
@@ -1848,8 +1762,8 @@ dlgInput.addEventListener('click', function (e) {
             lsSet(KEYS.last, String(S.last));
         });
 
-        console.log('🦔 小ci · 内联版 v5 已启动 · ' + measuredFPS + 'fps · ' + getScalePercent() + '%');
-        console.log('🤖 AI：参数来自 ai-config.json · Key 存本机');
+        console.log('🦔 小ci · 内联版 v6 已启动 · ' + measuredFPS + 'fps · ' + getScalePercent() + '%');
+        console.log('🤖 AI：输入框 + 预设问题 + ai-config.json 参数');
     }
 
     mount();
