@@ -453,16 +453,16 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 #ciwei-pet-dialogue {
     position: fixed;
     background: var(--cp-panel-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
     border: 1px solid var(--cp-panel-border);
     border-radius: 14px;
     padding: 0;
     box-shadow: var(--cp-panel-shadow);
     z-index: 9002;
     display: none;
-    min-width: 220px; max-width: 280px;
-    max-height: 60vh;
+    min-width: 200px; max-width: 260px;
+    max-height: 46vh;
     overflow: hidden;
     flex-direction: column;
     font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
@@ -473,7 +473,7 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 
 #ciwei-pet-dialogue .cp-dlg-header {
     display: flex; align-items: center;
-    padding: 8px 10px 10px;
+    padding: 7px 10px 8px;
     border-bottom: 1px solid var(--cp-panel-border);
     flex-shrink: 0;
     background: var(--cp-panel-bg);
@@ -529,8 +529,8 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
     border-radius: 4px;
 }
 #ciwei-pet-dialogue .cp-dlg-item {
-    padding: 9px 12px;
-    font-size: 13px;
+    padding: 7px 11px;
+    font-size: 12.5px;
     color: var(--cp-panel-text);
     border-radius: 8px;
     cursor: pointer;
@@ -577,7 +577,7 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
 #ciwei-pet-dialogue .cp-dlg-input-area {
     flex-shrink: 0;
     display: flex; gap: 6px;
-    padding: 8px 10px 10px;
+    padding: 7px 9px 9px;
     border-top: 1px solid var(--cp-panel-border);
     background: var(--cp-panel-bg);
 }
@@ -787,4 +787,91 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
         animation-duration: .01ms !important;
         transition-duration: .01ms !important;
     }
+}
+
+/* ============================================================
+   移动端 · 对话面板优化
+================================================================ */
+@media (max-width: 600px) {
+    #ciwei-pet-dialogue {
+        min-width: 180px;
+        max-width: 230px;
+        max-height: 42vh;
+    }
+    #ciwei-pet-dialogue .cp-dlg-item {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    #ciwei-pet-dialogue .cp-dlg-title {
+        font-size: 11px;
+    }
+    #ciwei-pet-dialogue .cp-dlg-input {
+        padding: 7px 10px;
+        font-size: 12.5px;
+    }
+    #ciwei-pet-dialogue .cp-dlg-send {
+        padding: 7px 12px;
+        font-size: 12.5px;
+    }
+}
+
+/* ============================================================
+   AI Key 面板 · 余额展示
+================================================================ */
+#ciwei-pet-ai-settings .cp-ai-balance-box {
+    background: var(--cp-panel-hover);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 4px;
+}
+#ciwei-pet-ai-settings .cp-ai-balance-main {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+#ciwei-pet-ai-settings .cp-ai-balance-main .cur {
+    font-size: 14px;
+    color: var(--cp-panel-text-muted);
+}
+#ciwei-pet-ai-settings .cp-ai-balance-main .amt {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, #58a6ff, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+#ciwei-pet-ai-settings .cp-ai-balance-sub {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--cp-panel-text-muted);
+    flex-wrap: wrap;
+}
+#ciwei-pet-ai-settings .cp-ai-balance-sub strong {
+    color: var(--cp-panel-text);
+    font-weight: 600;
+}
+#ciwei-pet-ai-settings .cp-ai-balance-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--cp-panel-text-muted);
+}
+#ciwei-pet-ai-settings .cp-ai-balance-status .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+#ciwei-pet-ai-settings .cp-ai-balance-status .dot.ok { background: #22c55e; }
+#ciwei-pet-ai-settings .cp-ai-balance-status .dot.err { background: #ef4444; }
+#ciwei-pet-ai-settings .cp-ai-balance-empty {
+    text-align: center;
+    font-size: 12px;
+    color: var(--cp-panel-text-muted);
+    padding: 8px 0;
 }

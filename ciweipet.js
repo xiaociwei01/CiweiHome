@@ -238,11 +238,18 @@
                     '<a href="https://xiaociwei01.github.io/CiweiBlog/ai.html" target="_blank" style="color:#58a6ff;margin-left:4px;">去修改</a>' +
                 '</div>' +
             '</div>' +
+            '<div class="cp-ai-field">' +
+    '<label class="cp-ai-label">💰 DeepSeek 余额</label>' +
+    '<div class="cp-ai-balance-box" id="cp-ai-balance-box">' +
+        '<div class="cp-ai-balance-empty">点下方「查余额」获取</div>' +
+    '</div>' +
+'</div>' +
             '<div class="cp-ai-actions">' +
-                '<button class="cp-ai-btn" id="cp-ai-test">🔍 测试</button>' +
-                '<button class="cp-ai-btn primary" id="cp-ai-save">💾 保存</button>' +
-                '<button class="cp-ai-btn danger" id="cp-ai-clear">🗑️ 清除</button>' +
-            '</div>' +
+    '<button class="cp-ai-btn" id="cp-ai-test">🔍 测试</button>' +
+    '<button class="cp-ai-btn" id="cp-ai-balance">💰 余额</button>' +
+    '<button class="cp-ai-btn primary" id="cp-ai-save">💾 保存</button>' +
+    '<button class="cp-ai-btn danger" id="cp-ai-clear">🗑️ 清除</button>' +
+'</div>' +
             '<div class="cp-ai-status" id="cp-ai-status"></div>' +
         '</div>';
 
@@ -279,6 +286,7 @@
     var aiKeyInput   = aiSettings.querySelector('#cp-ai-key');
     var aiKeyToggle  = aiSettings.querySelector('#cp-ai-key-toggle');
     var aiParamsEl   = aiSettings.querySelector('#cp-ai-params');
+    var aiBalanceBox = aiSettings.querySelector('#cp-ai-balance-box');
     var aiStatus     = aiSettings.querySelector('#cp-ai-status');
     var aiTestBtn    = aiSettings.querySelector('#cp-ai-test');
     var aiSaveBtn    = aiSettings.querySelector('#cp-ai-save');
@@ -1480,9 +1488,12 @@ dlgHeader.addEventListener('pointercancel', function (e) {
         aiStatus.className = 'cp-ai-status';
 
         aiParamsEl.innerHTML = '<span style="color:var(--cp-panel-text-muted);">加载中…</span>';
-        fetchAIConfig().then(function (cfg) {
-            renderAIParams(cfg);
-        });
+fetchAIConfig().then(function (cfg) {
+    renderAIParams(cfg);
+});
+
+// 自动查一次余额
+setTimeout(queryBalance, 300);
 
         var s = getSize();
         var px = S.x + s + 8;
@@ -1526,6 +1537,11 @@ dlgHeader.addEventListener('pointercancel', function (e) {
         aiStatus.className = 'cp-ai-status ok';
         setTimeout(closeAISettings, 800);
     });
+    
+    var aiBalanceBtn = aiSettings.querySelector('#cp-ai-balance');
+aiBalanceBtn.addEventListener('click', function () {
+    queryBalance();
+});
 
     aiTestBtn.addEventListener('click', function () {
         var k = aiKeyInput.value.trim() || getApiKey();
@@ -1578,6 +1594,65 @@ dlgHeader.addEventListener('pointercancel', function (e) {
         e.stopPropagation();
         openAISettings();
     });
+    // ============================================================
+// 余额查询
+// ============================================================
+function renderBalance(data) {
+    if (!data || !data.balance_infos || data.balance_infos.length === 0) {
+        aiBalanceBox.innerHTML = '<div class="cp-ai-balance-empty">暂无余额信息</div>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < data.balance_infos.length; i++) {
+        var info = data.balance_infos[i];
+        var symbol = info.currency === 'CNY' ? '¥' :
+                     info.currency === 'USD' ? '$' : (info.currency + ' ');
+        html +=
+            '<div class="cp-ai-balance-main">' +
+                '<span class="cur">' + symbol + '</span>' +
+                '<span class="amt">' + info.total_balance + '</span>' +
+            '</div>' +
+            '<div class="cp-ai-balance-sub">' +
+                '<span>赠送 <strong>' + symbol + info.granted_balance + '</strong></span>' +
+                '<span>充值 <strong>' + symbol + info.topped_up_balance + '</strong></span>' +
+            '</div>';
+    }
+    html +=
+        '<div class="cp-ai-balance-status">' +
+            '<span class="dot ' + (data.is_available ? 'ok' : 'err') + '"></span>' +
+            '<span>' + (data.is_available ? '账户可用' : '余额不足或不可用') + '</span>' +
+        '</div>';
+    aiBalanceBox.innerHTML = html;
+}
+
+function queryBalance() {
+    var k = getApiKey();
+    if (!k) {
+        aiBalanceBox.innerHTML = '<div class="cp-ai-balance-empty">请先保存 API Key</div>';
+        return;
+    }
+    aiBalanceBox.innerHTML = '<div class="cp-ai-balance-empty">⏳ 查询中…</div>';
+
+    fetch('https://api.deepseek.com/user/balance', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + k,
+            'Accept': 'application/json'
+        }
+    })
+    .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    })
+    .then(function (data) {
+        renderBalance(data);
+    })
+    .catch(function (err) {
+        console.error('余额查询失败:', err);
+        aiBalanceBox.innerHTML =
+            '<div class="cp-ai-balance-empty">❌ ' + err.message + '</div>';
+    });
+}
 
     // ============================================================
     // 工具栏
