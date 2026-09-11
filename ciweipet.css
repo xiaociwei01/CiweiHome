@@ -477,6 +477,16 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
     border-bottom: 1px solid var(--cp-panel-border);
     flex-shrink: 0;
     background: var(--cp-panel-bg);
+    cursor: move;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+#ciwei-pet-dialogue .cp-dlg-header.dragging {
+    cursor: grabbing;
+}
+#ciwei-pet-dialogue .cp-dlg-header.dragging ~ * {
+    pointer-events: none;
 }
 #ciwei-pet-dialogue .cp-dlg-title {
     font-size: 12px; font-weight: 600;
