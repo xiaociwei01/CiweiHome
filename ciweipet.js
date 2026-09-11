@@ -309,6 +309,13 @@
         aiThinking: false
     };
     var lastLongPressTime = 0;
+    // 对话面板拖动状态
+var dlgDrag = {
+    dragging: false,
+    startX: 0, startY: 0,
+    startLeft: 0, startTop: 0,
+    moved: false
+};
     var aiConfigCache = null;
     var aiConfigCacheTime = 0;
 
@@ -1041,16 +1048,24 @@
     }
 
     function showDialogueAt() {
-        S.dialogueOpen = true;
-        buildDialogueMenu();
+    S.dialogueOpen = true;
+    buildDialogueMenu();
 
-        var s = getSize();
-        var px = S.x + s + 8;
-        var py = S.y;
+    var s = getSize();
+    var px, py;
 
-        dialogue.style.left = px + 'px';
-        dialogue.style.top  = py + 'px';
-        dialogue.classList.add('show');
+    // 优先用拖动后的位置
+    if (typeof dialogue._savedX === 'number' && typeof dialogue._savedY === 'number') {
+        px = dialogue._savedX;
+        py = dialogue._savedY;
+    } else {
+        px = S.x + s + 8;
+        py = S.y;
+    }
+
+    dialogue.style.left = px + 'px';
+    dialogue.style.top  = py + 'px';
+    dialogue.classList.add('show');
 
         var dr = dialogue.getBoundingClientRect();
 
@@ -1164,6 +1179,74 @@
     dlgInput.addEventListener('click', function (e) {
         e.stopPropagation();
     });
+    // ============================================================
+// 对话面板拖动
+// ============================================================
+var dlgHeader = dialogue.querySelector('.cp-dlg-header');
+
+function saveDlgPos() {
+    var r = dialogue.getBoundingClientRect();
+    lsSet('ciwei_pet_dlg_pos', JSON.stringify({
+        x: Math.round(r.left),
+        y: Math.round(r.top)
+    }));
+}
+
+dlgHeader.addEventListener('pointerdown', function (e) {
+    // 点按钮时不触发拖动
+    if (e.target.closest('button')) return;
+
+    dlgDrag.dragging = true;
+    dlgDrag.moved = false;
+    dlgDrag.startX = e.clientX;
+    dlgDrag.startY = e.clientY;
+
+    var r = dialogue.getBoundingClientRect();
+    dlgDrag.startLeft = r.left;
+    dlgDrag.startTop = r.top;
+
+    dlgHeader.classList.add('dragging');
+    try { dlgHeader.setPointerCapture(e.pointerId); } catch (err) {}
+    e.preventDefault();
+});
+
+dlgHeader.addEventListener('pointermove', function (e) {
+    if (!dlgDrag.dragging) return;
+    e.preventDefault();
+
+    var dx = e.clientX - dlgDrag.startX;
+    var dy = e.clientY - dlgDrag.startY;
+
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dlgDrag.moved = true;
+    if (!dlgDrag.moved) return;
+
+    var newLeft = dlgDrag.startLeft + dx;
+    var newTop  = dlgDrag.startTop + dy;
+
+    // 边界约束
+    var w = dialogue.offsetWidth;
+    var h = dialogue.offsetHeight;
+    newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - w));
+    newTop  = Math.max(0, Math.min(newTop, window.innerHeight - h));
+
+    dialogue.style.left = newLeft + 'px';
+    dialogue.style.top  = newTop + 'px';
+});
+
+function endDlgDrag(e) {
+    if (!dlgDrag.dragging) return;
+    dlgDrag.dragging = false;
+    dlgHeader.classList.remove('dragging');
+    try { dlgHeader.releasePointerCapture(e.pointerId); } catch (err) {}
+    if (dlgDrag.moved) saveDlgPos();
+}
+
+dlgHeader.addEventListener('pointerup', endDlgDrag);
+dlgHeader.addEventListener('pointercancel', function (e) {
+    if (!dlgDrag.dragging) return;
+    dlgDrag.dragging = false;
+    dlgHeader.classList.remove('dragging');
+});
 
     // ============================================================
     // AI 配置（从 CiweiBlog/ai-config.json 读）
@@ -1332,7 +1415,7 @@
             if (!res.body) {
                 return res.json().then(function (json) {
                     var reply = json.choices[0].message.content;
-                    showBubble(reply, 5000, false);
+                    showBubble(reply, 60000, false);
                     pushHistory('assistant', reply);
                     setFace('happy', 2500);
                     S.aiThinking = false;
@@ -1341,7 +1424,7 @@
             return readStream(res.body);
         }).then(function (fullText) {
             if (!fullText) return;
-            showBubble(fullText, 5000, false);
+            showBubble(fullText, 60000, false);
             pushHistory('assistant', fullText);
             setFace('happy', 2500);
             S.mood = clamp(S.mood + 3, 0, 100);
@@ -1673,6 +1756,17 @@
     // ============================================================
     function restore() {
         if (!lsGet(KEYS.meeting)) lsSet(KEYS.meeting, String(Date.now()));
+        // 恢复对话面板位置
+var savedDlgPos = lsGet('ciwei_pet_dlg_pos');
+if (savedDlgPos) {
+    try {
+        var p = JSON.parse(savedDlgPos);
+        if (p && typeof p.x === 'number' && typeof p.y === 'number') {
+            dialogue._savedX = p.x;
+            dialogue._savedY = p.y;
+        }
+    } catch (e) {}
+}
 
         var savedScale = parseInt(lsGet(KEYS.scale) || String(DEFAULT_SCALE_INDEX), 10);
         if (isNaN(savedScale) || savedScale < 0 || savedScale >= SCALES.length) {
