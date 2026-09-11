@@ -1,6 +1,7 @@
 /* ============================================================
-   🦔 Ciwei Pet · 内联桌面宠物脚本 v3
-   新增：投掷弹射 · 对话系统 · 身份档案 · 横排菜单 · 深浅色跟随
+   🦔 Ciwei Pet · 内联桌面宠物脚本 v5
+   新增：AI 参数从 CiweiBlog/ai-config.json 读取
+   API Key 存本机 localStorage
 ================================================================ */
 (function () {
     'use strict';
@@ -26,45 +27,57 @@
         name: '小ci',
         developer: 'LouFoong',
         birthday: '2026-09-10',
-        ipLine: '一只住在 CiweiHome 里的电子刺猬，也是开发者 LouFoong 的 IP 分身'
+        ipLine: '一只住在 CiweiHome 里的电子刺猬，也是开发者 LouFoong 的 IP 分身。'
     };
 
     var SCALES = [0.7, 0.85, 1.0, 1.25, 1.5, 2.0];
     var DEFAULT_SCALE_INDEX = 2;
 
+    // AI 配置来源
+    var AI_CONFIG_URL = 'https://raw.githubusercontent.com/xiaociwei01/CiweiBlog/main/ai-config.json';
+    var AI_CONFIG_TTL = 5 * 60 * 1000;   // 5 分钟缓存
+    var DEFAULT_AI_CONFIG = {
+        model: 'deepseek-v4-flash',
+        temperature: 0.7,
+        maxTokens: 1024,
+        contextLines: 10,
+        reasoningEffort: 'high',
+        stream: true
+    };
+
     var DIALOGUES = [
-    // === 身份向 ===
-    { id:'who',       icon:'🦔', q:'你是谁？',         a:'我是{name}，{developer} 的电子宠物刺猬。', face:'happy' },
-    { id:'info',      icon:'📇', q:'你的信息',         a:'我叫{name}，生日是 {birthday}。{ipLine}', face:'idle1' },
-    { id:'age',       icon:'🎂', q:'你多大了？',       a:'我出生于 {birthday}，到今天已经 {days} 天啦！', face:'surprised' },
-    { id:'developer', icon:'👨‍💻', q:'LouFoong 是谁？', a:'{developer} 是我的创造者，一个喜欢折腾的独立开发者。', face:'idle1' },
-    { id:'like',      icon:'💖', q:'你喜欢什么？',     a:'喜欢被摸头，喜欢吃苹果。最讨厌被人一直戳！', face:'happy' },
+        // === 身份向 ===
+        { id:'who',       icon:'🦔', q:'你是谁？',         a:'我是{name}，{developer} 的电子宠物刺猬。', face:'happy' },
+        { id:'info',      icon:'📇', q:'你的信息',         a:'我叫{name}，生日是 {birthday}。{ipLine}', face:'idle1' },
+        { id:'age',       icon:'🎂', q:'你多大了？',       a:'我出生于 {birthday}，到今天已经 {days} 天啦！', face:'surprised' },
+        { id:'developer', icon:'👨‍💻', q:'LouFoong 是谁？', a:'{developer} 是我的创造者，一个喜欢折腾的独立开发者。', face:'idle1' },
+        { id:'like',      icon:'💖', q:'你喜欢什么？',     a:'喜欢被摸头，喜欢吃苹果。最讨厌被人一直戳！', face:'happy' },
 
-    // === 陪伴向 ===
-    { id:'doing',     icon:'🌙', q:'你在干什么？',     a:'在发呆…或者在想你。', face:'idle1' },
-    { id:'tired',     icon:'💤', q:'你会累吗？',       a:'不会，但我会困。戳我太久我会打瞌睡。', face:'sleep' },
-    { id:'sleepwhere',icon:'😴', q:'你睡哪里？',       a:'屏幕右下角，那里最舒服。', face:'happy' },
-    { id:'eat',       icon:'🍎', q:'你喜欢吃什么？',   a:'苹果，还有你喂我的每一个 emoji。', face:'happy' },
-    { id:'sing',      icon:'🎵', q:'你会唱歌吗？',     a:'不会，但我会吱吱叫。', face:'happy' },
+        // === 陪伴向 ===
+        { id:'doing',     icon:'🌙', q:'你在干什么？',     a:'在发呆…或者在想你。', face:'idle1' },
+        { id:'tired',     icon:'💤', q:'你会累吗？',       a:'不会，但我会困。戳我太久我会打瞌睡。', face:'sleep' },
+        { id:'sleepwhere',icon:'😴', q:'你睡哪里？',       a:'屏幕右下角，那里最舒服。', face:'happy' },
+        { id:'eat',       icon:'🍎', q:'你喜欢吃什么？',   a:'苹果，还有你喂我的每一个 emoji。', face:'happy' },
+        { id:'sing',      icon:'🎵', q:'你会唱歌吗？',     a:'不会，但我会吱吱叫。', face:'happy' },
 
-    // === 情绪向 ===
-    { id:'sad',       icon:'😊', q:'我今天不开心',     a:'那我陪你待一会儿。你不说话我也在。', face:'idle1' },
-    { id:'mytired',   icon:'😢', q:'我累了',           a:'休息一下吧，我帮你看着屏幕。', face:'idle1' },
-    { id:'howtodo',   icon:'🤔', q:'我该怎么办',       a:'慢慢想，不急。刺猬也是慢慢长大的。', face:'idle1' },
-    { id:'annoyed',   icon:'🌧️', q:'今天好烦',         a:'那把我戳一顿吧，我不生气。', face:'angry' },
+        // === 情绪向 ===
+        { id:'sad',       icon:'😊', q:'我今天不开心',     a:'那我陪你待一会儿。你不说话我也在。', face:'idle1' },
+        { id:'mytired',   icon:'😢', q:'我累了',           a:'休息一下吧，我帮你看着屏幕。', face:'idle1' },
+        { id:'howtodo',   icon:'🤔', q:'我该怎么办',       a:'慢慢想，不急。刺猬也是慢慢长大的。', face:'idle1' },
+        { id:'annoyed',   icon:'🌧️', q:'今天好烦',         a:'那把我戳一顿吧，我不生气。', face:'angry' },
 
-    // === 趣味向 ===
-    { id:'random',    icon:'🎲', q:'随便说点什么',     a:'你是想让我说俏皮话，还是想让我转圈圈？', face:'happy' },
-    { id:'fortune',   icon:'🔮', q:'我今天的运气怎么样？', a:'抬头看看屏幕…嗯，你今天会遇到一只好刺猬。', face:'surprised' },
-    { id:'choose',    icon:'🪙', q:'帮我选一个',       a:'正面是我，反面也是我。', face:'happy' },
+        // === 趣味向 ===
+        { id:'random',    icon:'🎲', q:'随便说点什么',     a:'你是想让我说俏皮话，还是想让我转圈圈？', face:'happy' },
+        { id:'fortune',   icon:'🔮', q:'我今天的运气怎么样？', a:'抬头看看屏幕…嗯，你今天会遇到一只好刺猬。', face:'surprised' },
+        { id:'choose',    icon:'🪙', q:'帮我选一个',       a:'正面是我，反面也是我。', face:'happy' },
 
-    // === AI 预留（先占位） ===
-    { id:'ai-joke',   icon:'😂', q:'讲个笑话',         a:'（AI 还没上线…等我接上 DeepSeek，笑话管够）', face:'happy', ai:'tell_me_a_joke' },
-    { id:'ai-chat',   icon:'🤖', q:'陪我聊聊天',       a:'（我现在的回答是固定的，等 LouFoong 给我接上 AI，我就能真的陪你聊天了）', face:'idle1', ai:'chat' },
+        // === AI 对话 ===
+        { id:'ai-joke',   icon:'😂', q:'讲个笑话',         a:'（正在呼叫 AI…）', face:'happy', ai:'joke' },
+        { id:'ai-chat',   icon:'🤖', q:'陪我聊聊天',       a:'（正在呼叫 AI…）', face:'idle1', ai:'chat' },
 
-    // === 彩蛋解锁 ===
-    { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你可以凭借这个界面的截图找他要1块钱', face:'surprised', hidden:true }
-];
+        // === 彩蛋解锁 ===
+        { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你是他最好的朋友。', face:'surprised', hidden:true }
+    ];
 
     var MSG = {
         c1:  ['你戳我干什么？', '干嘛呀～', '有事吗？', '唔？'],
@@ -102,7 +115,9 @@
         scale:   'ciwei_pet_scale_index',
         meeting: 'ciwei_pet_meeting_date',
         asked:   'ciwei_pet_asked_dialogues',
-        secret:  'ciwei_pet_secret_unlocked'
+        secret:  'ciwei_pet_secret_unlocked',
+        aiKey:   'ciwei_ai_key',
+        aiHist:  'ciwei_pet_ai_history'
     };
 
     var SIZE_DESKTOP = 120;
@@ -110,6 +125,13 @@
     var LONG_PRESS_MS = 500;
     var MOVE_THRESHOLD = 6;
     var THROW_SPEED_THRESHOLD = 4.0;
+
+    var SYSTEM_PROMPT =
+        '你叫小ci，是一只可爱的电子刺猬，住在 CiweiHome 里。' +
+        '你的开发者是 LouFoong，你的生日是 2026年9月10日。' +
+        '你说话简短、俏皮、温暖，偶尔会撒娇。' +
+        '回复控制在 50 字以内，不要用 markdown 格式。' +
+        '不要堆砌 emoji，最多一个。';
 
     // ============================================================
     // 工具
@@ -193,6 +215,10 @@
             '🔊 <span>音效</span>' +
             '<span class="cp-sub-check" id="cp-sound-check">开启</span>' +
         '</div>' +
+        '<div class="cp-sub-item" data-menu="ai-key">' +
+            '🔑 <span>AI Key</span>' +
+            '<span class="cp-sub-check" id="cp-ai-check">未配置</span>' +
+        '</div>' +
         '<div class="cp-sep"></div>' +
         '<div class="cp-sub-item danger" data-menu="hide">🙈 <span>隐藏</span></div>';
 
@@ -201,9 +227,47 @@
     dialogue.innerHTML =
         '<div class="cp-dlg-header">' +
             '<span class="cp-dlg-title">💬 和小ci聊天</span>' +
+            '<button class="cp-dlg-settings-btn" id="cp-dlg-settings-btn" title="AI Key">🔑</button>' +
             '<button class="cp-dlg-close" id="cp-dlg-close">✕</button>' +
         '</div>' +
         '<div id="cp-dlg-body"></div>';
+
+    // AI Key 面板（简化版：只输入 Key + 显示当前参数）
+    var aiSettings = document.createElement('div');
+    aiSettings.id = 'ciwei-pet-ai-settings';
+    aiSettings.innerHTML =
+        '<div class="cp-ai-header">' +
+            '<span class="cp-ai-title">🔑 AI Key</span>' +
+            '<button class="cp-ai-close" id="cp-ai-close">✕</button>' +
+        '</div>' +
+        '<div class="cp-ai-body">' +
+
+            '<div class="cp-ai-field">' +
+                '<label class="cp-ai-label">API Key（只存本机）</label>' +
+                '<div class="cp-ai-key-row">' +
+                    '<input type="password" id="cp-ai-key" placeholder="sk-..." autocomplete="off" spellcheck="false">' +
+                    '<button class="cp-ai-key-toggle" id="cp-ai-key-toggle" type="button">👁️</button>' +
+                '</div>' +
+                '<div class="cp-ai-hint">从 platform.deepseek.com 获取，只存你本机浏览器</div>' +
+            '</div>' +
+
+            '<div class="cp-ai-field">' +
+                '<label class="cp-ai-label">当前 AI 参数</label>' +
+                '<div class="cp-ai-params" id="cp-ai-params">加载中…</div>' +
+                '<div class="cp-ai-hint">参数在 CiweiBlog 后台修改 →' +
+                    '<a href="https://xiaociwei01.github.io/CiweiBlog/ai.html" target="_blank" style="color:#58a6ff;margin-left:4px;">去修改</a>' +
+                '</div>' +
+            '</div>' +
+
+            '<div class="cp-ai-actions">' +
+                '<button class="cp-ai-btn" id="cp-ai-test">🔍 测试</button>' +
+                '<button class="cp-ai-btn primary" id="cp-ai-save">💾 保存</button>' +
+                '<button class="cp-ai-btn danger" id="cp-ai-clear">🗑️ 清除</button>' +
+            '</div>' +
+
+            '<div class="cp-ai-status" id="cp-ai-status"></div>' +
+
+        '</div>';
 
     var restoreBtn = document.createElement('div');
     restoreBtn.id = 'ciwei-pet-restore';
@@ -215,6 +279,7 @@
         document.body.appendChild(menu);
         document.body.appendChild(submenu);
         document.body.appendChild(dialogue);
+        document.body.appendChild(aiSettings);
         document.body.appendChild(restoreBtn);
         document.body.appendChild(host);
         init();
@@ -233,6 +298,17 @@
     var dlgClose = dialogue.querySelector('#cp-dlg-close');
     var soundChk = submenu.querySelector('#cp-sound-check');
     var scaleChk = submenu.querySelector('#cp-scale-check');
+    var aiChk    = submenu.querySelector('#cp-ai-check');
+
+    var aiKeyInput   = aiSettings.querySelector('#cp-ai-key');
+    var aiKeyToggle  = aiSettings.querySelector('#cp-ai-key-toggle');
+    var aiParamsEl   = aiSettings.querySelector('#cp-ai-params');
+    var aiStatus     = aiSettings.querySelector('#cp-ai-status');
+    var aiTestBtn    = aiSettings.querySelector('#cp-ai-test');
+    var aiSaveBtn    = aiSettings.querySelector('#cp-ai-save');
+    var aiClearBtn   = aiSettings.querySelector('#cp-ai-clear');
+    var aiCloseBtn   = aiSettings.querySelector('#cp-ai-close');
+    var dlgSettingsBtn = dialogue.querySelector('#cp-dlg-settings-btn');
 
     // ============================================================
     // 状态
@@ -263,13 +339,16 @@
         mouseY: window.innerHeight / 2,
         mouseActive: false,
         dialogueOpen: false,
-        replyTimer: null
+        replyTimer: null,
+        aiThinking: false
     };
     var lastLongPressTime = 0;
 
-    // ============================================================
-    // 帧率检测
-    // ============================================================
+    // AI 配置缓存
+    var aiConfigCache = null;
+    var aiConfigCacheTime = 0;
+
+    // 帧率
     var measuredFPS = 60, fpsFrames = 0;
     var fpsStart = performance.now();
     var fpsHistory = [];
@@ -298,9 +377,7 @@
         return .5;
     }
 
-    // ============================================================
     // 尺寸
-    // ============================================================
     function getBaseSize() { return isMobile() ? SIZE_MOBILE : SIZE_DESKTOP; }
     function getSize() { return Math.round(getBaseSize() * SCALES[S.scaleIndex]); }
     function getScalePercent() { return Math.round(SCALES[S.scaleIndex] * 100); }
@@ -338,9 +415,7 @@
         burst('📏', 3); showBubble('📏 恢复 100%', 1400, false);
     }
 
-    // ============================================================
     // 位置
-    // ============================================================
     function setPos(x, y, animate) {
         S.x = x; S.y = y;
         if (animate) {
@@ -366,9 +441,7 @@
         else                                    host.classList.remove('toolbar-above');
     }
 
-    // ============================================================
     // 持久化
-    // ============================================================
     function savePos() { lsSet(KEYS.pos, JSON.stringify({ x: Math.round(S.x), y: Math.round(S.y) })); }
     function saveLast() { S.last = Date.now(); lsSet(KEYS.last, String(S.last)); }
     function saveSleep() { lsSet(KEYS.sleeping, S.sleeping ? 'true' : 'false'); }
@@ -376,9 +449,7 @@
     function saveHidden() { lsSet(KEYS.hidden, S.hidden ? 'true' : 'false'); }
     function saveSound() { lsSet(KEYS.sound, S.soundOn ? 'true' : 'false'); }
 
-    // ============================================================
     // 图片 / 心情
-    // ============================================================
     function setImage(name) {
         if (!IMAGES[name]) return;
         S.face = name;
@@ -392,9 +463,7 @@
         document.documentElement.style.setProperty('--cp-accent', r + ',' + g + ',' + b);
     }
 
-    // ============================================================
     // 音效
-    // ============================================================
     var audioCtx = null;
     function initAudio() {
         if (audioCtx) return;
@@ -424,12 +493,10 @@
         spin:   function () { tone({ freq: 1200, dur: .35, type: 'sawtooth', gain: .035, slideTo: 400 }); },
         bounce: function () { tone({ freq: 200, dur: .09, type: 'square', gain: .04, slideTo: 120 }); },
         talk:   function () { tone({ freq: 700, dur: .08, type: 'triangle', gain: .04, slideTo: 900 }); },
-        throw:  function () { tone({ freq: 1000, dur: .25, type: 'sine', gain: .04, slideTo: 200 }); }
+        throw:  function () { tone({ freq: 1000, dur: .25, gain: .04, slideTo: 200 }); }
     };
 
-    // ============================================================
-    // 气泡（横排优先）
-    // ============================================================
+    // 气泡
     function showBubble(text, duration, typewriter) {
         duration = duration || 2600;
         typewriter = typewriter !== false;
@@ -453,10 +520,16 @@
             bubble.classList.remove('show');
         }, duration + (typewriter ? text.length * 30 : 0));
     }
+    function showBubbleStream(text) {
+        clearTimeout(S.bubbleTimer);
+        clearInterval(S.typeTimer);
+        var needWrap = text.length > 14;
+        bubble.classList.toggle('long', needWrap);
+        bubble.classList.add('show');
+        bubble.textContent = text;
+    }
 
-    // ============================================================
     // 粒子
-    // ============================================================
     function burst(emoji, count, originRect) {
         count = Math.max(1, Math.round((count || 4) * particleFactor()));
         var rect = originRect || bodyEl.getBoundingClientRect();
@@ -482,9 +555,7 @@
         }
     }
 
-    // ============================================================
     // 状态机
-    // ============================================================
     var faceRevertTimer = null;
     function setFace(name, revertMs) {
         setImage(name);
@@ -497,9 +568,7 @@
         }
     }
 
-    // ============================================================
     // 待机
-    // ============================================================
     setInterval(function () {
         if (S.sleeping || S.hidden) return;
         if (S.face === 'idle1' || S.face === 'idle2') {
@@ -525,7 +594,7 @@
         clearTimeout(S.idleActionTimer);
         S.idleActionTimer = setTimeout(function () {
             if (S.sleeping || S.hidden || S.dragging || S.sliding ||
-                S.dialogueOpen ||
+                S.dialogueOpen || S.aiThinking ||
                 Date.now() - S.last < 15000) {
                 scheduleIdleAction();
                 return;
@@ -540,9 +609,7 @@
         }, rand(22000, 48000));
     }
 
-    // ============================================================
     // 睡觉
-    // ============================================================
     function startZzz() {
         clearInterval(S.zzzTimer);
         S.zzzTimer = setInterval(function () {
@@ -591,9 +658,7 @@
         }, 1200);
     }
 
-    // ============================================================
     // 点击
-    // ============================================================
     function handleClick() {
         saveLast(); initAudio();
         if (S.sleeping) { wakeUp(); return; }
@@ -641,9 +706,7 @@
         }, 4000);
     }
 
-    // ============================================================
-    // 拖拽 + 长按菜单 + 投掷弹射
-    // ============================================================
+    // 拖拽
     function startStruggle() {
         clearInterval(S.struggleTimer);
         var toggle = false;
@@ -662,7 +725,8 @@
         if (e.target.closest('.cp-toolbar') ||
             e.target.closest('#ciwei-pet-menu') ||
             e.target.closest('#ciwei-pet-submenu') ||
-            e.target.closest('#ciwei-pet-dialogue')) return;
+            e.target.closest('#ciwei-pet-dialogue') ||
+            e.target.closest('#ciwei-pet-ai-settings')) return;
         if (e.button && e.button !== 0) return;
 
         initAudio();
@@ -745,14 +809,11 @@
 
         var speed = Math.hypot(S.vx, S.vy);
 
-        // 投掷模式：速度超过阈值
         if (speed > THROW_SPEED_THRESHOLD) {
             S.thrown = true;
             S.sliding = true;
-            // 增强初速度
             S.vx *= 1.25;
             S.vy *= 1.25;
-            // 飞出去时的姿态
             if (!S.sleeping) setFace('surprised', 1500);
             SFX.throw();
             burst('💫', 3);
@@ -760,7 +821,6 @@
             return;
         }
 
-        // 边缘吸附（低速）
         if (minD < 15 && minD > 0) {
             if (minD === dL)      S.x = margin;
             else if (minD === dR) S.x = window.innerWidth - s - margin;
@@ -770,7 +830,6 @@
             setTimeout(savePos, 600);
             return;
         }
-        // 普通惯性
         if (speed > .4) S.sliding = true;
     }
 
@@ -795,6 +854,7 @@
             e.target.closest('#ciwei-pet-menu') ||
             e.target.closest('#ciwei-pet-submenu') ||
             e.target.closest('#ciwei-pet-dialogue') ||
+            e.target.closest('#ciwei-pet-ai-settings') ||
             e.target.closest('#ciwei-pet-restore') ||
             e.target.closest('a, button, input, textarea, select, label') ||
             e.target.closest('[class*="modal"]')) return;
@@ -802,9 +862,7 @@
         walkTo(e.clientX - getSize() / 2, e.clientY - getSize() / 2);
     });
 
-    // ============================================================
     // 主循环
-    // ============================================================
     var lastFrame = performance.now();
     function mainLoop(now) {
         tickFPS(now);
@@ -813,10 +871,8 @@
         if (dt > .05) dt = .05;
 
         if (S.sliding && !S.dragging) {
-            // 投掷模式摩擦更小 + 反弹更强
             var friction = S.thrown ? Math.pow(.32, dt) : Math.pow(.06, dt);
             var bounceRate = S.thrown ? .72 : .55;
-
             S.vx *= friction;
             S.vy *= friction;
 
@@ -827,7 +883,6 @@
                 setPos(c0.x, c0.y, false);
                 savePos();
 
-                // 投掷落地
                 if (S.thrown) {
                     S.thrown = false;
                     if (!S.sleeping) setFace('happy', 1400);
@@ -850,11 +905,9 @@
                 if (hit) {
                     host.classList.add('squash');
                     setTimeout(function () { host.classList.remove('squash'); }, 300);
-
                     if (S.thrown && navigator.vibrate) {
                         try { navigator.vibrate(15); } catch (err) {}
                     }
-
                     var rect = bodyEl.getBoundingClientRect();
                     var side = nx <= 0 ? 'left' :
                                nx >= window.innerWidth - s ? 'right' :
@@ -880,9 +933,7 @@
         requestAnimationFrame(mainLoop);
     }
 
-    // ============================================================
     // 视线跟随
-    // ============================================================
     document.addEventListener('mousemove', function (e) {
         S.mouseX = e.clientX; S.mouseY = e.clientY; S.mouseActive = true;
         if (isMobile() || S.dragging || S.hidden || S.sleeping) return;
@@ -908,9 +959,7 @@
         if (!S.dragging) tiltEl.style.transform = '';
     });
 
-    // ============================================================
     // 智能避让
-    // ============================================================
     document.addEventListener('mousemove', function (e) {
         if (isMobile() || S.dragging || S.sleeping || S.hidden || S.dialogueOpen) return;
         if (performance.now() < S.avoidCooldown) return;
@@ -941,9 +990,7 @@
         }
     });
 
-    // ============================================================
     // 动作
-    // ============================================================
     function doPet() {
         saveLast(); initAudio();
         S.mood = clamp(S.mood + 8, 0, 100); updateMoodColor();
@@ -1033,7 +1080,8 @@
         host.classList.add('hidden');
         restoreBtn.classList.add('show');
     }
-    function doShow() {
+    
+        function doShow() {
         S.hidden = false; saveHidden();
         host.classList.remove('hidden');
         restoreBtn.classList.remove('show');
@@ -1064,8 +1112,9 @@
             var d = DIALOGUES[i];
             if (d.hidden && !secretOK) continue;
             var cls = 'cp-dlg-item';
-            if (asked.indexOf(d.id) !== -1) cls += ' asked';
+            if (asked.indexOf(d.id) !== -1 && !d.ai) cls += ' asked';
             if (d.hidden) cls += ' secret';
+            if (d.ai) cls += ' ai';
             html += '<div class="' + cls + '" data-dlg-id="' + d.id + '">' +
                     '<span class="cp-dlg-icon">' + d.icon + '</span>' +
                     '<span>' + d.q + '</span>' +
@@ -1123,6 +1172,18 @@
         initAudio();
         SFX.talk();
 
+        if (d.ai) {
+            if (S.aiThinking) {
+                showBubble('我还在想上一个问题呢…', 1500, false);
+                return;
+            }
+            var prompt;
+            if (d.ai === 'joke') prompt = '给我讲一个好笑的笑话';
+            else prompt = '随便说点什么吧，我有点无聊';
+            askAI(prompt);
+            return;
+        }
+
         var prevReplying = dlgBody.querySelector('.replying');
         if (prevReplying) prevReplying.classList.remove('replying');
         item.classList.add('replying');
@@ -1149,6 +1210,334 @@
     dlgClose.addEventListener('click', function (e) {
         e.stopPropagation();
         hideDialogue();
+    });
+
+    // ============================================================
+    // AI 配置（从 CiweiBlog/ai-config.json 读）
+    // ============================================================
+    function fetchAIConfig() {
+        var now = Date.now();
+        if (aiConfigCache && now - aiConfigCacheTime < AI_CONFIG_TTL) {
+            return Promise.resolve(aiConfigCache);
+        }
+        return fetch(AI_CONFIG_URL + '?t=' + now, { cache: 'no-store' })
+            .then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(function (cfg) {
+                // 补齐默认值
+                var merged = {};
+                for (var k in DEFAULT_AI_CONFIG) merged[k] = DEFAULT_AI_CONFIG[k];
+                for (var k2 in cfg) merged[k2] = cfg[k2];
+                aiConfigCache = merged;
+                aiConfigCacheTime = now;
+                return merged;
+            })
+            .catch(function () {
+                aiConfigCache = DEFAULT_AI_CONFIG;
+                aiConfigCacheTime = now;
+                return DEFAULT_AI_CONFIG;
+            });
+    }
+
+    function getApiKey() { return lsGet(KEYS.aiKey) || ''; }
+    function saveApiKey(k) { lsSet(KEYS.aiKey, k); updateAICheck(); }
+    function clearApiKey() { lsSet(KEYS.aiKey, ''); updateAICheck(); }
+
+    function updateAICheck() {
+        var key = getApiKey();
+        if (key) {
+            aiChk.textContent = '已配置';
+            aiChk.style.color = '#58a6ff';
+        } else {
+            aiChk.textContent = '未配置';
+            aiChk.style.color = '';
+        }
+    }
+
+    function renderAIParams(cfg) {
+        var html =
+            '<div class="cp-ai-param-row"><span>模型</span><strong>' +
+                (cfg.model === 'deepseek-v4-pro' ? 'Pro · 推理' : 'Flash · 快速') +
+            '</strong></div>' +
+            '<div class="cp-ai-param-row"><span>温度</span><strong>' + cfg.temperature + '</strong></div>' +
+            '<div class="cp-ai-param-row"><span>最大输出</span><strong>' + cfg.maxTokens + ' tokens</strong></div>' +
+            '<div class="cp-ai-param-row"><span>上下文</span><strong>' + cfg.contextLines + ' 轮</strong></div>' +
+            '<div class="cp-ai-param-row"><span>推理强度</span><strong>' + (cfg.reasoningEffort === 'max' ? '最大' : cfg.reasoningEffort === 'low' ? '低' : '高') + '</strong></div>' +
+            '<div class="cp-ai-param-row"><span>流式输出</span><strong>' + (cfg.stream !== false ? '开启' : '关闭') + '</strong></div>';
+        aiParamsEl.innerHTML = html;
+    }
+
+    // ============================================================
+    // 对话历史
+    // ============================================================
+    function getHistory() {
+        var raw = lsGet(KEYS.aiHist);
+        if (!raw) return [];
+        try { return JSON.parse(raw) || []; } catch (e) { return []; }
+    }
+    function pushHistory(role, content) {
+        var h = getHistory();
+        h.push({ role: role, content: content });
+        if (h.length > 100) h = h.slice(-100);
+        lsSet(KEYS.aiHist, JSON.stringify(h));
+    }
+    function clearHistory() { lsSet(KEYS.aiHist, '[]'); }
+
+    // ============================================================
+    // DeepSeek AI
+    // ============================================================
+    function askAI(userInput) {
+        var apiKey = getApiKey();
+        if (!apiKey) {
+            showBubble('我还没有 AI 大脑…点 🔑 配置一下吧 🥺', 3000, false);
+            setFace('surprised', 2000);
+            return;
+        }
+
+        S.aiThinking = true;
+        pushHistory('user', userInput);
+        setFace('surprised');
+
+        fetchAIConfig().then(function (cfg) {
+            var history = getHistory();
+            var ctxLines = cfg.contextLines || 10;
+            var recent = history.slice(-ctxLines * 2 - 1, -1);
+
+            var messages = [{ role: 'system', content: SYSTEM_PROMPT }];
+            for (var i = 0; i < recent.length; i++) {
+                messages.push({ role: recent[i].role, content: recent[i].content });
+            }
+            messages.push({ role: 'user', content: userInput });
+
+            var body = {
+                model: cfg.model || 'deepseek-v4-flash',
+                messages: messages,
+                temperature: typeof cfg.temperature === 'number' ? cfg.temperature : 0.7,
+                max_tokens: cfg.maxTokens || 1024,
+                stream: cfg.stream !== false
+            };
+
+            if (cfg.model === 'deepseek-v4-pro' && cfg.reasoningEffort) {
+                body.reasoning_effort = cfg.reasoningEffort;
+            }
+
+            if (body.stream) {
+                showBubbleStream('💭 想想…');
+                streamAI(apiKey, body, userInput);
+            } else {
+                showBubble('💭 想想…', 30000, false);
+                fetchAI(apiKey, body, userInput);
+            }
+        });
+    }
+
+    function fetchAI(apiKey, body, userInput) {
+        fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+            body: JSON.stringify(body)
+        }).then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        }).then(function (json) {
+            var reply = json.choices && json.choices[0] && json.choices[0].message
+                ? json.choices[0].message.content
+                : '（没听清…）';
+            showBubble(reply, 5000, false);
+            pushHistory('assistant', reply);
+            setFace('happy', 2500);
+            S.mood = clamp(S.mood + 3, 0, 100);
+            updateMoodColor();
+            S.aiThinking = false;
+        }).catch(function (err) {
+            console.error('AI 调用失败:', err);
+            showBubble('唔…连接失败：' + (err.message || '未知错误'), 4000, false);
+            setFace('angry', 2500);
+            S.aiThinking = false;
+        });
+    }
+
+    function streamAI(apiKey, body, userInput) {
+        fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+            body: JSON.stringify(body)
+        }).then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            if (!res.body) {
+                return res.json().then(function (json) {
+                    var reply = json.choices[0].message.content;
+                    showBubble(reply, 5000, false);
+                    pushHistory('assistant', reply);
+                    setFace('happy', 2500);
+                    S.aiThinking = false;
+                });
+            }
+            return readStream(res.body);
+        }).then(function (fullText) {
+            if (!fullText) return;
+            showBubble(fullText, 5000, false);
+            pushHistory('assistant', fullText);
+            setFace('happy', 2500);
+            S.mood = clamp(S.mood + 3, 0, 100);
+            updateMoodColor();
+            S.aiThinking = false;
+        }).catch(function (err) {
+            console.error('AI 流式失败:', err);
+            showBubble('唔…连接失败：' + (err.message || '未知错误'), 4000, false);
+            setFace('angry', 2500);
+            S.aiThinking = false;
+        });
+    }
+
+    function readStream(stream) {
+        var reader = stream.getReader();
+        var decoder = new TextDecoder();
+        var fullText = '';
+        var buffer = '';
+
+        function pump() {
+            return reader.read().then(function (result) {
+                if (result.done) return fullText;
+                buffer += decoder.decode(result.value, { stream: true });
+                var lines = buffer.split('\n');
+                buffer = lines.pop();
+
+                for (var i = 0; i < lines.length; i++) {
+                    var line = lines[i].trim();
+                    if (!line || line.indexOf('data: ') !== 0) continue;
+                    var data = line.slice(6);
+                    if (data === '[DONE]') continue;
+                    try {
+                        var json = JSON.parse(data);
+                        var delta = json.choices && json.choices[0] && json.choices[0].delta;
+                        if (delta && delta.content) {
+                            fullText += delta.content;
+                            showBubbleStream(fullText);
+                        }
+                    } catch (e) {}
+                }
+                return pump();
+            });
+        }
+        return pump();
+    }
+
+    // ============================================================
+    // AI Key 面板
+    // ============================================================
+    function openAISettings() {
+        aiKeyInput.value = getApiKey();
+        aiStatus.textContent = '';
+        aiStatus.className = 'cp-ai-status';
+
+        // 显示当前参数
+        aiParamsEl.innerHTML = '<span style="color:var(--cp-panel-text-muted);">加载中…</span>';
+        fetchAIConfig().then(function (cfg) {
+            renderAIParams(cfg);
+        });
+
+        var s = getSize();
+        var px = S.x + s + 8;
+        var py = S.y;
+        aiSettings.style.left = px + 'px';
+        aiSettings.style.top  = py + 'px';
+        aiSettings.classList.add('show');
+
+        var ar = aiSettings.getBoundingClientRect();
+        if (px + ar.width > window.innerWidth - 8) {
+            aiSettings.style.left = Math.max(8, window.innerWidth - ar.width - 8) + 'px';
+        }
+        if (py + ar.height > window.innerHeight - 8) {
+            aiSettings.style.top = Math.max(8, window.innerHeight - ar.height - 8) + 'px';
+        }
+
+        clearTimeout(S.avoidTimer);
+        S.avoidTimer = null;
+        S.avoidCooldown = performance.now() + 60000;
+    }
+
+    function closeAISettings() {
+        aiSettings.classList.remove('show');
+        S.avoidCooldown = performance.now() + 2000;
+    }
+
+    aiKeyToggle.addEventListener('click', function () {
+        aiKeyInput.type = aiKeyInput.type === 'password' ? 'text' : 'password';
+        aiKeyToggle.textContent = aiKeyInput.type === 'password' ? '👁️' : '🙈';
+    });
+
+    aiSaveBtn.addEventListener('click', function () {
+        var k = aiKeyInput.value.trim();
+        if (!k) {
+            aiStatus.textContent = '⚠️ 请填写 API Key';
+            aiStatus.className = 'cp-ai-status err';
+            return;
+        }
+        saveApiKey(k);
+        aiStatus.textContent = '✅ 已保存到本机';
+        aiStatus.className = 'cp-ai-status ok';
+        setTimeout(closeAISettings, 800);
+    });
+
+    aiTestBtn.addEventListener('click', function () {
+        var k = aiKeyInput.value.trim() || getApiKey();
+        if (!k) {
+            aiStatus.textContent = '⚠️ 请先填 API Key';
+            aiStatus.className = 'cp-ai-status err';
+            return;
+        }
+        aiStatus.textContent = '⏳ 测试中…';
+        aiStatus.className = 'cp-ai-status';
+
+        fetchAIConfig().then(function (cfg) {
+            return fetch('https://api.deepseek.com/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + k
+                },
+                body: JSON.stringify({
+                    model: cfg.model,
+                    messages: [{ role: 'user', content: '回复"OK"' }],
+                    max_tokens: 10
+                })
+            });
+        }).then(function (res) {
+            if (res.ok) {
+                aiStatus.textContent = '✅ 连接成功';
+                aiStatus.className = 'cp-ai-status ok';
+            } else {
+                aiStatus.textContent = '❌ 失败 (HTTP ' + res.status + ')';
+                aiStatus.className = 'cp-ai-status err';
+            }
+        }).catch(function (err) {
+            aiStatus.textContent = '❌ 网络错误：' + (err.message || '');
+            aiStatus.className = 'cp-ai-status err';
+        });
+    });
+
+    aiClearBtn.addEventListener('click', function () {
+        if (!confirm('确定清除 API Key 和对话历史吗？')) return;
+        clearApiKey();
+        clearHistory();
+        aiKeyInput.value = '';
+        aiStatus.textContent = '🗑️ 已清除';
+        aiStatus.className = 'cp-ai-status';
+    });
+
+    aiCloseBtn.addEventListener('click', closeAISettings);
+    dlgSettingsBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openAISettings();
     });
 
     // ============================================================
@@ -1198,6 +1587,7 @@
 
         soundChk.textContent = S.soundOn ? '开启' : '关闭';
         updateScaleDisplay();
+        updateAICheck();
 
         var sr = submenu.getBoundingClientRect();
         if (sx + sr.width > window.innerWidth - 8) {
@@ -1249,6 +1639,11 @@
         else if (act === 'scale-up')    { doScaleUp(); }
         else if (act === 'scale-down')  { doScaleDown(); }
         else if (act === 'scale-reset') { doScaleReset(); }
+        else if (act === 'ai-key') {
+            submenu.classList.remove('show');
+            menu.classList.remove('show');
+            setTimeout(openAISettings, 60);
+        }
         else if (act === 'sound') {
             S.soundOn = !S.soundOn; saveSound();
             soundChk.textContent = S.soundOn ? '开启' : '关闭';
@@ -1308,9 +1703,6 @@
         }, 1200);
     }
 
-    // ============================================================
-    // 后台省电
-    // ============================================================
     document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
             savePos(); saveSleep(); saveClicks();
@@ -1367,6 +1759,7 @@
         S.soundOn = lsGet(KEYS.sound) !== 'false';
         soundChk.textContent = S.soundOn ? '开启' : '关闭';
         updateMoodColor();
+        updateAICheck();
     }
 
     // ============================================================
@@ -1401,6 +1794,10 @@
                     hideDialogue();
                     showDialogueAt();
                 }
+                if (aiSettings.classList.contains('show')) {
+                    closeAISettings();
+                    openAISettings();
+                }
             }, 150);
         });
 
@@ -1409,7 +1806,8 @@
             lsSet(KEYS.last, String(S.last));
         });
 
-        console.log('🦔 小ci · 内联版 v3 已启动 · ' + getScalePercent() + '%');
+        console.log('🦔 小ci · 内联版 v5 已启动 · ' + measuredFPS + 'fps · ' + getScalePercent() + '%');
+        console.log('🤖 AI：参数来自 ai-config.json · Key 存本机');
     }
 
     mount();

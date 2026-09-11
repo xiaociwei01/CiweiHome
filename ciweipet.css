@@ -663,3 +663,483 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
         transition-duration: .01ms !important;
     }
 }
+
+/* ============================================================
+   🆕 AI 设置面板
+================================================================ */
+#ciwei-pet-ai-settings {
+    position: fixed;
+    background: var(--cp-panel-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 14px;
+    padding: 0;
+    box-shadow: var(--cp-panel-shadow);
+    z-index: 9002;
+    display: none;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
+    animation: cp-menuIn .2s cubic-bezier(.22,1,.36,1);
+    transform-origin: top left;
+}
+#ciwei-pet-ai-settings.show { display: block; }
+#ciwei-pet-ai-settings::-webkit-scrollbar { width: 3px; }
+#ciwei-pet-ai-settings::-webkit-scrollbar-thumb {
+    background: var(--cp-panel-text-muted);
+    border-radius: 4px;
+}
+
+#ciwei-pet-ai-settings .cp-ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid var(--cp-panel-border);
+    position: sticky;
+    top: 0;
+    background: var(--cp-panel-bg);
+    border-radius: 14px 14px 0 0;
+    z-index: 1;
+}
+#ciwei-pet-ai-settings .cp-ai-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cp-panel-text);
+}
+#ciwei-pet-ai-settings .cp-ai-close {
+    background: none;
+    border: none;
+    color: var(--cp-panel-text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 6px;
+    transition: all .15s;
+    line-height: 1;
+}
+#ciwei-pet-ai-settings .cp-ai-close:hover {
+    background: var(--cp-panel-hover);
+    color: var(--cp-panel-text);
+}
+
+#ciwei-pet-ai-settings .cp-ai-body {
+    padding: 14px 16px 16px;
+}
+
+/* 字段 */
+#ciwei-pet-ai-settings .cp-ai-field {
+    margin-bottom: 14px;
+}
+#ciwei-pet-ai-settings .cp-ai-field:last-of-type {
+    margin-bottom: 6px;
+}
+#ciwei-pet-ai-settings .cp-ai-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cp-panel-text-muted);
+    letter-spacing: .3px;
+    margin-bottom: 6px;
+}
+#ciwei-pet-ai-settings .cp-ai-value {
+    color: var(--cp-panel-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-left: 4px;
+}
+
+/* API Key 行 */
+#ciwei-pet-ai-settings .cp-ai-key-row {
+    display: flex;
+    gap: 6px;
+}
+#ciwei-pet-ai-settings .cp-ai-key-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'SF Mono', Consolas, monospace;
+    background: var(--cp-panel-hover);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 8px;
+    color: var(--cp-panel-text);
+    outline: none;
+    transition: border-color .2s;
+}
+#ciwei-pet-ai-settings .cp-ai-key-row input:focus {
+    border-color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-key-toggle {
+    width: 36px;
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 8px;
+    background: var(--cp-panel-hover);
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--cp-panel-text-muted);
+    transition: all .15s;
+}
+#ciwei-pet-ai-settings .cp-ai-key-toggle:hover {
+    background: var(--cp-panel-active);
+    color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-hint {
+    font-size: 11px;
+    color: var(--cp-panel-text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+/* 单选组 */
+#ciwei-pet-ai-settings .cp-ai-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+#ciwei-pet-ai-settings .cp-ai-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--cp-panel-text);
+    transition: all .15s;
+    border: 1px solid transparent;
+}
+#ciwei-pet-ai-settings .cp-ai-radio:hover {
+    background: var(--cp-panel-hover);
+}
+#ciwei-pet-ai-settings .cp-ai-radio input {
+    margin: 0;
+    accent-color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-radio.checked {
+    background: var(--cp-panel-active);
+    border-color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-radio .cp-ai-radio-sub {
+    font-size: 11px;
+    color: var(--cp-panel-text-muted);
+    margin-left: auto;
+}
+
+/* 滑块 */
+#ciwei-pet-ai-settings input[type="range"] {
+    width: 100%;
+    accent-color: #58a6ff;
+    cursor: pointer;
+}
+
+/* 分段按钮 */
+#ciwei-pet-ai-settings .cp-ai-seg {
+    display: flex;
+    gap: 4px;
+    background: var(--cp-panel-hover);
+    padding: 3px;
+    border-radius: 8px;
+}
+#ciwei-pet-ai-settings .cp-ai-seg button {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cp-panel-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+}
+#ciwei-pet-ai-settings .cp-ai-seg button:hover {
+    color: var(--cp-panel-text);
+}
+#ciwei-pet-ai-settings .cp-ai-seg button.active {
+    background: var(--cp-panel-bg);
+    color: #58a6ff;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+/* 开关 */
+#ciwei-pet-ai-settings .cp-ai-switch {
+    display: inline-block;
+    position: relative;
+    width: 40px;
+    height: 22px;
+    cursor: pointer;
+}
+#ciwei-pet-ai-settings .cp-ai-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+#ciwei-pet-ai-settings .cp-ai-switch span {
+    position: absolute;
+    inset: 0;
+    background: var(--cp-panel-hover);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 22px;
+    transition: all .2s;
+}
+#ciwei-pet-ai-settings .cp-ai-switch span::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--cp-panel-text-muted);
+    transition: all .2s;
+}
+#ciwei-pet-ai-settings .cp-ai-switch input:checked + span {
+    background: #58a6ff;
+    border-color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-switch input:checked + span::after {
+    left: 20px;
+    background: #fff;
+}
+
+/* 操作按钮 */
+#ciwei-pet-ai-settings .cp-ai-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--cp-panel-border);
+}
+#ciwei-pet-ai-settings .cp-ai-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 8px;
+    background: var(--cp-panel-hover);
+    color: var(--cp-panel-text);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+}
+#ciwei-pet-ai-settings .cp-ai-btn:hover {
+    background: var(--cp-panel-active);
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-btn.primary {
+    background: #58a6ff;
+    color: #fff;
+    border-color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-btn.primary:hover {
+    background: #4a8edb;
+}
+#ciwei-pet-ai-settings .cp-ai-btn.danger:hover {
+    background: rgba(239,68,68,.16);
+    border-color: #ef4444;
+    color: #f87171;
+}
+
+/* 状态提示 */
+#ciwei-pet-ai-settings .cp-ai-status {
+    margin-top: 10px;
+    font-size: 12px;
+    text-align: center;
+    min-height: 18px;
+    color: var(--cp-panel-text-muted);
+    transition: color .2s;
+}
+#ciwei-pet-ai-settings .cp-ai-status.ok { color: #22c55e; }
+#ciwei-pet-ai-settings .cp-ai-status.err { color: #ef4444; }
+
+/* 对话面板头部加设置按钮 */
+#ciwei-pet-dialogue .cp-dlg-header {
+    gap: 6px;
+}
+#ciwei-pet-dialogue .cp-dlg-settings-btn {
+    background: none;
+    border: none;
+    color: var(--cp-panel-text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all .15s;
+    line-height: 1;
+    margin-left: auto;
+    margin-right: 2px;
+}
+#ciwei-pet-dialogue .cp-dlg-settings-btn:hover {
+    background: var(--cp-panel-hover);
+    color: #58a6ff;
+    transform: rotate(45deg);
+}
+
+/* ============================================================
+   🆕 AI Key 面板
+================================================================ */
+#ciwei-pet-ai-settings {
+    position: fixed;
+    background: var(--cp-panel-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 14px;
+    padding: 0;
+    box-shadow: var(--cp-panel-shadow);
+    z-index: 9002;
+    display: none;
+    width: 300px;
+    max-width: calc(100vw - 32px);
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    font-family: -apple-system, 'PingFang SC', 'Segoe UI', 'Inter', sans-serif;
+    animation: cp-menuIn .2s cubic-bezier(.22,1,.36,1);
+    transform-origin: top left;
+}
+#ciwei-pet-ai-settings.show { display: block; }
+#ciwei-pet-ai-settings::-webkit-scrollbar { width: 3px; }
+#ciwei-pet-ai-settings::-webkit-scrollbar-thumb {
+    background: var(--cp-panel-text-muted);
+    border-radius: 4px;
+}
+#ciwei-pet-ai-settings .cp-ai-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid var(--cp-panel-border);
+    position: sticky;
+    top: 0;
+    background: var(--cp-panel-bg);
+    border-radius: 14px 14px 0 0;
+    z-index: 1;
+}
+#ciwei-pet-ai-settings .cp-ai-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cp-panel-text);
+}
+#ciwei-pet-ai-settings .cp-ai-close {
+    background: none; border: none;
+    color: var(--cp-panel-text-muted);
+    font-size: 16px; cursor: pointer;
+    padding: 2px 8px; border-radius: 6px;
+    transition: all .15s; line-height: 1;
+}
+#ciwei-pet-ai-settings .cp-ai-close:hover {
+    background: var(--cp-panel-hover);
+    color: var(--cp-panel-text);
+}
+#ciwei-pet-ai-settings .cp-ai-body { padding: 14px 16px 16px; }
+#ciwei-pet-ai-settings .cp-ai-field { margin-bottom: 14px; }
+#ciwei-pet-ai-settings .cp-ai-field:last-of-type { margin-bottom: 6px; }
+#ciwei-pet-ai-settings .cp-ai-label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--cp-panel-text-muted);
+    letter-spacing: .3px; margin-bottom: 6px;
+}
+#ciwei-pet-ai-settings .cp-ai-key-row {
+    display: flex; gap: 6px;
+}
+#ciwei-pet-ai-settings .cp-ai-key-row input {
+    flex: 1; min-width: 0;
+    padding: 8px 10px; font-size: 13px;
+    font-family: 'SF Mono', Consolas, monospace;
+    background: var(--cp-panel-hover);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 8px;
+    color: var(--cp-panel-text);
+    outline: none;
+}
+#ciwei-pet-ai-settings .cp-ai-key-row input:focus { border-color: #58a6ff; }
+#ciwei-pet-ai-settings .cp-ai-key-toggle {
+    width: 36px; border: 1px solid var(--cp-panel-border);
+    border-radius: 8px; background: var(--cp-panel-hover);
+    cursor: pointer; font-size: 14px;
+    color: var(--cp-panel-text-muted);
+    transition: all .15s;
+}
+#ciwei-pet-ai-settings .cp-ai-key-toggle:hover {
+    background: var(--cp-panel-active);
+    color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-hint {
+    font-size: 11px; color: var(--cp-panel-text-muted);
+    margin-top: 4px; line-height: 1.5;
+}
+#ciwei-pet-ai-settings .cp-ai-hint a { text-decoration: none; }
+#ciwei-pet-ai-settings .cp-ai-hint a:hover { text-decoration: underline; }
+#ciwei-pet-ai-settings .cp-ai-params {
+    background: var(--cp-panel-hover);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--cp-panel-text);
+}
+#ciwei-pet-ai-settings .cp-ai-param-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+#ciwei-pet-ai-settings .cp-ai-param-row span { color: var(--cp-panel-text-muted); }
+#ciwei-pet-ai-settings .cp-ai-param-row strong { font-weight: 600; }
+#ciwei-pet-ai-settings .cp-ai-actions {
+    display: flex; gap: 6px;
+    margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--cp-panel-border);
+}
+#ciwei-pet-ai-settings .cp-ai-btn {
+    flex: 1; padding: 8px 12px;
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 8px;
+    background: var(--cp-panel-hover);
+    color: var(--cp-panel-text);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all .15s;
+    font-family: inherit;
+}
+#ciwei-pet-ai-settings .cp-ai-btn:hover {
+    background: var(--cp-panel-active);
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-btn.primary {
+    background: #58a6ff; color: #fff; border-color: #58a6ff;
+}
+#ciwei-pet-ai-settings .cp-ai-btn.primary:hover { background: #4a8edb; }
+#ciwei-pet-ai-settings .cp-ai-btn.danger:hover {
+    background: rgba(239,68,68,.16);
+    border-color: #ef4444; color: #f87171;
+}
+#ciwei-pet-ai-settings .cp-ai-status {
+    margin-top: 10px; font-size: 12px;
+    text-align: center; min-height: 18px;
+    color: var(--cp-panel-text-muted);
+}
+#ciwei-pet-ai-settings .cp-ai-status.ok { color: #22c55e; }
+#ciwei-pet-ai-settings .cp-ai-status.err { color: #ef4444; }
+
+#ciwei-pet-dialogue .cp-dlg-settings-btn {
+    background: none; border: none;
+    color: var(--cp-panel-text-muted);
+    font-size: 13px; cursor: pointer;
+    padding: 2px 6px; border-radius: 6px;
+    transition: all .15s; line-height: 1;
+    margin-left: auto; margin-right: 2px;
+}
+#ciwei-pet-dialogue .cp-dlg-settings-btn:hover {
+    background: var(--cp-panel-hover);
+    color: #58a6ff;
+}
