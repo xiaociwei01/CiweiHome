@@ -1143,3 +1143,83 @@ body[data-fps="low"] #ciwei-pet .cp-bubble {
     background: var(--cp-panel-hover);
     color: #58a6ff;
 }
+
+/* ============================================================
+   🆕 对话输入框
+================================================================ */
+#ciwei-pet-dialogue {
+    flex-direction: column;
+    overflow: hidden;
+    max-height: 60vh;
+}
+#ciwei-pet-dialogue.show {
+    display: flex;
+}
+
+#ciwei-pet-dialogue #cp-dlg-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+#ciwei-pet-dialogue #cp-dlg-body::-webkit-scrollbar { width: 3px; }
+#ciwei-pet-dialogue #cp-dlg-body::-webkit-scrollbar-thumb {
+    background: var(--cp-panel-text-muted);
+    border-radius: 4px;
+}
+
+#ciwei-pet-dialogue .cp-dlg-input-area {
+    flex-shrink: 0;
+    display: flex;
+    gap: 6px;
+    padding: 8px 10px 10px;
+    border-top: 1px solid var(--cp-panel-border);
+    background: var(--cp-panel-bg);
+    border-radius: 0 0 14px 14px;
+}
+
+#ciwei-pet-dialogue .cp-dlg-input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 12px;
+    background: var(--cp-panel-hover);
+    border: 1px solid var(--cp-panel-border);
+    border-radius: 8px;
+    color: var(--cp-panel-text);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s;
+    -webkit-tap-highlight-color: transparent;
+}
+#ciwei-pet-dialogue .cp-dlg-input:focus {
+    border-color: #58a6ff;
+}
+#ciwei-pet-dialogue .cp-dlg-input::placeholder {
+    color: var(--cp-panel-text-muted);
+}
+
+#ciwei-pet-dialogue .cp-dlg-send {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #58a6ff;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+}
+#ciwei-pet-dialogue .cp-dlg-send:hover {
+    background: #4a8edb;
+}
+#ciwei-pet-dialogue .cp-dlg-send:active {
+    transform: scale(.94);
+}
+#ciwei-pet-dialogue .cp-dlg-send:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}

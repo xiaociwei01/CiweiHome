@@ -225,12 +225,16 @@
     var dialogue = document.createElement('div');
     dialogue.id = 'ciwei-pet-dialogue';
     dialogue.innerHTML =
-        '<div class="cp-dlg-header">' +
-            '<span class="cp-dlg-title">💬 和小ci聊天</span>' +
-            '<button class="cp-dlg-settings-btn" id="cp-dlg-settings-btn" title="AI Key">🔑</button>' +
-            '<button class="cp-dlg-close" id="cp-dlg-close">✕</button>' +
-        '</div>' +
-        '<div id="cp-dlg-body"></div>';
+    '<div class="cp-dlg-header">' +
+        '<span class="cp-dlg-title">💬 和小ci聊天</span>' +
+        '<button class="cp-dlg-settings-btn" id="cp-dlg-settings-btn" title="AI Key">🔑</button>' +
+        '<button class="cp-dlg-close" id="cp-dlg-close">✕</button>' +
+    '</div>' +
+    '<div id="cp-dlg-body"></div>' +
+    '<div class="cp-dlg-input-area">' +
+        '<input type="text" class="cp-dlg-input" id="cp-dlg-input" placeholder="打字问我…" autocomplete="off">' +
+        '<button class="cp-dlg-send" id="cp-dlg-send">发送</button>' +
+    '</div>';
 
     // AI Key 面板（简化版：只输入 Key + 显示当前参数）
     var aiSettings = document.createElement('div');
@@ -296,6 +300,8 @@
     var toolbar  = host.querySelector('.cp-toolbar');
     var dlgBody  = dialogue.querySelector('#cp-dlg-body');
     var dlgClose = dialogue.querySelector('#cp-dlg-close');
+    var dlgInput = dialogue.querySelector('#cp-dlg-input');
+    var dlgSend  = dialogue.querySelector('#cp-dlg-send');
     var soundChk = submenu.querySelector('#cp-sound-check');
     var scaleChk = submenu.querySelector('#cp-scale-check');
     var aiChk    = submenu.querySelector('#cp-ai-check');
@@ -1147,12 +1153,19 @@
         }
         if (parseFloat(dialogue.style.top) < 8) dialogue.style.top = '8px';
 
-        clearTimeout(S.avoidTimer);
-        S.avoidTimer = null;
-        S.avoidCooldown = performance.now() + 60000;
-    }
+            clearTimeout(S.avoidTimer);
+    S.avoidTimer = null;
+    S.avoidCooldown = performance.now() + 60000;
 
-    function hideDialogue() {
+    // 桌面端自动聚焦输入框
+    if (!isMobile() && dlgInput) {
+        setTimeout(function () {
+            try { dlgInput.focus(); } catch (e) {}
+        }, 300);
+    }
+}
+
+function hideDialogue() {
         dialogue.classList.remove('show');
         S.dialogueOpen = false;
         S.avoidCooldown = performance.now() + 2000;
@@ -1211,6 +1224,35 @@
         e.stopPropagation();
         hideDialogue();
     });
+
+// ⭐ 用户自由输入
+function sendUserInput() {
+    var text = dlgInput.value.trim();
+    if (!text) return;
+    if (S.aiThinking) {
+        showBubble('我还在想上一个问题呢…', 1500, false);
+        return;
+    }
+    dlgInput.value = '';
+    askAI(text);
+}
+
+dlgSend.addEventListener('click', function (e) {
+    e.stopPropagation();
+    sendUserInput();
+});
+
+dlgInput.addEventListener('keydown', function (e) {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendUserInput();
+    }
+});
+
+dlgInput.addEventListener('click', function (e) {
+    e.stopPropagation();
+});
 
     // ============================================================
     // AI 配置（从 CiweiBlog/ai-config.json 读）
