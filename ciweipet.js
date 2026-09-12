@@ -1464,7 +1464,12 @@ aiHeader.addEventListener('pointercancel', function (e) {
             var ctxLines = cfg.contextLines || 10;
             var recent = history.slice(-ctxLines * 2 - 1, -1);
 
-            var messages = [{ role: 'system', content: SYSTEM_PROMPT }];
+            // 获取当前真实时间，让 AI 有“时间感知”
+var now = new Date();
+var timeStr = now.toLocaleString('zh-CN', { hour12: false });
+var timeContext = "\n【系统提示：当前真实时间是 " + timeStr + "。如果用户问时间、年龄、多久了，请根据此信息回答。】";
+
+var messages = [{ role: 'system', content: SYSTEM_PROMPT + timeContext }];
             for (var i = 0; i < recent.length; i++) {
                 messages.push({ role: recent[i].role, content: recent[i].content });
             }
