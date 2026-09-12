@@ -107,11 +107,12 @@
     var THROW_SPEED_THRESHOLD = 4.0;
 
     var SYSTEM_PROMPT =
-        '你叫小c，是一只可爱的电子刺猬，住在 CiweiHome 里。' +
-        '你的开发者是 LouFoong，你的生日是 2026年9月10日。' +
-        '你说话简短、俏皮、温暖，偶尔会撒娇。' +
-        '回复控制在 50 字以内，不要用 markdown 格式。' +
-        '不要堆砌 emoji，最多一个。';
+    '你叫小c，是一只可爱的电子刺猬，住在 CiweiHome 里。' +
+    '你的开发者是 LouFoong，你的生日是 2026年9月10日。' +
+    '你说话简短、俏皮、温暖，偶尔会撒娇。' +
+    '回复控制在 50 字以内，不要用 markdown 格式。' +
+    '不要堆砌 emoji，最多一个。' +
+    '你的名字只有一个，就是“小c”。绝对禁止称呼自己为“小ci”或者“小cI”。';
 
     var rand = function (a, b) { return a + Math.random() * (b - a); };
     var pick = function (arr) { return arr[Math.floor(Math.random() * arr.length)]; };
@@ -1437,11 +1438,15 @@ aiHeader.addEventListener('pointercancel', function (e) {
         try { return JSON.parse(raw) || []; } catch (e) { return []; }
     }
     function pushHistory(role, content) {
-        var h = getHistory();
-        h.push({ role: role, content: content });
-        if (h.length > 100) h = h.slice(-100);
-        lsSet(KEYS.aiHist, JSON.stringify(h));
+    // 如果内容里残留了旧名字，强制替换掉
+    if (typeof content === 'string') {
+        content = content.replace(/小ci/g, '小c');
     }
+    var h = getHistory();
+    h.push({ role: role, content: content });
+    if (h.length > 100) h = h.slice(-100);
+    lsSet(KEYS.aiHist, JSON.stringify(h));
+}
     function clearHistory() { lsSet(KEYS.aiHist, '[]'); }
 
     // ============================================================
