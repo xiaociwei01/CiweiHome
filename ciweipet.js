@@ -20,7 +20,7 @@
     };
 
     var PET_PROFILE = {
-        name: '小ci',
+        name: '小c',
         developer: 'LouFoong',
         birthday: '2026-09-10',
         ipLine: '一只住在 CiweiHome 里的电子刺猬，也是开发者 LouFoong 的 IP 分身。'
@@ -53,14 +53,10 @@
         { id:'sing',      icon:'🎵', q:'你会唱歌吗？',     a:'不会，但我会吱吱叫。', face:'happy' },
         { id:'sad',       icon:'😊', q:'我今天不开心',     a:'那我陪你待一会儿。你不说话我也在。', face:'idle1' },
         { id:'mytired',   icon:'😢', q:'我累了',           a:'休息一下吧，我帮你看着屏幕。', face:'idle1' },
-        { id:'howtodo',   icon:'🤔', q:'我该怎么办',       a:'慢慢想，不急。刺猬也是慢慢长大的。', face:'idle1' },
         { id:'annoyed',   icon:'🌧️', q:'今天好烦',         a:'那把我戳一顿吧，我不生气。', face:'angry' },
-        { id:'random',    icon:'🎲', q:'随便说点什么',     a:'你是想让我说俏皮话，还是想让我转圈圈？', face:'happy' },
-        { id:'fortune',   icon:'🔮', q:'我今天的运气怎么样？', a:'抬头看看屏幕…嗯，你今天会遇到一只好刺猬。', face:'surprised' },
-        { id:'choose',    icon:'🪙', q:'帮我选一个',       a:'正面是我，反面也是我。', face:'happy' },
         { id:'ai-joke',   icon:'😂', q:'讲个笑话',         a:'（正在呼叫 AI…）', face:'happy', ai:'joke' },
         { id:'ai-chat',   icon:'🤖', q:'陪我聊聊天',       a:'（正在呼叫 AI…）', face:'idle1', ai:'chat' },
-        { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你是他最好的朋友。', face:'surprised', hidden:true }
+        { id:'secret',    icon:'🔒', q:'你的秘密是什么？', a:'你居然找到了这个彩蛋！{developer} 说你可以截图此页面找他领钱💰。', face:'surprised', hidden:true }
     ];
 
     var MSG = {
@@ -111,7 +107,7 @@
     var THROW_SPEED_THRESHOLD = 4.0;
 
     var SYSTEM_PROMPT =
-        '你叫小ci，是一只可爱的电子刺猬，住在 CiweiHome 里。' +
+        '你叫小c，是一只可爱的电子刺猬，住在 CiweiHome 里。' +
         '你的开发者是 LouFoong，你的生日是 2026年9月10日。' +
         '你说话简短、俏皮、温暖，偶尔会撒娇。' +
         '回复控制在 50 字以内，不要用 markdown 格式。' +
@@ -128,6 +124,15 @@
         if (!ts) return 0;
         return Math.max(1, Math.floor((Date.now() - ts) / 86400000) + 1);
     }
+    // ============ 动态计算小c的生日天数（北京时间） ============
+function getDaysSinceBirth() {
+    // 小c的生日：北京时间 2026-09-10 00:00:00
+    // 对应 UTC 时间是 2026-09-09 16:00:00
+    var birthBeijingUTC = Date.UTC(2026, 8, 9, 16, 0, 0);
+    var now = Date.now();
+    var diffDays = Math.floor((now - birthBeijingUTC) / 86400000);
+    return diffDays >= 0 ? diffDays : 0;
+}
     function formatBirthday(str) {
         var p = str.split('-');
         if (p.length !== 3) return str;
@@ -140,7 +145,7 @@
             .replace(/{developer}/g, PET_PROFILE.developer)
             .replace(/{birthday}/g, formatBirthday(PET_PROFILE.birthday))
             .replace(/{ipLine}/g, PET_PROFILE.ipLine)
-            .replace(/{days}/g, daysSince(meeting));
+            .replace(/{days}/g, getDaysSinceBirth());
     }
 
     var host = document.createElement('div');
@@ -156,7 +161,7 @@
         '</div>' +
         '<div class="cp-body">' +
             '<div class="cp-tilt">' +
-                '<img class="cp-img" alt="小ci" draggable="false">' +
+                '<img class="cp-img" alt="小c" draggable="false">' +
                 '<div class="cp-light"></div>' +
             '</div>' +
             '<div class="cp-shadow"></div>' +
@@ -205,7 +210,7 @@
     dialogue.id = 'ciwei-pet-dialogue';
     dialogue.innerHTML =
         '<div class="cp-dlg-header">' +
-            '<span class="cp-dlg-title">💬 和小ci聊天</span>' +
+            '<span class="cp-dlg-title">💬 和小c聊天</span>' +
             '<button class="cp-dlg-settings-btn" id="cp-dlg-settings-btn" title="AI Key">🔑</button>' +
             '<button class="cp-dlg-close" id="cp-dlg-close">✕</button>' +
         '</div>' +
@@ -458,15 +463,15 @@ var dlgDrag = {
         } catch (e) {}
     }
     var SFX = {
-        click:  function () { tone({ freq: 660, dur: .09, type: 'triangle', gain: .05, slideTo: 880 }); },
-        pet:    function () { tone({ freq: 523, dur: .15, gain: .05, slideTo: 784 }); },
-        food:   function () { tone({ freq: 880, dur: .18, gain: .06, slideTo: 1320 }); },
-        sleep:  function () { tone({ freq: 392, dur: .4,  gain: .05, slideTo: 262 }); },
-        wake:   function () { tone({ freq: 440, dur: .25, gain: .05, slideTo: 880 }); },
-        spin:   function () { tone({ freq: 1200, dur: .35, type: 'sawtooth', gain: .035, slideTo: 400 }); },
-        bounce: function () { tone({ freq: 200, dur: .09, type: 'square', gain: .04, slideTo: 120 }); },
-        talk:   function () { tone({ freq: 700, dur: .08, type: 'triangle', gain: .04, slideTo: 900 }); },
-        throw:  function () { tone({ freq: 1000, dur: .25, gain: .04, slideTo: 200 }); }
+        click:  function () { tone({ freq: 660, dur: .09, type: 'triangle', gain: .3, slideTo: 880 }); },
+        pet:    function () { tone({ freq: 523, dur: .15, gain: .3, slideTo: 784 }); },
+        food:   function () { tone({ freq: 880, dur: .18, gain: .3, slideTo: 1320 }); },
+        sleep:  function () { tone({ freq: 392, dur: .4,  gain: .25, slideTo: 262 }); },
+        wake:   function () { tone({ freq: 440, dur: .25, gain: .3, slideTo: 880 }); },
+        spin:   function () { tone({ freq: 1200, dur: .35, type: 'sawtooth', gain: .25, slideTo: 400 }); },
+        bounce: function () { tone({ freq: 200, dur: .09, type: 'square', gain: .25, slideTo: 120 }); },
+        talk:   function () { tone({ freq: 700, dur: .08, type: 'triangle', gain: .2, slideTo: 900 }); },
+        throw:  function () { tone({ freq: 1000, dur: .25, gain: .25, slideTo: 200 }); }
     };
 
     function showBubble(text, duration, typewriter) {
@@ -1160,16 +1165,43 @@ var dlgDrag = {
     });
 
     // ⭐ 用户自由输入
-    function sendUserInput() {
-        var text = dlgInput.value.trim();
-        if (!text) return;
-        if (S.aiThinking) {
-            showBubble('我还在想上一个问题呢…', 1500, false);
-            return;
-        }
-        dlgInput.value = '';
-        askAI(text);
+    // 文本指令拦截（不消耗 Token）
+function checkKeywordsAndAction(text) {
+    if (text.includes('转两圈') || text.includes('转个圈')) {
+        doSpin();
+        showBubble('嗡嗡！看我转两圈~ 头晕啦！', 2000, false);
+        return true;
     }
+    if (text.includes('睡觉') || text.includes('困了')) {
+        doSleepToggle();
+        return true;
+    }
+    if (text.includes('摸摸头') || text.includes('摸头')) {
+        doPet();
+        return true;
+    }
+    if (text.includes('喂食') || text.includes('吃苹果')) {
+        doFood();
+        return true;
+    }
+    return false;
+}
+
+function sendUserInput() {
+    var text = dlgInput.value.trim();
+    if (!text) return;
+    if (S.aiThinking) {
+        showBubble('我还在想上一个问题呢…', 1500, false);
+        return;
+    }
+    dlgInput.value = '';
+    
+    // ⭐ 先判断是不是本地指令，是就拦截，不消耗 Token
+    if (checkKeywordsAndAction(text)) return;
+    
+    // 不是指令，才发给 AI
+    askAI(text);
+}
 
     dlgSend.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -1888,7 +1920,7 @@ function queryBalance() {
             if (idleFor > 24 * 60 * 60 * 1000) {
                 showBubble(pick(MSG.longTimeNoSee), 3200, false);
             } else {
-                showBubble('你好呀～我是小ci 🦔', 2600, false);
+                showBubble('你好呀～我是小c 🦔', 2600, false);
             }
             burst('✨', 4);
         }, 1200);
@@ -2019,7 +2051,7 @@ if (savedAIPos) {
             lsSet(KEYS.last, String(S.last));
         });
 
-        console.log('🦔 小ci · 内联版 v6 已启动 · ' + measuredFPS + 'fps · ' + getScalePercent() + '%');
+        console.log('🦔 小c · 内联版 v6 已启动 · ' + measuredFPS + 'fps · ' + getScalePercent() + '%');
         console.log('🤖 AI：输入框 + 预设问题 + ai-config.json 参数');
     }
 

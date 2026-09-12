@@ -4,7 +4,7 @@
    策略：HTML → 网络优先（保证内容最新）
         静态资源 → 缓存优先（快）
 ================================================================ */
-var CACHE_NAME = 'ciweihome-v8';
+var CACHE_NAME = 'ciweihome-v9';
 var STATIC_ASSETS = [
     './',
     './index.html',
