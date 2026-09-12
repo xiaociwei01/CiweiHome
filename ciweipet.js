@@ -8,7 +8,7 @@
     if (window.__ciweiPetLoaded) return;
     window.__ciweiPetLoaded = true;
 
-    var IMG_BASE = 'https://xiaociwei01.github.io/CiweiPet/';
+    var IMG_BASE = 'https://ciweistudio.github.io/CiweiPet/';
     var IMAGES = {
         idle1:     IMG_BASE + 'idle-1.png',
         idle2:     IMG_BASE + 'idle-2.png',
@@ -430,10 +430,18 @@ var dlgDrag = {
     function saveSound() { lsSet(KEYS.sound, S.soundOn ? 'true' : 'false'); }
 
     function setImage(name) {
-        if (!IMAGES[name]) return;
-        S.face = name;
-        img.src = IMAGES[name];
-    }
+    if (!IMAGES[name]) return;
+    S.face = name;
+    img.src = IMAGES[name];
+    // 图片加载失败时的兜底处理
+    img.onerror = function() {
+        console.warn('图片加载失败:', IMAGES[name]);
+        host.style.opacity = '0'; // 加载失败就先隐藏，不显示破图
+    };
+    img.onload = function() {
+        host.style.opacity = '1'; // 加载成功再显示
+    };
+}
     function updateMoodColor() {
         var t = clamp(S.mood, 0, 100) / 100;
         var r = Math.round(255 - t * 167);
